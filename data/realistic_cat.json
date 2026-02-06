@@ -1,0 +1,167 @@
+{
+  "name": "RealisticCat",
+  "age": 2.083333333333331,
+  "emotional_state": {
+    "happiness": 100,
+    "hunger": 100,
+    "energy": 0,
+    "trust": 100
+  },
+  "behavior_weights": {
+    "play": 1.0,
+    "sleep": 0.5450000000000002,
+    "eat": 0.9000000000000004,
+    "purr": 0.7050000000000002,
+    "scratch": 0.4,
+    "hide": 0.25
+  },
+  "learned_behaviors": {
+    "hide": 0.1,
+    "purr": 0.41000000000000003,
+    "eat": 0.9999999999999998,
+    "play": 1.0,
+    "sleep": 0.49
+  },
+  "memories": [
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human ignored the play behavior",
+      "reward": -0.3,
+      "age": 1.6874999999999982
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "sleep",
+      "response": "Human ignored the sleep behavior",
+      "reward": -0.1,
+      "age": 1.7083333333333315
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "sleep",
+      "response": "Human acknowledged the cat sleeping",
+      "reward": 0.6,
+      "age": 1.7291666666666647
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human ignored the play behavior",
+      "reward": -0.3,
+      "age": 1.749999999999998
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "sleep",
+      "response": "Human acknowledged the cat sleeping",
+      "reward": 0.6,
+      "age": 1.7708333333333313
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "sleep",
+      "response": "Human ignored the sleep behavior",
+      "reward": -0.1,
+      "age": 1.7916666666666645
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human praised the cat for eating!",
+      "reward": 1.0,
+      "age": 1.8124999999999978
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "purr",
+      "response": "Human praised the cat for purring!",
+      "reward": 0.8,
+      "age": 1.833333333333331
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human ignored the eat behavior",
+      "reward": -0.1,
+      "age": 1.8541666666666643
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human praised the cat for eating!",
+      "reward": 1.0,
+      "age": 1.8749999999999976
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human ignored the eat behavior",
+      "reward": -0.3,
+      "age": 1.8958333333333308
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human acknowledged the cat playing",
+      "reward": 0.5,
+      "age": 1.916666666666664
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human acknowledged the cat playing",
+      "reward": 0.5,
+      "age": 1.9374999999999973
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human ignored the play behavior",
+      "reward": -0.1,
+      "age": 1.9583333333333306
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human praised the cat for eating!",
+      "reward": 1.0,
+      "age": 1.9791666666666639
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human praised the cat for eating!",
+      "reward": 1.0,
+      "age": 1.9999999999999971
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human ignored the eat behavior",
+      "reward": -0.1,
+      "age": 2.0208333333333304
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human acknowledged the cat playing",
+      "reward": 0.5,
+      "age": 2.041666666666664
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "play",
+      "response": "Human praised the cat for playing!",
+      "reward": 1.0,
+      "age": 2.0624999999999973
+    },
+    {
+      "timestamp": "2026-02-05T19:16:11.291875",
+      "action": "eat",
+      "response": "Human praised the cat for eating!",
+      "reward": 1.0,
+      "age": 2.083333333333331
+    }
+  ]
+}

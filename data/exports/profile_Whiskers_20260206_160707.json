@@ -1,0 +1,190 @@
+{
+  "name": "Whiskers",
+  "age": 422.4883333329572,
+  "emotional_state": {
+    "happiness": 99.6099999999998,
+    "hunger": 100,
+    "energy": 98.43999999999976,
+    "trust": 100
+  },
+  "behavior_weights": {
+    "play": 1.0,
+    "sleep": 1.0,
+    "eat": 1.0,
+    "purr": 0.525,
+    "scratch": 0.4,
+    "hide": 0.12500000000000003,
+    "groom": 0.345,
+    "talk": 0.325,
+    "train": 0.4,
+    "rest": 1.0
+  },
+  "learned_behaviors": {
+    "groom": 0.09000000000000001,
+    "hide": -0.15000000000000002,
+    "eat": 1.0,
+    "sleep": 1.0,
+    "play": 1.0,
+    "train": 0.1,
+    "rest": 1.0,
+    "purr": 0.05,
+    "talk": 0.05
+  },
+  "memories": [
+    {
+      "timestamp": "2026-02-06T16:03:54.470398",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 417.68999999962824
+    },
+    {
+      "timestamp": "2026-02-06T16:04:04.584610",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 417.94083333296135
+    },
+    {
+      "timestamp": "2026-02-06T16:04:14.680551",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 418.19166666629445
+    },
+    {
+      "timestamp": "2026-02-06T16:04:24.802807",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "age": 418.44249999962756
+    },
+    {
+      "timestamp": "2026-02-06T16:04:34.895379",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "age": 418.69333333296066
+    },
+    {
+      "timestamp": "2026-02-06T16:04:45.003626",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 418.94416666629377
+    },
+    {
+      "timestamp": "2026-02-06T16:04:55.109656",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 419.1949999996269
+    },
+    {
+      "timestamp": "2026-02-06T16:05:05.197096",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 419.44583333296
+    },
+    {
+      "timestamp": "2026-02-06T16:05:15.299693",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 419.6966666662931
+    },
+    {
+      "timestamp": "2026-02-06T16:05:25.431588",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 419.9474999996262
+    },
+    {
+      "timestamp": "2026-02-06T16:05:35.540249",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "age": 420.1983333329593
+    },
+    {
+      "timestamp": "2026-02-06T16:05:45.648902",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "age": 420.4491666662924
+    },
+    {
+      "timestamp": "2026-02-06T16:05:55.771191",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "age": 420.6999999996255
+    },
+    {
+      "timestamp": "2026-02-06T16:06:05.879014",
+      "action": "rest",
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "age": 420.9508333329586
+    },
+    {
+      "timestamp": "2026-02-06T16:06:15.991727",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "age": 421.2016666662917
+    },
+    {
+      "timestamp": "2026-02-06T16:06:26.112932",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 421.4524999996248
+    },
+    {
+      "timestamp": "2026-02-06T16:06:36.223323",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 421.7033333329579
+    },
+    {
+      "timestamp": "2026-02-06T16:06:46.331562",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 421.95416666629103
+    },
+    {
+      "timestamp": "2026-02-06T16:06:56.441736",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 422.20499999962414
+    },
+    {
+      "timestamp": "2026-02-06T16:07:06.547180",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 422.45583333295724
+    }
+  ],
+  "personality": {
+    "playful": 0.18823529411764706,
+    "calm": 0.5686274509803921,
+    "curious": 0.6862745098039216,
+    "social": 0.08627450980392157
+  },
+  "trick_level": 1,
+  "trick_xp": 5.0,
+  "achievements": [
+    "trust_60",
+    "first_feed",
+    "happy_85",
+    "first_train",
+    "first_day"
+  ]
+}
