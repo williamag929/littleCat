@@ -28,6 +28,14 @@ class CatBrain:
         self.learned_behaviors = defaultdict(float)  # action -> success rate
         self.action_history = []  # Track recent actions
 
+        # Q-learning (lightweight RL)
+        self.q_table = defaultdict(lambda: defaultdict(float))
+        self.alpha = 0.2
+        self.gamma = 0.9
+        self.epsilon = 0.2
+        self.last_state = None
+        self.last_action = None
+
         # Personality traits (0-1 range)
         self.personality = self._generate_personality(self.name)
 
@@ -97,6 +105,13 @@ class CatBrain:
         # Trick training progression
         if action == 'train':
             self._apply_trick_progress(reward)
+
+        # Q-learning update
+        current_state = self._get_state()
+        if self.last_state is not None and self.last_action is not None:
+            self._update_q(self.last_state, self.last_action, reward, current_state)
+        self.last_state = current_state
+        self.last_action = action
     
     def decide_action(self, context="neutral"):
         """
@@ -152,10 +167,25 @@ class CatBrain:
             for i, (action, weight) in enumerate(action_weights.items())
         }
         
-        # Select action with highest weight
-        best_action = max(weighted_actions, key=weighted_actions.get)
-        confidence = np.clip(weighted_actions[best_action], 0, 1)
-        
+        # Q-learning: epsilon-greedy action selection
+        state = self._get_state(context)
+        actions = list(action_weights.keys())
+        use_explore = np.random.random() < self.epsilon
+
+        if not use_explore:
+            q_values = self.q_table.get(state, {})
+            if q_values:
+                best_action = max(actions, key=lambda a: q_values.get(a, 0.0))
+                confidence = np.clip(q_values.get(best_action, 0.0), 0, 1)
+            else:
+                best_action = max(weighted_actions, key=weighted_actions.get)
+                confidence = np.clip(weighted_actions[best_action], 0, 1)
+        else:
+            best_action = np.random.choice(actions)
+            confidence = 0.2
+
+        self.last_state = state
+        self.last_action = best_action
         return best_action, confidence
     
     def update_state(self, time_delta=1):
@@ -225,6 +255,30 @@ class CatBrain:
             return "NEUTRAL 😿"
         else:
             return "GRUMPY 😾"
+
+    def _get_state(self, context="neutral"):
+        """Discretize emotional state into a compact RL state."""
+        return (
+            self._bin(self.happiness),
+            self._bin(self.hunger),
+            self._bin(self.energy),
+            self._bin(self.trust),
+            context,
+        )
+
+    def _bin(self, value, bins=4):
+        """Bucket a 0-100 value into bins."""
+        step = 100 / bins
+        return int(min(bins - 1, value // step))
+
+    def _update_q(self, state, action, reward, next_state):
+        """Q-learning update step."""
+        current_q = self.q_table[state][action]
+        next_best = 0.0
+        if self.q_table.get(next_state):
+            next_best = max(self.q_table[next_state].values())
+        td_target = reward + self.gamma * next_best
+        self.q_table[state][action] = current_q + self.alpha * (td_target - current_q)
     
     def save_brain(self, filepath):
         """Save cat's learned state to file."""
@@ -243,7 +297,13 @@ class CatBrain:
             'personality': self.personality,
             'trick_level': self.trick_level,
             'trick_xp': self.trick_xp,
-            'achievements': list(self.achievements)
+            'achievements': list(self.achievements),
+            'q_learning': {
+                'alpha': self.alpha,
+                'gamma': self.gamma,
+                'epsilon': self.epsilon,
+                'q_table': {str(k): dict(v) for k, v in self.q_table.items()},
+            }
         }
         with open(filepath, 'w') as f:
             json.dump(data, f, indent=2)
@@ -270,5 +330,18 @@ class CatBrain:
             self.trick_level = data.get('trick_level', 1)
             self.trick_xp = data.get('trick_xp', 0)
             self.achievements = set(data.get('achievements', []))
+
+            q_learning = data.get('q_learning', {})
+            self.alpha = q_learning.get('alpha', self.alpha)
+            self.gamma = q_learning.get('gamma', self.gamma)
+            self.epsilon = q_learning.get('epsilon', self.epsilon)
+            q_raw = q_learning.get('q_table', {})
+            self.q_table = defaultdict(lambda: defaultdict(float))
+            for k, v in q_raw.items():
+                try:
+                    state = eval(k)
+                except Exception:
+                    continue
+                self.q_table[state] = defaultdict(float, v)
         except FileNotFoundError:
             print("No saved brain found - starting fresh!")

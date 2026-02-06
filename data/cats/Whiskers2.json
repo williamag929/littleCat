@@ -1,0 +1,68 @@
+{
+  "name": "Whiskers2",
+  "age": 0.37250000000000183,
+  "emotional_state": {
+    "happiness": 99.71999999999986,
+    "hunger": 53.41000000000051,
+    "energy": 62.11999999999951,
+    "trust": 46.5
+  },
+  "behavior_weights": {
+    "play": 0.5650000000000001,
+    "sleep": 0.35,
+    "eat": 0.45,
+    "purr": 0.5,
+    "scratch": 0.4,
+    "hide": 0.2,
+    "groom": 0.3,
+    "talk": 0.3,
+    "train": 0.35,
+    "rest": 0.25
+  },
+  "learned_behaviors": {
+    "play": 0.13,
+    "sleep": 0.1,
+    "eat": 0.1
+  },
+  "memories": [
+    {
+      "timestamp": "2026-02-06T16:39:35.096915",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.8,
+      "age": 0.04166666666666662
+    },
+    {
+      "timestamp": "2026-02-06T16:39:38.143810",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "age": 0.11750000000000027
+    },
+    {
+      "timestamp": "2026-02-06T16:39:44.368215",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "age": 0.27166666666666617
+    },
+    {
+      "timestamp": "2026-02-06T16:39:47.491738",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 0.34916666666666796
+    }
+  ],
+  "personality": {
+    "playful": 0.7215686274509804,
+    "calm": 0.9411764705882353,
+    "curious": 0.396078431372549,
+    "social": 0.4392156862745098
+  },
+  "trick_level": 1,
+  "trick_xp": 0,
+  "achievements": [
+    "happy_85"
+  ]
+}
