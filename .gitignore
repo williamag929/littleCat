@@ -43,3 +43,4 @@ data/screen_agent.json
 # OS
 .DS_Store
 Thumbs.db
+.env
