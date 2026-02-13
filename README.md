@@ -9,7 +9,8 @@ This project includes **two different AI agents**:
 1. **🐱 AI Cat Agent** - An autonomous learning pet that adapts to your behavior using reinforcement learning
 2. **🎮 Screen Agent** - An automated game player using computer vision to control games
 
-**See [AGENT_GUIDE.md](AGENT_GUIDE.md) for complete agent documentation and capabilities!**
+**📌 [WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md) - Quick overview of what you can do with these agents!**  
+**📖 [AGENT_GUIDE.md](AGENT_GUIDE.md) - Complete agent documentation and capabilities**
 
 ## 🎮 Game Concept
 

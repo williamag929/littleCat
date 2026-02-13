@@ -4,7 +4,10 @@
 
 This file serves as a **complete roadmap** to all project resources. Start here and choose your path!
 
-> **🤖 NEW: This project includes TWO AI agents!** See [AGENT_GUIDE.md](AGENT_GUIDE.md) for details on both the AI Cat Agent and the Screen Agent.
+> **🤖 NEW: This project includes TWO AI agents!** 
+> 
+> **Quick overview:** [WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md)  
+> **Complete guide:** [AGENT_GUIDE.md](AGENT_GUIDE.md)
 
 ---
 
@@ -12,7 +15,13 @@ This file serves as a **complete roadmap** to all project resources. Start here 
 
 **New to the project? Start here:**
 
-1. **[QUICKSTART.txt](QUICKSTART.txt)** ← Start here!
+0. **[WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md)** ← What can you do?
+   - Quick overview of capabilities
+   - Both agents explained
+   - Decision guide
+   - Comparison with VS Code agents
+
+1. **[QUICKSTART.txt](QUICKSTART.txt)** ← Get started!
    - Installation in 3 steps
    - How to run the game
    - Basic controls
@@ -150,6 +159,7 @@ E = Export/Save    L = Load          ESC = Exit
 
 | File | Purpose | Audience | Read Time |
 |------|---------|----------|-----------|
+| **WHAT_CAN_I_DO.md** | Quick capabilities | First-timers | 3 min |
 | **QUICKSTART.txt** | Fast setup & play | Everyone | 5 min |
 | **README.md** | Features & gameplay | Players | 15 min |
 | **AGENT_GUIDE.md** | Agent capabilities | Agent users | 25 min |
@@ -438,6 +448,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed explanations.
 
 ## 📄 FILE QUICK LINKS
 
+- [WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md) - **Start here** for quick overview
 - [QUICKSTART.txt](QUICKSTART.txt) - Get started fast
 - [README.md](README.md) - Full documentation
 - [AGENT_GUIDE.md](AGENT_GUIDE.md) - Agent capabilities
