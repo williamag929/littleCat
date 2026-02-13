@@ -12,6 +12,7 @@ import math
 from cat_brain import CatBrain
 import time
 from datetime import datetime
+from typing import Dict, Optional, Tuple, List
 
 # Load environment variables (.env file)
 try:
