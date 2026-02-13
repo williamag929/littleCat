@@ -154,6 +154,7 @@ class GameDisplay:
         self.font_large = pygame.font.Font(None, 36)
         self.font_medium = pygame.font.Font(None, 28)
         self.font_small = pygame.font.Font(None, 20)
+        self.font_tiny = pygame.font.Font(None, 14)
         self.label_cache = {}
         
         # Cat visual position and movement
@@ -851,7 +852,7 @@ class GameDisplay:
             self.screen.blit(text_surf, (box_x + 20, box_y + 20 + i * 22))
 
     def draw_context_menu(self, menu_pos, items, mouse_pos=None):
-        """Draw right-click radial menu."""
+        """Draw improved circular menu with gradient background and text labels."""
         if not items:
             return
 
@@ -865,13 +866,33 @@ class GameDisplay:
         cx = max(margin, min(self.window_width - margin, cx))
         cy = max(margin, min(self.window_height - margin, cy))
 
+        # Draw semi-transparent gradient background circle (dimmed)
+        background_radius = RADIAL_MENU_RADIUS + 50
+        overlay = pygame.Surface((background_radius * 2, background_radius * 2), pygame.SRCALPHA)
+        
+        # Gradient effect: dark center fading out
+        for r in range(background_radius, 0, -5):
+            alpha = int(120 * (1 - r / background_radius))  # Fade from 120 to 0
+            color = (20, 20, 30, alpha)  # Dark blue-gray
+            pygame.draw.circle(overlay, color, (background_radius, background_radius), r)
+        
+        self.screen.blit(overlay, (int(cx - background_radius), int(cy - background_radius)))
+
         base_angle = -math.pi / 2
         step = (2 * math.pi) / count
 
-        # Center dot
-        pygame.draw.circle(self.screen, WHITE, (int(cx), int(cy)), 10)
-        pygame.draw.circle(self.screen, DARK_GRAY, (int(cx), int(cy)), 10, 2)
+        # Draw connecting lines from center (optional subtle feature)
+        for i in range(count):
+            angle = base_angle + i * step
+            ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
+            iy = cy + math.sin(angle) * RADIAL_MENU_RADIUS
+            pygame.draw.line(self.screen, (80, 80, 100, 100), (int(cx), int(cy)), (int(ix), int(iy)), 1)
 
+        # Draw center dot with glow effect
+        pygame.draw.circle(self.screen, (100, 150, 255), (int(cx), int(cy)), 14)
+        pygame.draw.circle(self.screen, (150, 200, 255), (int(cx), int(cy)), 14, 2)
+
+        # Draw menu items
         for i, item in enumerate(items):
             angle = base_angle + i * step
             ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
@@ -884,19 +905,45 @@ class GameDisplay:
                 hovered = (dx * dx + dy * dy) <= (RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP) ** 2
 
             radius = RADIAL_ITEM_RADIUS + (RADIAL_HOVER_BUMP if hovered else 0)
-            fill = LIGHT_GRAY if hovered else WHITE
-            pygame.draw.circle(self.screen, fill, (int(ix), int(iy)), radius)
-            pygame.draw.circle(self.screen, DARK_GRAY, (int(ix), int(iy)), radius, 2)
+            
+            # Draw item button with gradient effect
+            if hovered:
+                # Brighter on hover - gradient from blue to cyan
+                pygame.draw.circle(self.screen, (120, 180, 255), (int(ix), int(iy)), radius)
+                pygame.draw.circle(self.screen, (150, 200, 255), (int(ix), int(iy)), radius, 3)
+                glow_radius = int(radius * 1.15)
+                pygame.draw.circle(self.screen, (120, 180, 255, 100), (int(ix), int(iy)), glow_radius, 1)
+            else:
+                # Dark gradient blue
+                pygame.draw.circle(self.screen, (60, 100, 150), (int(ix), int(iy)), radius)
+                pygame.draw.circle(self.screen, (100, 150, 200), (int(ix), int(iy)), radius, 2)
 
-            icon = item.get("icon", "")
+            # Draw text label
             label = item.get("label", "")
-            if icon:
-                icon_surf = self.font_small.render(icon, True, BLACK)
-                icon_rect = icon_surf.get_rect(center=(int(ix), int(iy)))
-                self.screen.blit(icon_surf, icon_rect)
+            if label:
+                text_color = (255, 255, 255) if hovered else (200, 220, 240)
+                label_surf = self.font_small.render(label, True, text_color)
+                label_rect = label_surf.get_rect(center=(int(ix), int(iy)))
+                
+                # Add slight shadow effect for better readability
+                shadow_surf = self.font_small.render(label, True, (20, 20, 30, 180))
+                shadow_rect = shadow_surf.get_rect(center=(int(ix) + 1, int(iy) + 1))
+                self.screen.blit(shadow_surf, shadow_rect)
+                self.screen.blit(label_surf, label_rect)
 
+            # Show tooltip on hover
             if hovered and label:
-                self.draw_label(label, (int(ix), int(iy + radius + 16)))
+                tooltip_y = int(iy + radius + 20)
+                tooltip_text = item.get("tooltip", label)
+                tooltip_surf = self.font_tiny.render(tooltip_text, True, (200, 220, 240))
+                tooltip_rect = tooltip_surf.get_rect(center=(int(ix), tooltip_y))
+                
+                # Tooltip background
+                tooltip_bg = pygame.Surface((tooltip_rect.width + 16, tooltip_rect.height + 8), pygame.SRCALPHA)
+                pygame.draw.rect(tooltip_bg, (30, 50, 80, 200), tooltip_bg.get_rect(), border_radius=4)
+                self.screen.blit(tooltip_bg, (tooltip_rect.x - 8, tooltip_rect.y - 4))
+                self.screen.blit(tooltip_surf, tooltip_rect)
+    
     
     def draw_chat_ui(self, response_text, input_text, waiting, frame_count):
         """
@@ -1225,6 +1272,10 @@ class LittleCatGame:
                 self.last_input_time = time.time()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # Block all mouse clicks when chat is active
+                if self.chat_active:
+                    continue
+                
                 if self.mini_game and event.button == 1:
                     if self.display.is_point_on_cat(*event.pos):
                         self.resolve_mini_game(True)
@@ -1252,10 +1303,18 @@ class LittleCatGame:
                         self.open_context_menu(event.pos)
 
             if event.type == pygame.MOUSEBUTTONUP:
+                # Block mouse up when chat is active
+                if self.chat_active:
+                    continue
+                
                 if event.button == 1 and self.dragging:
                     self.dragging = False
 
             if event.type == pygame.MOUSEMOTION:
+                # Block mouse motion when chat is active
+                if self.chat_active:
+                    continue
+                
                 self.mouse_pos = event.pos
                 self.last_mouse_pos = event.pos
                 if self.dragging:
@@ -1391,6 +1450,7 @@ class LittleCatGame:
         self.context_menu_page = 0
         self.context_menu_pages = [
             [
+                {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui},
                 {"label": "Pet", "icon": "😺", "action": lambda: self.perform_action('purr', "You petted the cat!")},
                 {"label": "Feed", "icon": "🍖", "action": lambda: self.perform_action('eat', "You fed the cat!")},
                 {"label": "Play", "icon": "🎾", "action": self.show_toy_menu},
@@ -1848,6 +1908,16 @@ class LittleCatGame:
         
         self.waiting_for_toy = True
     
+    def open_chat_ui(self):
+        """Open the chat/screen agent UI."""
+        if not self.chat_agent:
+            return
+        self.chat_active = True
+        self.chat_input_text = ""
+        self.chat_response = ""
+        self.chat_waiting_for_response = False
+        self.context_menu_active = False
+    
     def play_with_toy(self, toy_type):
         """Handle playing with a specific toy."""
         self.waiting_for_toy = False
@@ -2197,11 +2267,11 @@ class LittleCatGame:
             "energy": cat.energy,
             "happiness": cat.happiness,
             "trust": cat.trust,
-            "personality": list(cat.brain.personality.keys()) if hasattr(cat.brain, 'personality') else [],
+            "personality": list(cat.personality.keys()) if hasattr(cat, 'personality') else [],
             "last_action": self.current_action,
-            "learned_tricks": [t for t, level in cat.brain.tricks.items() if level > 0],
-            "achievements": list(cat.achievements.keys()),
-            "q_learning_active": True if hasattr(cat.brain, 'q_table') else False,
+            "trick_level": cat.trick_level if hasattr(cat, 'trick_level') else 1,
+            "achievements": list(cat.achievements) if hasattr(cat, 'achievements') else [],
+            "q_learning_active": True if hasattr(cat, 'q_table') else False,
         }
     
     def update_chat_response(self):

@@ -74,7 +74,7 @@ YOUNG_PLAY_COOLDOWN = 6.0
 
 CHAT_ENABLED = True                      # Enable/disable chat feature
 CHAT_TOGGLE_KEY = "?"                    # Press '?' to open chat
-CHAT_MODEL = "gpt-4-vision-preview"      # OpenAI model (+ vision capability)
+CHAT_MODEL = "gpt-4o"                    # OpenAI model (current vision model)
 CHAT_MAX_TOKENS = 500                    # Max response length
 CHAT_HISTORY_LENGTH = 10                 # Context history (messages)
 CHAT_API_TIMEOUT = 5.0                   # Seconds to wait for API response
