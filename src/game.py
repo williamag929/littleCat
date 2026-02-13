@@ -10,6 +10,7 @@ import json
 import random
 import math
 from cat_brain import CatBrain
+from ui_agent import SeniorUIAgent
 import time
 
 # Initialize Pygame
@@ -720,7 +721,7 @@ class GameDisplay:
             return True  # Is moving
         return False  # Reached target
         
-    def draw_stats(self, cat_status):
+    def draw_stats(self, cat_status, ui_agent=None):
         """Draw cat statistics on screen."""
         # Title
         title = self.font_large.render(f"{cat_status['name']} - Day {int(cat_status['age_days'])}", True, BLACK)
@@ -730,7 +731,7 @@ class GameDisplay:
         mood_text = self.font_medium.render(cat_status['mood'], True, BLACK)
         self.screen.blit(mood_text, (self.window_width - 220, 20))
         
-        # Stats bars
+        # Stats bars with UI Agent enhanced colors
         y_offset = 80
         stats = [
             ('Happiness', cat_status['happiness'], GREEN),
@@ -739,7 +740,13 @@ class GameDisplay:
             ('Trust', cat_status['trust'], PINK),
         ]
         
-        for stat_name, value, color in stats:
+        for i, (stat_name, value, default_color) in enumerate(stats):
+            # Use UI Agent to determine color based on value if available
+            if ui_agent:
+                color = ui_agent.get_status_color(value)
+            else:
+                color = default_color
+            
             # Label
             label = self.font_small.render(f"{stat_name}: {value}", True, BLACK)
             self.screen.blit(label, (20, y_offset))
@@ -845,7 +852,7 @@ class GameDisplay:
             if hovered and label:
                 self.draw_label(label, (int(ix), int(iy + radius + 16)))
     
-    def render(self, cat_status, current_action, show_toy_menu=False, context_menu=None, overlay_labels=None, visual_state=None):
+    def render(self, cat_status, current_action, show_toy_menu=False, context_menu=None, overlay_labels=None, visual_state=None, ui_agent=None):
         """Render complete game frame."""
         if DESKTOP_OVERLAY and TRANSPARENT_BACKGROUND:
             self.screen.fill(TRANSPARENT_COLOR)
@@ -876,7 +883,7 @@ class GameDisplay:
             if visual_state.get("show_stats"):
                 self.draw_stats_panel(cat_status, (self.cat_x + 120, self.cat_y - 40))
         if SHOW_UI:
-            self.draw_stats(cat_status)
+            self.draw_stats(cat_status, ui_agent)
             self.draw_instructions()
         if show_toy_menu:
             self.draw_toy_menu()
@@ -1026,6 +1033,14 @@ class LittleCatGame:
         self.jump_progress = 0.0
         self.show_stats_panel = False
         self.stats_panel_timer = 0.0
+
+        # UI Agent - intelligent UI enhancement system
+        self.ui_agent = SeniorUIAgent()
+        self.agent_message = None
+        self.agent_message_timer = 0
+        self.agent_hint = None
+        self.agent_hint_timer = 0
+        self.thought_bubble = None
 
         # Sound
         self.sound_enabled = SOUND_ENABLED
@@ -1536,6 +1551,16 @@ class LittleCatGame:
         """Build overlay labels for reminders, achievements, and mini-games."""
         labels = []
         y = 60
+        
+        # UI Agent messages
+        if self.agent_message:
+            labels.append((self.agent_message, (self.display.window_width // 2, y)))
+            y += 35
+        
+        if self.agent_hint:
+            labels.append((self.agent_hint, (self.display.window_width // 2, y)))
+            y += 35
+        
         for reminder in self.reminders:
             labels.append((reminder['text'], (180, y)))
             y += 28
@@ -1544,6 +1569,11 @@ class LittleCatGame:
             y += 28
         if self.mini_game:
             labels.append((self.mini_game['prompt'], (self.display.window_width // 2, 80)))
+        
+        # Thought bubble above cat
+        if self.thought_bubble and not SHOW_UI:
+            labels.append((self.thought_bubble, (self.display.cat_x, self.display.cat_y - 90)))
+        
         return labels
     
     def perform_action(self, action, message):
@@ -1588,6 +1618,12 @@ class LittleCatGame:
             self.cat.happiness = min(100, self.cat.happiness + 5)
             self.cat.energy = max(0, self.cat.energy - 10)
             self.cat.hunger = min(100, self.cat.hunger + 5)
+
+        # Get UI Agent response for this action
+        agent_response = self.ui_agent.get_action_response(action, self.cat)
+        if agent_response:
+            self.agent_message = agent_response
+            self.agent_message_timer = 3.0  # Show for 3 seconds
 
         # Action-based achievements
         if action == 'eat':
@@ -1781,6 +1817,34 @@ class LittleCatGame:
         delta_time = GAME_SPEED
         self.cat.update_state(delta_time)
 
+        # Update UI Agent timers and messages
+        if self.agent_message_timer > 0:
+            self.agent_message_timer -= 1 / FPS
+        else:
+            self.agent_message = None
+        
+        if self.agent_hint_timer > 0:
+            self.agent_hint_timer -= 1 / FPS
+        else:
+            self.agent_hint = None
+        
+        # Periodically get state-based messages from UI Agent
+        state_message = self.ui_agent.get_state_message(self.cat)
+        if state_message and not self.agent_message:
+            self.agent_message = state_message
+            self.agent_message_timer = 4.0
+        
+        # Show hints occasionally for new users
+        if not self.agent_hint and random.random() < 0.001:  # Small chance each frame
+            game_state = {'cat_brain': self.cat}
+            hint = self.ui_agent.get_hint(game_state)
+            if hint:
+                self.agent_hint = hint
+                self.agent_hint_timer = 8.0
+        
+        # Update thought bubble
+        self.thought_bubble = self.ui_agent.get_thought_bubble(self.cat)
+
         # Age-based pacing (older cats move and act less)
         age_days = self.cat.age
         move_interval = min(12, 5 + age_days * 0.2)  # seconds
@@ -1908,7 +1972,7 @@ class LittleCatGame:
                 "jump_progress": self.jump_progress,
                 "show_stats": self.show_stats_panel
             }
-            self.display.render(cat_status, self.current_action, self.waiting_for_toy, context_menu, overlay_labels, visual_state)
+            self.display.render(cat_status, self.current_action, self.waiting_for_toy, context_menu, overlay_labels, visual_state, self.ui_agent)
             
             self.display.clock.tick(FPS)
         
