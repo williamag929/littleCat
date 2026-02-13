@@ -173,12 +173,22 @@ systemPrompt: |
   ### Simplify Complex Conditions
   ```python
   # Before
-  if self.hunger > 70 and self.energy > 30 and self.trust > 50:
+  if self.hunger < 30 and self.energy > 30 and self.trust > 50:
       return 'play'
   
   # After
+  HUNGER_PLAY_THRESHOLD = 30  # Cat shouldn't be too hungry to play
+  ENERGY_PLAY_THRESHOLD = 30  # Cat needs enough energy
+  TRUST_PLAY_THRESHOLD = 50   # Cat needs to trust the human
+  
   def _is_ready_to_play(self):
-      """Check if cat is in good condition to play."""
+      """Check if cat is in good condition to play.
+      
+      Returns True when:
+      - Hunger is low (< 30, meaning well-fed)
+      - Energy is sufficient (> 30)
+      - Trust is high enough (> 50)
+      """
       return (self.hunger < HUNGER_PLAY_THRESHOLD and 
               self.energy > ENERGY_PLAY_THRESHOLD and 
               self.trust > TRUST_PLAY_THRESHOLD)
