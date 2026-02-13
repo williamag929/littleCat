@@ -2,15 +2,17 @@
 
 A Python-based virtual pet game featuring an artificial intelligence cat that **learns and grows** from your interactions!
 
-## 🤖 Two AI Agents in One Project!
+## 🤖 Three AI Agents in One Project!
 
-This project includes **two different AI agents**:
+This project includes **three different AI agents**:
 
 1. **🐱 AI Cat Agent** - An autonomous learning pet that adapts to your behavior using reinforcement learning
-2. **🎮 Screen Agent** - An automated game player using computer vision to control games
+2. **🎨 Senior UI Agent** - An intelligent UI enhancement system that improves user experience with contextual feedback, hints, and personality-driven dialogue
+3. **🎮 Screen Agent** - An automated game player using computer vision to control games
 
 **📌 [WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md) - Quick overview of what you can do with these agents!**  
-**📖 [AGENT_GUIDE.md](AGENT_GUIDE.md) - Complete agent documentation and capabilities**
+**📖 [AGENT_GUIDE.md](AGENT_GUIDE.md) - Complete agent documentation and capabilities**  
+**🎨 [UI_AGENT_GUIDE.md](UI_AGENT_GUIDE.md) - Senior UI Agent features and documentation**
 
 ## 🎮 Game Concept
 
@@ -45,6 +47,26 @@ The cat has a learning brain with:
    - Random personality traits
 5. Repeat and improve over time
 ```
+
+## 🎨 Senior UI Agent (Intelligent UX Enhancement)
+
+The **Senior UI Agent** enhances your gaming experience with intelligent, context-aware feedback!
+
+**Key Features:**
+- **Personality-driven dialogue** - Cat responses adapt to emotional state and personality
+- **State-based messages** - Proactive notifications about cat's needs (hungry, tired, happy)
+- **Contextual hints** - Helpful tooltips to guide new users
+- **Thought bubbles** - Visual representation of what your cat is thinking (🍖, 💤, ❤️)
+- **Dynamic status colors** - Color-coded bars that change based on values (green=good, red=critical)
+- **Smart suggestions** - Intelligent recommendations on what to do next
+
+**Example Interactions:**
+- Feed a hungry cat: "Thank you! I was getting hungry! 😋"
+- Play with happy cat: "Yay! Playtime is the best! 🎾"
+- Pet your cat: "*purrs contentedly* 😊"
+- Cat needs attention: "I could use some attention... 😿"
+
+**See [UI_AGENT_GUIDE.md](UI_AGENT_GUIDE.md) for complete UI agent documentation!**
 
 ## 🎮 Screen Agent (Automated Game Player)
 
