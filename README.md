@@ -2,6 +2,16 @@
 
 A Python-based virtual pet game featuring an artificial intelligence cat that **learns and grows** from your interactions!
 
+## 🤖 Two AI Agents in One Project!
+
+This project includes **two different AI agents**:
+
+1. **🐱 AI Cat Agent** - An autonomous learning pet that adapts to your behavior using reinforcement learning
+2. **🎮 Screen Agent** - An automated game player using computer vision to control games
+
+**📌 [WHAT_CAN_I_DO.md](WHAT_CAN_I_DO.md) - Quick overview of what you can do with these agents!**  
+**📖 [AGENT_GUIDE.md](AGENT_GUIDE.md) - Complete agent documentation and capabilities**
+
 ## 🎮 Game Concept
 
 Meet your digital cat companion that:
@@ -35,6 +45,27 @@ The cat has a learning brain with:
    - Random personality traits
 5. Repeat and improve over time
 ```
+
+## 🎮 Screen Agent (Automated Game Player)
+
+In addition to the AI cat, this project includes a **Screen Agent** that can automatically play games!
+
+**Key Features:**
+- **Computer vision** using OpenCV to detect game elements
+- **Automated keyboard control** to play the game
+- **Adaptive learning** to improve performance over time
+- **Works with any Pong/Breakout-style game**
+
+**Quick Start:**
+```bash
+# Calibrate the agent for your game
+python src/screen_agent_poc.py --calibrate
+
+# Let it play automatically
+python src/screen_agent_poc.py --play
+```
+
+**See [AGENT_GUIDE.md](AGENT_GUIDE.md) for complete screen agent documentation!**
 
 ## 🚀 Installation
 
