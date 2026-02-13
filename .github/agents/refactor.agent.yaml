@@ -177,15 +177,15 @@ systemPrompt: |
       return 'play'
   
   # After
-  HUNGER_PLAY_THRESHOLD = 30  # Cat shouldn't be too hungry to play
-  ENERGY_PLAY_THRESHOLD = 30  # Cat needs enough energy
-  TRUST_PLAY_THRESHOLD = 50   # Cat needs to trust the human
+  HUNGER_PLAY_THRESHOLD = 30  # Maximum hunger level for play (low hunger = well-fed)
+  ENERGY_PLAY_THRESHOLD = 30  # Minimum energy needed
+  TRUST_PLAY_THRESHOLD = 50   # Minimum trust level needed
   
   def _is_ready_to_play(self):
       """Check if cat is in good condition to play.
       
       Returns True when:
-      - Hunger is low (< 30, meaning well-fed)
+      - Hunger is low (< 30, well-fed state)
       - Energy is sufficient (> 30)
       - Trust is high enough (> 50)
       """
