@@ -4,6 +4,8 @@
 
 This file serves as a **complete roadmap** to all project resources. Start here and choose your path!
 
+> **🤖 NEW: This project includes TWO AI agents!** See [AGENT_GUIDE.md](AGENT_GUIDE.md) for details on both the AI Cat Agent and the Screen Agent.
+
 ---
 
 ## 🚀 QUICK START (5 MINUTES)
@@ -36,23 +38,29 @@ This file serves as a **complete roadmap** to all project resources. Start here 
 
 1. **[QUICKSTART.txt](QUICKSTART.txt)** - Get started in 5 minutes
 2. **[README.md](README.md)** - Full game features and mechanics
-3. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual explanations of how it works
+3. **[AGENT_GUIDE.md](AGENT_GUIDE.md)** - Understand both AI agents
+4. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual explanations of how it works
 
 **Typical flow:**
 - Install → Play → Save → Share with friends!
+- Or try the Screen Agent → Auto-play games!
 
 ### For Learners (Understanding AI)
 
 **Want to understand how the AI works?**
 
-1. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed AI system explanation
-2. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual system diagrams
-3. **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Code explanation
-4. **[src/cat_brain.py](src/cat_brain.py)** - Read the AI code
+1. **[AGENT_GUIDE.md](AGENT_GUIDE.md)** - Complete agent capabilities guide
+2. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed AI system explanation
+3. **[DIAGRAMS.md](DIAGRAMS.md)** - Visual system diagrams
+4. **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Code explanation
+5. **[src/cat_brain.py](src/cat_brain.py)** - Read the AI code
+6. **[src/screen_agent_poc.py](src/screen_agent_poc.py)** - Read the screen agent code
 
 **Study path:**
+- What agents are available?
 - How does learning work?
 - How does the cat make decisions?
+- How does computer vision work?
 - What are emotional states?
 - How is memory managed?
 
@@ -82,6 +90,7 @@ littleCat/
 ├── 📖 DOCUMENTATION FILES
 │   ├── QUICKSTART.txt          ← Start here!
 │   ├── README.md               ← Full features
+│   ├── AGENT_GUIDE.md          ← Agent capabilities (NEW!)
 │   ├── INSTALL.md              ← Installation guide
 │   ├── ARCHITECTURE.md         ← AI system details
 │   ├── DIAGRAMS.md             ← Visual diagrams
@@ -92,6 +101,7 @@ littleCat/
 ├── 🎮 GAME FILES
 │   ├── src/game.py             ← Main game (RUN THIS!)
 │   ├── src/cat_brain.py        ← AI system
+│   ├── src/screen_agent_poc.py ← Screen agent (NEW!)
 │   ├── src/trainer.py          ← Training simulator
 │   └── src/config.py           ← Settings
 │
@@ -142,6 +152,7 @@ E = Export/Save    L = Load          ESC = Exit
 |------|---------|----------|-----------|
 | **QUICKSTART.txt** | Fast setup & play | Everyone | 5 min |
 | **README.md** | Features & gameplay | Players | 15 min |
+| **AGENT_GUIDE.md** | Agent capabilities | Agent users | 25 min |
 | **INSTALL.md** | Installation guide | Installers | 10 min |
 | **ARCHITECTURE.md** | AI system details | Learners | 30 min |
 | **DIAGRAMS.md** | Visual explanations | Visual learners | 20 min |
@@ -429,6 +440,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed explanations.
 
 - [QUICKSTART.txt](QUICKSTART.txt) - Get started fast
 - [README.md](README.md) - Full documentation
+- [AGENT_GUIDE.md](AGENT_GUIDE.md) - Agent capabilities
 - [INSTALL.md](INSTALL.md) - Installation guide
 - [ARCHITECTURE.md](ARCHITECTURE.md) - AI deep dive
 - [DIAGRAMS.md](DIAGRAMS.md) - Visual explanations
