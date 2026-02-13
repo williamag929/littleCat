@@ -11,6 +11,20 @@ import random
 import math
 from cat_brain import CatBrain
 import time
+from datetime import datetime
+
+# Load environment variables (.env file)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv optional, will try without it
+
+# Chat agent (LARY)
+try:
+    from chat_agent import create_chat_agent
+except ImportError:
+    create_chat_agent = None
 
 # Initialize Pygame
 pygame.init()
@@ -34,6 +48,13 @@ try:
     YOUNG_FOLLOW_CURSOR = getattr(cfg, "YOUNG_FOLLOW_CURSOR", True)
     YOUNG_PLAY_DISTANCE = getattr(cfg, "YOUNG_PLAY_DISTANCE", 45)
     YOUNG_PLAY_COOLDOWN = getattr(cfg, "YOUNG_PLAY_COOLDOWN", 6.0)
+    # Chat agent settings
+    CHAT_ENABLED = getattr(cfg, "CHAT_ENABLED", True)
+    CHAT_TOGGLE_KEY = getattr(cfg, "CHAT_TOGGLE_KEY", "?")
+    CHAT_MODEL = getattr(cfg, "CHAT_MODEL", "gpt-4-vision-preview")
+    CHAT_MAX_TOKENS = getattr(cfg, "CHAT_MAX_TOKENS", 500)
+    CHAT_HISTORY_LENGTH = getattr(cfg, "CHAT_HISTORY_LENGTH", 10)
+    CHAT_API_TIMEOUT = getattr(cfg, "CHAT_API_TIMEOUT", 5.0)
 except Exception:
     ADULT_AGE_DAYS = 199
     BUSY_THRESHOLD_SECONDS = 20
@@ -45,6 +66,12 @@ except Exception:
     YOUNG_FOLLOW_CURSOR = True
     YOUNG_PLAY_DISTANCE = 45
     YOUNG_PLAY_COOLDOWN = 6.0
+    CHAT_ENABLED = True
+    CHAT_TOGGLE_KEY = "?"
+    CHAT_MODEL = "gpt-4-vision-preview"
+    CHAT_MAX_TOKENS = 500
+    CHAT_HISTORY_LENGTH = 10
+    CHAT_API_TIMEOUT = 5.0
 
 # Pixel-art sprite settings (90s style)
 USE_PIXEL_SPRITES = True
@@ -870,6 +897,98 @@ class GameDisplay:
             if hovered and label:
                 self.draw_label(label, (int(ix), int(iy + radius + 16)))
     
+    def draw_chat_ui(self, response_text, input_text, waiting, frame_count):
+        """
+        Draw chat overlay UI (LARY Agent).
+        Appears as a box in the lower portion of the screen.
+        
+        Args:
+            response_text: AI response to display
+            input_text: Current user input being typed
+            waiting: Bool if waiting for API response
+            frame_count: Animation frame (for cursor blink)
+        """
+        # Chat box dimensions
+        chat_width = 760
+        chat_height = 280
+        chat_x = (WINDOW_WIDTH - chat_width) // 2
+        chat_y = WINDOW_HEIGHT - chat_height - 20
+        
+        # Dim background
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 100))
+        self.screen.blit(overlay, (0, 0))
+        
+        # Chat box background
+        pygame.draw.rect(self.screen, (30, 30, 30), (chat_x, chat_y, chat_width, chat_height))
+        pygame.draw.rect(self.screen, (100, 150, 255), (chat_x, chat_y, chat_width, chat_height), 3)
+        
+        # Title
+        title = "🤖 LARY Agent - Ask for help (Press ? to close)"
+        title_surf = self.font_small.render(title, True, (100, 180, 255))
+        self.screen.blit(title_surf, (chat_x + 10, chat_y + 5))
+        
+        # Response area (if response exists)
+        response_y = chat_y + 35
+        if response_text:
+            # Wrap text into lines
+            words = response_text.split()
+            lines = []
+            current_line = ""
+            for word in words:
+                test_line = current_line + (" " if current_line else "") + word
+                test_surf = self.font_tiny.render(test_line, True, WHITE)
+                if test_surf.get_width() > chat_width - 30:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+                else:
+                    current_line = test_line
+            if current_line:
+                lines.append(current_line)
+            
+            # Draw response lines (max 8 lines visible)
+            for i, line in enumerate(lines[:8]):
+                line_surf = self.font_tiny.render(line, True, (200, 200, 200))
+                self.screen.blit(line_surf, (chat_x + 15, response_y + i * 18))
+            
+            if waiting:
+                # Show "thinking" indicator
+                thinking_text = "⏳ Thinking..."
+                think_surf = self.font_small.render(thinking_text, True, (200, 150, 100))
+                self.screen.blit(think_surf, (chat_x + 15, response_y + min(len(lines), 8) * 18))
+        else:
+            # No response yet - show placeholder
+            placeholder = "Ask LARY anything about your cat or the game!"
+            placeholder_surf = self.font_small.render(placeholder, True, (100, 150, 150))
+            self.screen.blit(placeholder_surf, (chat_x + 15, response_y))
+        
+        # Input line
+        input_y = chat_y + chat_height - 50
+        prompt = "You: "
+        prompt_surf = self.font_small.render(prompt, True, (100, 200, 255))
+        self.screen.blit(prompt_surf, (chat_x + 10, input_y))
+        
+        # Input text
+        input_surf = self.font_small.render(input_text, True, (200, 200, 200))
+        self.screen.blit(input_surf, (chat_x + 50, input_y))
+        
+        # Blinking cursor
+        if frame_count % 60 > 30:
+            cursor_x = chat_x + 50 + input_surf.get_width() + 2
+            pygame.draw.line(
+                self.screen,
+                (200, 200, 200),
+                (cursor_x, input_y),
+                (cursor_x, input_y + 16),
+                2
+            )
+        
+        # Instructions at bottom
+        instructions = "Press ENTER to send | ESC to close | Max 100 chars"
+        inst_surf = self.font_tiny.render(instructions, True, (150, 150, 150))
+        self.screen.blit(inst_surf, (chat_x + 10, chat_y + chat_height - 20))
+    
     def render(self, cat_status, current_action, show_toy_menu=False, context_menu=None, overlay_labels=None, visual_state=None):
         """Render complete game frame."""
         if DESKTOP_OVERLAY and TRANSPARENT_BACKGROUND:
@@ -910,6 +1029,15 @@ class GameDisplay:
         if overlay_labels:
             for text, pos in overlay_labels:
                 self.draw_label(text, pos)
+        
+        # Chat UI overlay
+        if visual_state and visual_state.get("chat_active"):
+            self.draw_chat_ui(
+                visual_state.get("chat_response", ""),
+                visual_state.get("chat_input", ""),
+                visual_state.get("chat_waiting", False),
+                self.animation_frame
+            )
         
         pygame.display.flip()
 
@@ -1063,6 +1191,27 @@ class LittleCatGame:
         self.sfx_volume = 0.5
         self.init_sound()
 
+        # Chat Agent (LARY) - AI Helper
+        self.chat_agent = None
+        self.chat_active = False
+        self.chat_input_text = ""
+        self.chat_response = ""
+        self.chat_cursor_blink = 0
+        self.chat_waiting_for_response = False
+        
+        if CHAT_ENABLED and create_chat_agent:
+            try:
+                self.chat_agent = create_chat_agent({
+                    "model": CHAT_MODEL,
+                    "max_tokens": CHAT_MAX_TOKENS,
+                    "timeout": CHAT_API_TIMEOUT,
+                    "max_history": CHAT_HISTORY_LENGTH
+                })
+                if self.chat_agent:
+                    print(f"✨ Chat Agent (LARY) initialized. Press '{CHAT_TOGGLE_KEY}' for help!")
+            except Exception as e:
+                print(f"⚠️  Chat agent setup failed: {e}")
+
         print(f"Loaded {self.cat.name}! Age: {self.cat.age:.1f} days")
     
     def handle_input(self):
@@ -1135,6 +1284,40 @@ class LittleCatGame:
                 if event.key == pygame.K_ESCAPE and self.context_menu_active:
                     self.context_menu_active = False
                     continue
+                
+                # Chat Agent Toggle (?)
+                if self.chat_agent and event.unicode == '?' and not self.chat_active:
+                    self.chat_active = True
+                    self.chat_input_text = ""
+                    self.chat_response = ""
+                    self.chat_waiting_for_response = False
+                    continue
+                
+                # Chat input handling (when chat active)
+                if self.chat_active:
+                    if event.key == pygame.K_RETURN:
+                        # Send message to LARY agent
+                        if self.chat_input_text.strip():
+                            game_state = self.get_game_state_for_agent()
+                            self.chat_agent.request_help(
+                                self.chat_input_text,
+                                game_state,
+                                include_screenshot=True
+                            )
+                            self.chat_input_text = ""
+                            self.chat_waiting_for_response = True
+                        continue
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.chat_input_text = self.chat_input_text[:-1]
+                        continue
+                    elif event.key == pygame.K_ESCAPE:
+                        self.chat_active = False
+                        continue
+                    elif event.unicode.isprintable():
+                        if len(self.chat_input_text) < 100:  # Max input length
+                            self.chat_input_text += event.unicode
+                        continue
+                
                 # Handle toy selection if waiting
                 if self.waiting_for_toy:
                     if event.key == pygame.K_1:
@@ -1954,6 +2137,10 @@ class LittleCatGame:
         self.update_reminders()
         self.update_achievements()
         
+        # Chat agent update (check for responses from async AI)
+        if self.chat_active:
+            self.update_chat_response()
+        
         self.game_time += 1 / FPS
     
     def run(self):
@@ -1976,7 +2163,11 @@ class LittleCatGame:
                 "food_level": self.food_level,
                 "curious": self.curiosity_pause > 0,
                 "jump_progress": self.jump_progress,
-                "show_stats": self.show_stats_panel
+                "show_stats": self.show_stats_panel,
+                "chat_active": self.chat_active,
+                "chat_response": self.chat_response,
+                "chat_input": self.chat_input_text,
+                "chat_waiting": self.chat_waiting_for_response
             }
             self.display.render(cat_status, self.current_action, self.waiting_for_toy, context_menu, overlay_labels, visual_state)
             
@@ -1987,6 +2178,47 @@ class LittleCatGame:
         print(f"\nSaved {self.cat.name}'s brain. Goodbye!")
         pygame.quit()
         sys.exit()
+    
+    def get_game_state_for_agent(self) -> Dict:
+        """
+        Snapshot current game state for LARY agent context.
+        Called ONLY when user requests help (not every frame).
+        
+        Returns:
+            Dict with cat stats and game info
+        """
+        cat = self.cat
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "cat_name": cat.name,
+            "age": cat.age,
+            "hunger": cat.hunger,
+            "energy": cat.energy,
+            "happiness": cat.happiness,
+            "trust": cat.trust,
+            "personality": list(cat.brain.personality.keys()) if hasattr(cat.brain, 'personality') else [],
+            "last_action": self.current_action,
+            "learned_tricks": [t for t, level in cat.brain.tricks.items() if level > 0],
+            "achievements": list(cat.achievements.keys()),
+            "q_learning_active": True if hasattr(cat.brain, 'q_table') else False,
+        }
+    
+    def update_chat_response(self):
+        """
+        Check for incoming chat responses from async API.
+        Called every frame while chat is active.
+        """
+        if not self.chat_agent or not self.chat_active:
+            return
+        
+        # Check for new response
+        response = self.chat_agent.get_response()
+        if response:
+            self.chat_response = response
+            self.chat_waiting_for_response = False
+        
+        # Update cursor blink animation
+        self.chat_cursor_blink = (self.chat_cursor_blink + 1) % 60
 
 
 if __name__ == "__main__":
