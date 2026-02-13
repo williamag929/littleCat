@@ -21,6 +21,31 @@ WINDOW_HEIGHT = 600
 FPS = 30
 GAME_SPEED = 0.02  # Time multiplier for simulation (slower days)
 
+# Optional behavior settings (can be overridden in config.py)
+try:
+    import config as cfg
+    ADULT_AGE_DAYS = getattr(cfg, "ADULT_AGE_DAYS", 199)
+    BUSY_THRESHOLD_SECONDS = getattr(cfg, "BUSY_THRESHOLD_SECONDS", 20)
+    ADULT_SLEEP_MULTIPLIER = getattr(cfg, "ADULT_SLEEP_MULTIPLIER", 2.5)
+    ADULT_REST_MULTIPLIER = getattr(cfg, "ADULT_REST_MULTIPLIER", 1.8)
+    ADULT_FIXED_SPOT = getattr(cfg, "ADULT_FIXED_SPOT", True)
+    FIXED_SPOT_MARGIN_X = getattr(cfg, "FIXED_SPOT_MARGIN_X", 140)
+    FIXED_SPOT_MARGIN_Y = getattr(cfg, "FIXED_SPOT_MARGIN_Y", 160)
+    YOUNG_FOLLOW_CURSOR = getattr(cfg, "YOUNG_FOLLOW_CURSOR", True)
+    YOUNG_PLAY_DISTANCE = getattr(cfg, "YOUNG_PLAY_DISTANCE", 45)
+    YOUNG_PLAY_COOLDOWN = getattr(cfg, "YOUNG_PLAY_COOLDOWN", 6.0)
+except Exception:
+    ADULT_AGE_DAYS = 199
+    BUSY_THRESHOLD_SECONDS = 20
+    ADULT_SLEEP_MULTIPLIER = 2.5
+    ADULT_REST_MULTIPLIER = 1.8
+    ADULT_FIXED_SPOT = True
+    FIXED_SPOT_MARGIN_X = 140
+    FIXED_SPOT_MARGIN_Y = 160
+    YOUNG_FOLLOW_CURSOR = True
+    YOUNG_PLAY_DISTANCE = 45
+    YOUNG_PLAY_COOLDOWN = 6.0
+
 # Pixel-art sprite settings (90s style)
 USE_PIXEL_SPRITES = True
 SPRITE_SIZE = 32
@@ -1026,6 +1051,8 @@ class LittleCatGame:
         self.jump_progress = 0.0
         self.show_stats_panel = False
         self.stats_panel_timer = 0.0
+        self.last_input_time = time.time()
+        self.young_play_cooldown = 0.0
 
         # Sound
         self.sound_enabled = SOUND_ENABLED
@@ -1043,6 +1070,9 @@ class LittleCatGame:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+            if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN):
+                self.last_input_time = time.time()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.mini_game and event.button == 1:
@@ -1276,6 +1306,12 @@ class LittleCatGame:
         """Trigger a jump animation."""
         self.jump_timer = self.jump_duration
         self.play_sfx("jump")
+
+    def get_fixed_spot(self):
+        """Get a fixed resting spot near the bottom-right."""
+        x = self.display.window_width - FIXED_SPOT_MARGIN_X
+        y = self.display.window_height - FIXED_SPOT_MARGIN_Y
+        return (x, y)
 
     def toggle_stats_panel(self):
         """Toggle temporary stats panel near the cat."""
@@ -1781,6 +1817,9 @@ class LittleCatGame:
         delta_time = GAME_SPEED
         self.cat.update_state(delta_time)
 
+        is_adult = self.cat.age >= ADULT_AGE_DAYS
+        is_busy = (time.time() - self.last_input_time) >= BUSY_THRESHOLD_SECONDS
+
         # Age-based pacing (older cats move and act less)
         age_days = self.cat.age
         move_interval = min(12, 5 + age_days * 0.2)  # seconds
@@ -1798,6 +1837,36 @@ class LittleCatGame:
                 self.resolve_mini_game(True, force=True)
                 self.hunt_timer = 0
 
+        # Adult behavior: stay near fixed spot and sleep more when user busy
+        if is_adult and is_busy and ADULT_FIXED_SPOT:
+            fixed_x, fixed_y = self.get_fixed_spot()
+            self.display.target_x, self.display.target_y = fixed_x, fixed_y
+            self.display.cat_speed = min(self.display.cat_speed, 1.2)
+            if self.action_timer <= 0:
+                if self.cat.hunger > 70:
+                    self.add_reminder("Adult cat: hungry")
+                    self.current_action = "talk"
+                    self.action_timer = 2.5
+                elif self.cat.energy < 40:
+                    self.current_action = "sleep"
+                    self.action_timer = 3.5 * ADULT_SLEEP_MULTIPLIER
+                else:
+                    self.current_action = "rest"
+                    self.action_timer = 2.5 * ADULT_REST_MULTIPLIER
+        
+        # Young cat behavior: follow cursor and try to play
+        if not is_adult and YOUNG_FOLLOW_CURSOR and self.last_mouse_pos:
+            mx, my = self.last_mouse_pos
+            self.display.target_x, self.display.target_y = mx, my
+            if self.young_play_cooldown > 0:
+                self.young_play_cooldown -= 1 / FPS
+            if self.is_mouse_near_cat(self.last_mouse_pos, radius=YOUNG_PLAY_DISTANCE):
+                if self.young_play_cooldown <= 0 and self.cat.energy > 40 and self.cat.hunger < 70:
+                    self.auto_perform_action("play")
+                    self.current_action = "play"
+                    self.action_timer = 1.5
+                    self.young_play_cooldown = YOUNG_PLAY_COOLDOWN
+
         # Jump animation progress
         if self.jump_timer > 0:
             self.jump_timer -= 1 / FPS
@@ -1812,7 +1881,7 @@ class LittleCatGame:
             
             # Randomly wander
             self.movement_timer += 1 / FPS
-            if self.movement_timer > move_interval and not self.is_moving and self.hunt_timer <= 0 and self.curiosity_pause <= 0:
+            if self.movement_timer > move_interval and not self.is_moving and self.hunt_timer <= 0 and self.curiosity_pause <= 0 and not (is_adult and is_busy):
                 self.display.move_cat_to_random_position()
                 self.movement_timer = 0
 
@@ -1843,21 +1912,22 @@ class LittleCatGame:
                 self.current_action = "idle"
         
         # AI decides action if too much time has passed
-        self.ai_timer += 1 / FPS
-        if self.ai_timer >= ai_interval:
-            self.ai_timer = 0
-            context = "human_nearby" if self.action_timer > 0 else "alone"
-            action, confidence = self.cat.decide_action(context)
-            
-            # Prevent auto-play when energy is low
-            if action == "play" and self.cat.energy < 35:
-                action = "sleep" if self.cat.energy < 20 else "rest"
-            
-            if confidence > 0.6 and self.action_timer <= 0:
-                # Auto-perform action (with state changes!)
-                self.auto_perform_action(action)
-                self.current_action = action
-                self.action_timer = 2.5
+        if not (is_adult and is_busy):
+            self.ai_timer += 1 / FPS
+            if self.ai_timer >= ai_interval:
+                self.ai_timer = 0
+                context = "human_nearby" if self.action_timer > 0 else "alone"
+                action, confidence = self.cat.decide_action(context)
+                
+                # Prevent auto-play when energy is low
+                if action == "play" and self.cat.energy < 35:
+                    action = "sleep" if self.cat.energy < 20 else "rest"
+                
+                if confidence > 0.6 and self.action_timer <= 0:
+                    # Auto-perform action (with state changes!)
+                    self.auto_perform_action(action)
+                    self.current_action = action
+                    self.action_timer = 2.5
 
         # Mini-game timer
         if self.mini_game:

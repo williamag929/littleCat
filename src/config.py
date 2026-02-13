@@ -56,4 +56,16 @@ CAT_COLOR = (255, 165, 0)   # Orange
 CAT_SIZE = 40               # Pixel radius
 DISPLAY_STATS_UPDATE_RATE = 0.1  # Seconds between stat updates
 
+# Adult and busy behavior
+ADULT_AGE_DAYS = 199
+BUSY_THRESHOLD_SECONDS = 20
+ADULT_SLEEP_MULTIPLIER = 2.5
+ADULT_REST_MULTIPLIER = 1.8
+ADULT_FIXED_SPOT = True
+FIXED_SPOT_MARGIN_X = 140
+FIXED_SPOT_MARGIN_Y = 160
+YOUNG_FOLLOW_CURSOR = True
+YOUNG_PLAY_DISTANCE = 45
+YOUNG_PLAY_COOLDOWN = 6.0
+
 print("Config loaded successfully!")
