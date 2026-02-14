@@ -1,10 +1,10 @@
 {
   "name": "Whiskers",
-  "age": 466.11916666625086,
+  "age": 466.1866666662508,
   "emotional_state": {
-    "happiness": 99.35999999999967,
-    "hunger": 91.25000000000308,
-    "energy": 69.28000000000063,
+    "happiness": 98.54999999999926,
+    "hunger": 93.68000000000318,
+    "energy": 66.04000000000012,
     "trust": 100
   },
   "behavior_weights": {
@@ -181,11 +181,17 @@
   "trick_level": 1,
   "trick_xp": 7.5,
   "achievements": [
-    "happy_85",
-    "first_train",
-    "first_day",
-    "first_groom",
     "first_feed",
-    "trust_60"
-  ]
+    "trust_60",
+    "first_day",
+    "happy_85",
+    "first_groom",
+    "first_train"
+  ],
+  "q_learning": {
+    "alpha": 0.2,
+    "gamma": 0.9,
+    "epsilon": 0.2,
+    "q_table": {}
+  }
 }

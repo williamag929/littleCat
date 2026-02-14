@@ -64,5 +64,11 @@
   "trick_xp": 0,
   "achievements": [
     "happy_85"
-  ]
+  ],
+  "q_learning": {
+    "alpha": 0.2,
+    "gamma": 0.9,
+    "epsilon": 0.2,
+    "q_table": {}
+  }
 }
