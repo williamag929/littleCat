@@ -100,6 +100,7 @@ littleCat/
 │   ├── QUICKSTART.txt          ← Start here!
 │   ├── README.md               ← Full features
 │   ├── AGENT_GUIDE.md          ← Agent capabilities (NEW!)
+│   ├── ISSUE_MANAGER_AGENT.md  ← GitHub Copilot issue agent (NEW!)
 │   ├── INSTALL.md              ← Installation guide
 │   ├── ARCHITECTURE.md         ← AI system details
 │   ├── DIAGRAMS.md             ← Visual diagrams
@@ -163,6 +164,7 @@ E = Export/Save    L = Load          ESC = Exit
 | **QUICKSTART.txt** | Fast setup & play | Everyone | 5 min |
 | **README.md** | Features & gameplay | Players | 15 min |
 | **AGENT_GUIDE.md** | Agent capabilities | Agent users | 25 min |
+| **ISSUE_MANAGER_AGENT.md** | Issue manager agent | Maintainers | 15 min |
 | **INSTALL.md** | Installation guide | Installers | 10 min |
 | **ARCHITECTURE.md** | AI system details | Learners | 30 min |
 | **DIAGRAMS.md** | Visual explanations | Visual learners | 20 min |
@@ -452,6 +454,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed explanations.
 - [QUICKSTART.txt](QUICKSTART.txt) - Get started fast
 - [README.md](README.md) - Full documentation
 - [AGENT_GUIDE.md](AGENT_GUIDE.md) - Agent capabilities
+- [ISSUE_MANAGER_AGENT.md](ISSUE_MANAGER_AGENT.md) - GitHub Copilot issue agent
 - [INSTALL.md](INSTALL.md) - Installation guide
 - [ARCHITECTURE.md](ARCHITECTURE.md) - AI deep dive
 - [DIAGRAMS.md](DIAGRAMS.md) - Visual explanations
