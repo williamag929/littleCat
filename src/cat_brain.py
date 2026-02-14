@@ -226,7 +226,11 @@ class CatBrain:
         }
     
     def _get_personality_modifiers(self):
-        """Get cached personality modifiers for performance."""
+        """Get cached personality modifiers for performance.
+        
+        Personality is immutable after initialization (only changes on load_brain),
+        so caching these computed values is safe. Cache is invalidated on load_brain.
+        """
         if self._personality_modifiers is None:
             playful = self.personality.get('playful', 0.5)
             calm = self.personality.get('calm', 0.5)
@@ -353,6 +357,7 @@ class CatBrain:
             for k, v in q_raw.items():
                 try:
                     # Use json.loads instead of eval for safety and performance
+                    # json.loads returns a list, so convert to tuple for dict key
                     state = tuple(json.loads(k))
                 except (ValueError, TypeError):
                     continue

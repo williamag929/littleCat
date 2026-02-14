@@ -698,7 +698,12 @@ class GameDisplay:
             self.draw_claws((self.cat_x, base_y + 22))
 
     def draw_label(self, text, center_pos):
-        """Draw a high-contrast label for better visibility with improved caching."""
+        """Draw a high-contrast label for better visibility with improved caching.
+        
+        Note: Cache uses insertion order (MRU - Most Recently Used) for eviction,
+        not true LRU. This is acceptable since labels are typically accessed in similar
+        patterns each frame.
+        """
         if text in self.label_cache:
             text_surf = self.label_cache[text]
         else:
@@ -706,7 +711,7 @@ class GameDisplay:
             self.label_cache[text] = text_surf
             # More efficient cache management - clear oldest half when limit reached
             if len(self.label_cache) > 50:
-                # Keep only most recently added items
+                # Keep only most recently added items (MRU eviction)
                 items = list(self.label_cache.items())
                 self.label_cache = dict(items[-25:])
         text_rect = text_surf.get_rect(center=center_pos)
