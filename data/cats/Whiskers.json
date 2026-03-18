@@ -1,10 +1,10 @@
 {
   "name": "Whiskers",
-  "age": 468.4916666662487,
+  "age": 466.1866666662508,
   "emotional_state": {
-    "happiness": 98.6199999999993,
-    "hunger": 74.14000000000016,
-    "energy": 5.479999999992835,
+    "happiness": 98.54999999999926,
+    "hunger": 93.68000000000318,
+    "energy": 66.04000000000012,
     "trust": 100
   },
   "behavior_weights": {
@@ -181,45 +181,17 @@
   "trick_level": 1,
   "trick_xp": 7.5,
   "achievements": [
+    "first_feed",
+    "trust_60",
     "first_day",
     "happy_85",
-    "first_feed",
-    "first_train",
-    "trust_60",
-    "first_groom"
+    "first_groom",
+    "first_train"
   ],
   "q_learning": {
     "alpha": 0.2,
     "gamma": 0.9,
     "epsilon": 0.2,
-    "q_table": {
-      "(3, 3, 2, 3, 'neutral')": {
-        "eat": 0.1
-      },
-      "(3, 2, 2, 3, 'alone')": {
-        "sleep": 0.1
-      },
-      "(3, 2, 2, 3, 'neutral')": {
-        "sleep": 0.1
-      },
-      "(3, 3, 3, 3, 'alone')": {
-        "eat": 0.2
-      },
-      "(3, 3, 3, 3, 'neutral')": {
-        "eat": 0.1
-      },
-      "(3, 2, 3, 3, 'neutral')": {
-        "play": -0.001999999999999999
-      },
-      "(3, 3, 2, 3, 'alone')": {
-        "sleep": 0.118
-      },
-      "(3, 3, 1, 3, 'alone')": {
-        "play": 0.1
-      },
-      "(3, 3, 0, 3, 'alone')": {
-        "eat": 0.2
-      }
-    }
+    "q_table": {}
   }
 }

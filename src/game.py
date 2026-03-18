@@ -157,6 +157,7 @@ class GameDisplay:
         self.font_small = pygame.font.Font(None, 20)
         self.font_tiny = pygame.font.Font(None, 14)
         self.label_cache = {}
+        self.instruction_surfaces = None  # Cache for static instruction text
         
         # Cat visual position and movement
         self.cat_x = self.window_width // 2
@@ -726,14 +727,22 @@ class GameDisplay:
             self.draw_claws((self.cat_x, base_y + 22))
 
     def draw_label(self, text, center_pos):
-        """Draw a high-contrast label for better visibility."""
+        """Draw a high-contrast label for better visibility with improved caching.
+        
+        Note: Cache uses insertion order (MRU - Most Recently Used) for eviction,
+        not true LRU. This is acceptable since labels are typically accessed in similar
+        patterns each frame.
+        """
         if text in self.label_cache:
             text_surf = self.label_cache[text]
         else:
             text_surf = self.font_small.render(text, True, BLACK)
             self.label_cache[text] = text_surf
-            if len(self.label_cache) > 40:
-                self.label_cache.clear()
+            # More efficient cache management - clear oldest half when limit reached
+            if len(self.label_cache) > 50:
+                # Keep only most recently added items (MRU eviction)
+                items = list(self.label_cache.items())
+                self.label_cache = dict(items[-25:])
         text_rect = text_surf.get_rect(center=center_pos)
 
         padding_x = 8
@@ -829,15 +838,20 @@ class GameDisplay:
             y_offset += 30
     
     def draw_instructions(self):
-        """Draw game instructions."""
-        instructions = [
-            "Press: [P]lay(toy menu) [F]eed [S]leep [T]pet [H]ide [R]est [G]room [Y]talk [N]train",
-            "Press [ESC] to exit  |  [E] to export brain  |  [L] to load brain",
-            "Press [TAB] to switch cat  |  [M] to mute/unmute"
-        ]
+        """Draw game instructions with caching for performance."""
+        if self.instruction_surfaces is None:
+            # Cache instruction text surfaces since they never change
+            instructions = [
+                "Press: [P]lay(toy menu) [F]eed [S]leep [T]pet [H]ide [R]est [G]room [Y]talk [N]train",
+                "Press [ESC] to exit  |  [E] to export brain  |  [L] to load brain",
+                "Press [TAB] to switch cat  |  [M] to mute/unmute"
+            ]
+            self.instruction_surfaces = [
+                self.font_small.render(text, True, DARK_GRAY) 
+                for text in instructions
+            ]
         
-        for i, text in enumerate(instructions):
-            instr_surf = self.font_small.render(text, True, DARK_GRAY)
+        for i, instr_surf in enumerate(self.instruction_surfaces):
             self.screen.blit(instr_surf, (20, self.window_height - 50 + i * 25))
 
     def draw_toy_menu(self):
@@ -1718,20 +1732,26 @@ class LittleCatGame:
         self.save_profiles_index()
 
     def init_sound(self):
-        """Initialize ambient sound if available."""
+        """Initialize ambient sound if available with optimized batch loading."""
         if not self.sound_enabled:
             return
         try:
             pygame.mixer.init()
+            # Load ambient sound
             if os.path.exists(AMBIENT_SOUND_PATH):
                 self.ambient_sound = pygame.mixer.Sound(AMBIENT_SOUND_PATH)
                 self.ambient_channel = self.ambient_sound.play(-1)
                 if self.ambient_channel:
                     self.ambient_channel.set_volume(0.25)
+            # Batch load sound effects with error handling
             for key, path in SOUND_FX_PATHS.items():
                 if os.path.exists(path):
-                    self.sfx[key] = pygame.mixer.Sound(path)
-        except Exception:
+                    try:
+                        self.sfx[key] = pygame.mixer.Sound(path)
+                    except pygame.error:
+                        # Skip sounds that can't be loaded
+                        continue
+        except pygame.error:
             self.sound_enabled = False
 
     def play_sfx(self, key):
@@ -1787,7 +1807,9 @@ class LittleCatGame:
                 self.add_reminder("Routine: Bedtime soon")
                 self.reminder_cooldowns['bedtime'] = self.game_time
 
-        self.reminders = [r for r in self.reminders if r['expires'] > self.game_time]
+        # Filter expired reminders efficiently - only when checking reminders
+        if self.reminders:
+            self.reminders = [r for r in self.reminders if r['expires'] > self.game_time]
 
     def award_achievement(self, key, text):
         """Award an achievement to the active cat."""
@@ -1815,7 +1837,9 @@ class LittleCatGame:
             if self.cat.age >= 1:
                 self.award_achievement('first_day', 'First Day')
 
-        self.achievement_notifications = [a for a in self.achievement_notifications if a['expires'] > self.game_time]
+        # Filter expired achievements efficiently - only during achievement check timer
+        if self.achievement_notifications:
+            self.achievement_notifications = [a for a in self.achievement_notifications if a['expires'] > self.game_time]
 
     def start_mini_game(self, toy_type):
         """Start a simple toy mini-game (click the cat in time)."""

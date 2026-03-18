@@ -4,7 +4,7 @@ Simulates a cat's learning capacity and decision-making based on interactions.
 """
 
 import numpy as np
-from collections import defaultdict
+from collections import defaultdict, deque
 import json
 from datetime import datetime
 import hashlib
@@ -24,7 +24,8 @@ class CatBrain:
         self.trust = 30
         
         # Learning system - memories and patterns
-        self.memories = []  # Store interactions
+        self.max_memory = 100  # Limit learning buffer
+        self.memories = deque(maxlen=self.max_memory)  # Store interactions with automatic size limit
         self.learned_behaviors = defaultdict(float)  # action -> success rate
         self.action_history = []  # Track recent actions
 
@@ -60,7 +61,8 @@ class CatBrain:
             'rest': 0.25,
         }
         
-        self.max_memory = 100  # Limit learning buffer
+        # Cache personality modifiers for performance
+        self._personality_modifiers = None
         
     def learn_from_interaction(self, action, human_response, reward):
         """
@@ -80,10 +82,7 @@ class CatBrain:
             'age': self.age
         }
         self.memories.append(memory)
-        
-        # Limit memory size (older memories fade)
-        if len(self.memories) > self.max_memory:
-            self.memories.pop(0)
+        # deque automatically maintains maxlen, no manual pop needed
         
         # Update learned behavior weights
         self.learned_behaviors[action] += reward * 0.1
@@ -127,19 +126,11 @@ class CatBrain:
         # Adjust weights based on emotional state
         action_weights = self.behavior_weights.copy()
         
-        # Personality influences (subtle bias)
-        playful = self.personality.get('playful', 0.5)
-        calm = self.personality.get('calm', 0.5)
-        curious = self.personality.get('curious', 0.5)
-        social = self.personality.get('social', 0.5)
-
-        action_weights['play'] = min(1.0, action_weights['play'] + (playful * 0.15))
-        action_weights['sleep'] = min(1.0, action_weights['sleep'] + (calm * 0.1))
-        action_weights['rest'] = min(1.0, action_weights.get('rest', 0.2) + (calm * 0.1))
-        action_weights['talk'] = min(1.0, action_weights.get('talk', 0.2) + (social * 0.12))
-        action_weights['purr'] = min(1.0, action_weights['purr'] + (social * 0.1))
-        action_weights['train'] = min(1.0, action_weights.get('train', 0.2) + ((social + curious) * 0.08))
-        action_weights['groom'] = min(1.0, action_weights.get('groom', 0.2) + (calm * 0.08))
+        # Apply cached personality influences (subtle bias)
+        personality_mods = self._get_personality_modifiers()
+        for action, modifier in personality_mods.items():
+            if action in action_weights:
+                action_weights[action] = min(1.0, action_weights.get(action, 0.2) + modifier)
 
         # Hunger influences eating behavior
         if self.hunger > 70:
@@ -160,11 +151,10 @@ class CatBrain:
         if self.trust < 40:
             action_weights['hide'] = min(1.0, action_weights['hide'] + 0.3)
         
-        # Add some randomness (cats are unpredictable!)
-        noise = np.random.normal(0, 0.1, len(action_weights))
+        # Add some randomness (cats are unpredictable!) - optimized to avoid unnecessary array
         weighted_actions = {
-            action: weight + noise[i] 
-            for i, (action, weight) in enumerate(action_weights.items())
+            action: weight + np.random.normal(0, 0.1)
+            for action, weight in action_weights.items()
         }
         
         # Q-learning: epsilon-greedy action selection
@@ -234,6 +224,29 @@ class CatBrain:
             'curious': values[2],
             'social': values[3],
         }
+    
+    def _get_personality_modifiers(self):
+        """Get cached personality modifiers for performance.
+        
+        Personality is immutable after initialization (only changes on load_brain),
+        so caching these computed values is safe. Cache is invalidated on load_brain.
+        """
+        if self._personality_modifiers is None:
+            playful = self.personality.get('playful', 0.5)
+            calm = self.personality.get('calm', 0.5)
+            curious = self.personality.get('curious', 0.5)
+            social = self.personality.get('social', 0.5)
+            
+            self._personality_modifiers = {
+                'play': playful * 0.15,
+                'sleep': calm * 0.1,
+                'rest': calm * 0.1,
+                'talk': social * 0.12,
+                'purr': social * 0.1,
+                'train': (social + curious) * 0.08,
+                'groom': calm * 0.08,
+            }
+        return self._personality_modifiers
 
     def _apply_trick_progress(self, reward):
         """Progress trick training based on reward."""
@@ -293,7 +306,7 @@ class CatBrain:
             },
             'behavior_weights': self.behavior_weights,
             'learned_behaviors': dict(self.learned_behaviors),
-            'memories': self.memories[-20:],  # Keep last 20 memories
+            'memories': list(self.memories)[-20:],  # Convert deque to list, keep last 20 memories
             'personality': self.personality,
             'trick_level': self.trick_level,
             'trick_xp': self.trick_xp,
@@ -302,7 +315,7 @@ class CatBrain:
                 'alpha': self.alpha,
                 'gamma': self.gamma,
                 'epsilon': self.epsilon,
-                'q_table': {str(k): dict(v) for k, v in self.q_table.items()},
+                'q_table': {json.dumps(k): dict(v) for k, v in self.q_table.items()},
             }
         }
         with open(filepath, 'w') as f:
@@ -325,8 +338,12 @@ class CatBrain:
             
             self.behavior_weights = data.get('behavior_weights', self.behavior_weights)
             self.learned_behaviors = defaultdict(float, data.get('learned_behaviors', {}))
-            self.memories = data.get('memories', [])
+            # Convert loaded memories list to deque with maxlen
+            loaded_memories = data.get('memories', [])
+            self.memories = deque(loaded_memories, maxlen=self.max_memory)
             self.personality = data.get('personality', self.personality)
+            # Invalidate cached personality modifiers after loading
+            self._personality_modifiers = None
             self.trick_level = data.get('trick_level', 1)
             self.trick_xp = data.get('trick_xp', 0)
             self.achievements = set(data.get('achievements', []))
@@ -339,8 +356,10 @@ class CatBrain:
             self.q_table = defaultdict(lambda: defaultdict(float))
             for k, v in q_raw.items():
                 try:
-                    state = eval(k)
-                except Exception:
+                    # Use json.loads instead of eval for safety and performance
+                    # json.loads returns a list, so convert to tuple for dict key
+                    state = tuple(json.loads(k))
+                except (ValueError, TypeError):
                     continue
                 self.q_table[state] = defaultdict(float, v)
         except FileNotFoundError:
