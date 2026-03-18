@@ -785,7 +785,7 @@ class GameDisplay:
         mood_text = self.font_medium.render(cat_status['mood'], True, BLACK)
         self.screen.blit(mood_text, (self.window_width - 220, 20))
         
-        # Stats bars with UI Agent enhanced colors
+        # Stats bars with UI Agent enhanced colors and emoji indicators
         y_offset = 80
         stats = [
             ('Happiness', cat_status['happiness'], GREEN),
@@ -794,6 +794,16 @@ class GameDisplay:
             ('Trust', cat_status['trust'], PINK),
         ]
         
+        # Get emoji-enhanced labels from UI Agent if available
+        emoji_labels = None
+        if ui_agent:
+            emoji_labels = ui_agent.format_status_text(type('obj', (object,), {
+                'happiness': cat_status['happiness'],
+                'hunger': cat_status['hunger'],
+                'energy': cat_status['energy'],
+                'trust': cat_status['trust'],
+            })())
+        
         for i, (stat_name, value, default_color) in enumerate(stats):
             # Use UI Agent to determine color based on value if available
             if ui_agent:
@@ -801,8 +811,12 @@ class GameDisplay:
             else:
                 color = default_color
             
-            # Label
-            label = self.font_small.render(f"{stat_name}: {value}", True, BLACK)
+            # Label with emoji indicators from UI Agent
+            if emoji_labels and i < len(emoji_labels):
+                label_text = emoji_labels[i]
+            else:
+                label_text = f"{stat_name}: {value}"
+            label = self.font_small.render(label_text, True, BLACK)
             self.screen.blit(label, (20, y_offset))
             
             # Bar background
@@ -1242,6 +1256,9 @@ class LittleCatGame:
         self.agent_hint = None
         self.agent_hint_timer = 0
         self.thought_bubble = None
+        self.agent_suggestion = None
+        self.agent_suggestion_timer = 0
+        self.personality_insight_timer = 0
         self.last_input_time = time.time()
         self.young_play_cooldown = 0.0
 
@@ -1778,7 +1795,9 @@ class LittleCatGame:
             return
         self.cat.achievements.add(key)
         expires_at = self.game_time + 5.0
-        self.achievement_notifications.append({'text': text, 'expires': expires_at})
+        # Use UI Agent celebration message
+        celebration = self.ui_agent.celebrate_achievement(text)
+        self.achievement_notifications.append({'text': celebration, 'expires': expires_at})
         if len(self.achievement_notifications) > 3:
             self.achievement_notifications.pop(0)
 
@@ -1845,11 +1864,16 @@ class LittleCatGame:
             labels.append((reminder['text'], (180, y)))
             y += 28
         for ach in self.achievement_notifications:
-            labels.append((f"Achievement: {ach['text']}", (220, y)))
+            labels.append((ach['text'], (220, y)))
             y += 28
         if self.mini_game:
             labels.append((self.mini_game['prompt'], (self.display.window_width // 2, 80)))
         
+        # Smart interaction suggestion
+        if self.agent_suggestion:
+            labels.append((self.agent_suggestion, (self.display.window_width // 2, y)))
+            y += 35
+
         # Thought bubble above cat
         if self.thought_bubble and not SHOW_UI:
             labels.append((self.thought_bubble, (self.display.cat_x, self.display.cat_y - 90)))
@@ -2134,6 +2158,27 @@ class LittleCatGame:
         
         # Update thought bubble
         self.thought_bubble = self.ui_agent.get_thought_bubble(self.cat)
+
+        # Update smart interaction suggestion
+        if self.agent_suggestion_timer > 0:
+            self.agent_suggestion_timer -= 1 / FPS
+        else:
+            self.agent_suggestion = None
+        if not self.agent_suggestion and not self.agent_message and random.random() < 0.002:
+            suggestion = self.ui_agent.suggest_interaction(self.cat)
+            if suggestion:
+                self.agent_suggestion = suggestion
+                self.agent_suggestion_timer = 5.0
+
+        # Periodically show personality insights
+        self.personality_insight_timer += 1 / FPS
+        if self.personality_insight_timer >= 30:  # Every 30 seconds
+            self.personality_insight_timer = 0
+            if not self.agent_message:
+                insight = self.ui_agent.get_personality_insight(self.cat)
+                if insight:
+                    self.agent_message = insight
+                    self.agent_message_timer = 4.0
 
         is_adult = self.cat.age >= ADULT_AGE_DAYS
         is_busy = (time.time() - self.last_input_time) >= BUSY_THRESHOLD_SECONDS
