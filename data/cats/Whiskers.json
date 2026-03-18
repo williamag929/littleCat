@@ -1,10 +1,10 @@
 {
   "name": "Whiskers",
-  "age": 466.11916666625086,
+  "age": 468.4916666662487,
   "emotional_state": {
-    "happiness": 99.35999999999967,
-    "hunger": 91.25000000000308,
-    "energy": 69.28000000000063,
+    "happiness": 98.6199999999993,
+    "hunger": 74.14000000000016,
+    "energy": 5.479999999992835,
     "trust": 100
   },
   "behavior_weights": {
@@ -14,13 +14,13 @@
     "purr": 0.7500000000000002,
     "scratch": 0.4,
     "hide": 0.12500000000000003,
-    "groom": 0.4700000000000001,
+    "groom": 0.4950000000000001,
     "talk": 0.37500000000000006,
     "train": 0.42500000000000004,
     "rest": 1.0
   },
   "learned_behaviors": {
-    "groom": 0.33999999999999997,
+    "groom": 0.38999999999999996,
     "hide": -0.15000000000000002,
     "eat": 1.0,
     "sleep": 1.0,
@@ -31,76 +31,6 @@
     "talk": 0.15000000000000002
   },
   "memories": [
-    {
-      "timestamp": "2026-02-06T16:50:34.701131",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 1.0,
-      "age": 461.2999999995886
-    },
-    {
-      "timestamp": "2026-02-06T16:50:44.805796",
-      "action": "rest",
-      "response": "Cat is resting",
-      "reward": 0.5,
-      "age": 461.5508333329217
-    },
-    {
-      "timestamp": "2026-02-06T16:50:54.904220",
-      "action": "rest",
-      "response": "Cat is resting",
-      "reward": 0.5,
-      "age": 461.8016666662548
-    },
-    {
-      "timestamp": "2026-02-06T16:51:05.005441",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 1.0,
-      "age": 462.0524999995879
-    },
-    {
-      "timestamp": "2026-02-06T16:51:15.120564",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 0.5,
-      "age": 462.303333332921
-    },
-    {
-      "timestamp": "2026-02-06T16:51:25.205374",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 0.5,
-      "age": 462.5541666662541
-    },
-    {
-      "timestamp": "2026-02-06T16:51:35.318114",
-      "action": "sleep",
-      "response": "Cat yawns and sleeps",
-      "reward": 1.0,
-      "age": 462.8049999995872
-    },
-    {
-      "timestamp": "2026-02-06T16:51:45.415617",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 0.5,
-      "age": 463.0558333329203
-    },
-    {
-      "timestamp": "2026-02-06T16:51:55.528238",
-      "action": "eat",
-      "response": "Cat meows for food...",
-      "reward": 0.5,
-      "age": 463.3066666662534
-    },
-    {
-      "timestamp": "2026-02-06T16:52:05.628951",
-      "action": "rest",
-      "response": "Cat is resting",
-      "reward": 0.5,
-      "age": 463.5574999995865
-    },
     {
       "timestamp": "2026-02-06T16:52:15.718058",
       "action": "sleep",
@@ -170,6 +100,76 @@
       "response": "Cat is resting",
       "reward": 0.5,
       "age": 466.0658333329176
+    },
+    {
+      "timestamp": "2026-02-13T13:45:47.615290",
+      "action": "eat",
+      "response": "You fed the cat!",
+      "reward": 1.0,
+      "age": 466.19249999958413
+    },
+    {
+      "timestamp": "2026-02-13T13:45:50.240766",
+      "action": "groom",
+      "response": "You gently groomed the cat",
+      "reward": 0.5,
+      "age": 466.25749999958407
+    },
+    {
+      "timestamp": "2026-02-13T13:45:54.751822",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 466.36999999958397
+    },
+    {
+      "timestamp": "2026-02-13T13:45:55.055082",
+      "action": "sleep",
+      "response": "Cat is sleeping peacefully",
+      "reward": 0.5,
+      "age": 466.3766666662506
+    },
+    {
+      "timestamp": "2026-02-13T13:46:04.892485",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 466.6208333329171
+    },
+    {
+      "timestamp": "2026-02-13T13:46:06.074382",
+      "action": "play",
+      "response": "Played with Ball \ud83d\udd34",
+      "reward": 0.5,
+      "age": 466.6491666662504
+    },
+    {
+      "timestamp": "2026-02-13T13:46:08.562102",
+      "action": "play",
+      "response": "Mini-game missed",
+      "reward": -0.1,
+      "age": 466.7116666662503
+    },
+    {
+      "timestamp": "2026-02-13T13:46:15.025014",
+      "action": "sleep",
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "age": 466.8716666662502
+    },
+    {
+      "timestamp": "2026-02-13T13:47:05.700632",
+      "action": "play",
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "age": 468.1258333329157
+    },
+    {
+      "timestamp": "2026-02-13T13:47:15.842063",
+      "action": "eat",
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "age": 468.3766666662488
     }
   ],
   "personality": {
@@ -181,11 +181,45 @@
   "trick_level": 1,
   "trick_xp": 7.5,
   "achievements": [
-    "happy_85",
-    "first_train",
     "first_day",
-    "first_groom",
+    "happy_85",
     "first_feed",
-    "trust_60"
-  ]
+    "first_train",
+    "trust_60",
+    "first_groom"
+  ],
+  "q_learning": {
+    "alpha": 0.2,
+    "gamma": 0.9,
+    "epsilon": 0.2,
+    "q_table": {
+      "(3, 3, 2, 3, 'neutral')": {
+        "eat": 0.1
+      },
+      "(3, 2, 2, 3, 'alone')": {
+        "sleep": 0.1
+      },
+      "(3, 2, 2, 3, 'neutral')": {
+        "sleep": 0.1
+      },
+      "(3, 3, 3, 3, 'alone')": {
+        "eat": 0.2
+      },
+      "(3, 3, 3, 3, 'neutral')": {
+        "eat": 0.1
+      },
+      "(3, 2, 3, 3, 'neutral')": {
+        "play": -0.001999999999999999
+      },
+      "(3, 3, 2, 3, 'alone')": {
+        "sleep": 0.118
+      },
+      "(3, 3, 1, 3, 'alone')": {
+        "play": 0.1
+      },
+      "(3, 3, 0, 3, 'alone')": {
+        "eat": 0.2
+      }
+    }
+  }
 }

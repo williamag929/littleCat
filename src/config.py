@@ -68,4 +68,25 @@ YOUNG_FOLLOW_CURSOR = True
 YOUNG_PLAY_DISTANCE = 45
 YOUNG_PLAY_COOLDOWN = 6.0
 
+# ===== CHAT AGENT CONFIGURATION =====
+# LARY Agent (AI helper chat integrated into game)
+# Screenshot captured ON-DEMAND only (when user requests help)
+
+CHAT_ENABLED = True                      # Enable/disable chat feature
+CHAT_TOGGLE_KEY = "?"                    # Press '?' to open chat
+CHAT_MODEL = "gpt-4o"                    # OpenAI model (current vision model)
+CHAT_MAX_TOKENS = 500                    # Max response length
+CHAT_HISTORY_LENGTH = 10                 # Context history (messages)
+CHAT_API_TIMEOUT = 5.0                   # Seconds to wait for API response
+CHAT_MAX_REQUESTS_PER_MINUTE = 10        # Rate limit (10 req/min)
+CHAT_UI_WIDTH = 760                      # Chat box width (pixels)
+CHAT_UI_HEIGHT = 280                     # Chat box height (pixels)
+
+# Optional: Use cheaper/faster model (less quality)
+# CHAT_MODEL = "gpt-3.5-turbo"
+# CHAT_MAX_TOKENS = 300
+
+# Cost Warning: gpt-4-vision is ~$0.03 per image + tokens
+# Monitor OPENAI_API_KEY usage in dashboard
+
 print("Config loaded successfully!")

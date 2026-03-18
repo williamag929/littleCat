@@ -12,6 +12,21 @@ import math
 from cat_brain import CatBrain
 from ui_agent import SeniorUIAgent
 import time
+from datetime import datetime
+from typing import Dict, Optional, Tuple, List
+
+# Load environment variables (.env file)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv optional, will try without it
+
+# Chat agent (LARY)
+try:
+    from chat_agent import create_chat_agent
+except ImportError:
+    create_chat_agent = None
 
 # Initialize Pygame
 pygame.init()
@@ -35,6 +50,13 @@ try:
     YOUNG_FOLLOW_CURSOR = getattr(cfg, "YOUNG_FOLLOW_CURSOR", True)
     YOUNG_PLAY_DISTANCE = getattr(cfg, "YOUNG_PLAY_DISTANCE", 45)
     YOUNG_PLAY_COOLDOWN = getattr(cfg, "YOUNG_PLAY_COOLDOWN", 6.0)
+    # Chat agent settings
+    CHAT_ENABLED = getattr(cfg, "CHAT_ENABLED", True)
+    CHAT_TOGGLE_KEY = getattr(cfg, "CHAT_TOGGLE_KEY", "?")
+    CHAT_MODEL = getattr(cfg, "CHAT_MODEL", "gpt-4-vision-preview")
+    CHAT_MAX_TOKENS = getattr(cfg, "CHAT_MAX_TOKENS", 500)
+    CHAT_HISTORY_LENGTH = getattr(cfg, "CHAT_HISTORY_LENGTH", 10)
+    CHAT_API_TIMEOUT = getattr(cfg, "CHAT_API_TIMEOUT", 5.0)
 except Exception:
     ADULT_AGE_DAYS = 199
     BUSY_THRESHOLD_SECONDS = 20
@@ -46,6 +68,12 @@ except Exception:
     YOUNG_FOLLOW_CURSOR = True
     YOUNG_PLAY_DISTANCE = 45
     YOUNG_PLAY_COOLDOWN = 6.0
+    CHAT_ENABLED = True
+    CHAT_TOGGLE_KEY = "?"
+    CHAT_MODEL = "gpt-4-vision-preview"
+    CHAT_MAX_TOKENS = 500
+    CHAT_HISTORY_LENGTH = 10
+    CHAT_API_TIMEOUT = 5.0
 
 # Pixel-art sprite settings (90s style)
 USE_PIXEL_SPRITES = True
@@ -127,6 +155,7 @@ class GameDisplay:
         self.font_large = pygame.font.Font(None, 36)
         self.font_medium = pygame.font.Font(None, 28)
         self.font_small = pygame.font.Font(None, 20)
+        self.font_tiny = pygame.font.Font(None, 14)
         self.label_cache = {}
         
         # Cat visual position and movement
@@ -830,7 +859,7 @@ class GameDisplay:
             self.screen.blit(text_surf, (box_x + 20, box_y + 20 + i * 22))
 
     def draw_context_menu(self, menu_pos, items, mouse_pos=None):
-        """Draw right-click radial menu."""
+        """Draw improved circular menu with gradient background and text labels."""
         if not items:
             return
 
@@ -844,13 +873,33 @@ class GameDisplay:
         cx = max(margin, min(self.window_width - margin, cx))
         cy = max(margin, min(self.window_height - margin, cy))
 
+        # Draw semi-transparent gradient background circle (dimmed)
+        background_radius = RADIAL_MENU_RADIUS + 50
+        overlay = pygame.Surface((background_radius * 2, background_radius * 2), pygame.SRCALPHA)
+        
+        # Gradient effect: dark center fading out
+        for r in range(background_radius, 0, -5):
+            alpha = int(120 * (1 - r / background_radius))  # Fade from 120 to 0
+            color = (20, 20, 30, alpha)  # Dark blue-gray
+            pygame.draw.circle(overlay, color, (background_radius, background_radius), r)
+        
+        self.screen.blit(overlay, (int(cx - background_radius), int(cy - background_radius)))
+
         base_angle = -math.pi / 2
         step = (2 * math.pi) / count
 
-        # Center dot
-        pygame.draw.circle(self.screen, WHITE, (int(cx), int(cy)), 10)
-        pygame.draw.circle(self.screen, DARK_GRAY, (int(cx), int(cy)), 10, 2)
+        # Draw connecting lines from center (optional subtle feature)
+        for i in range(count):
+            angle = base_angle + i * step
+            ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
+            iy = cy + math.sin(angle) * RADIAL_MENU_RADIUS
+            pygame.draw.line(self.screen, (80, 80, 100, 100), (int(cx), int(cy)), (int(ix), int(iy)), 1)
 
+        # Draw center dot with glow effect
+        pygame.draw.circle(self.screen, (100, 150, 255), (int(cx), int(cy)), 14)
+        pygame.draw.circle(self.screen, (150, 200, 255), (int(cx), int(cy)), 14, 2)
+
+        # Draw menu items
         for i, item in enumerate(items):
             angle = base_angle + i * step
             ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
@@ -863,19 +912,137 @@ class GameDisplay:
                 hovered = (dx * dx + dy * dy) <= (RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP) ** 2
 
             radius = RADIAL_ITEM_RADIUS + (RADIAL_HOVER_BUMP if hovered else 0)
-            fill = LIGHT_GRAY if hovered else WHITE
-            pygame.draw.circle(self.screen, fill, (int(ix), int(iy)), radius)
-            pygame.draw.circle(self.screen, DARK_GRAY, (int(ix), int(iy)), radius, 2)
+            
+            # Draw item button with gradient effect
+            if hovered:
+                # Brighter on hover - gradient from blue to cyan
+                pygame.draw.circle(self.screen, (120, 180, 255), (int(ix), int(iy)), radius)
+                pygame.draw.circle(self.screen, (150, 200, 255), (int(ix), int(iy)), radius, 3)
+                glow_radius = int(radius * 1.15)
+                pygame.draw.circle(self.screen, (120, 180, 255, 100), (int(ix), int(iy)), glow_radius, 1)
+            else:
+                # Dark gradient blue
+                pygame.draw.circle(self.screen, (60, 100, 150), (int(ix), int(iy)), radius)
+                pygame.draw.circle(self.screen, (100, 150, 200), (int(ix), int(iy)), radius, 2)
 
-            icon = item.get("icon", "")
+            # Draw text label
             label = item.get("label", "")
-            if icon:
-                icon_surf = self.font_small.render(icon, True, BLACK)
-                icon_rect = icon_surf.get_rect(center=(int(ix), int(iy)))
-                self.screen.blit(icon_surf, icon_rect)
+            if label:
+                text_color = (255, 255, 255) if hovered else (200, 220, 240)
+                label_surf = self.font_small.render(label, True, text_color)
+                label_rect = label_surf.get_rect(center=(int(ix), int(iy)))
+                
+                # Add slight shadow effect for better readability
+                shadow_surf = self.font_small.render(label, True, (20, 20, 30, 180))
+                shadow_rect = shadow_surf.get_rect(center=(int(ix) + 1, int(iy) + 1))
+                self.screen.blit(shadow_surf, shadow_rect)
+                self.screen.blit(label_surf, label_rect)
 
+            # Show tooltip on hover
             if hovered and label:
-                self.draw_label(label, (int(ix), int(iy + radius + 16)))
+                tooltip_y = int(iy + radius + 20)
+                tooltip_text = item.get("tooltip", label)
+                tooltip_surf = self.font_tiny.render(tooltip_text, True, (200, 220, 240))
+                tooltip_rect = tooltip_surf.get_rect(center=(int(ix), tooltip_y))
+                
+                # Tooltip background
+                tooltip_bg = pygame.Surface((tooltip_rect.width + 16, tooltip_rect.height + 8), pygame.SRCALPHA)
+                pygame.draw.rect(tooltip_bg, (30, 50, 80, 200), tooltip_bg.get_rect(), border_radius=4)
+                self.screen.blit(tooltip_bg, (tooltip_rect.x - 8, tooltip_rect.y - 4))
+                self.screen.blit(tooltip_surf, tooltip_rect)
+    
+    
+    def draw_chat_ui(self, response_text, input_text, waiting, frame_count):
+        """
+        Draw chat overlay UI (LARY Agent).
+        Appears as a box in the lower portion of the screen.
+        
+        Args:
+            response_text: AI response to display
+            input_text: Current user input being typed
+            waiting: Bool if waiting for API response
+            frame_count: Animation frame (for cursor blink)
+        """
+        # Chat box dimensions
+        chat_width = 760
+        chat_height = 280
+        chat_x = (WINDOW_WIDTH - chat_width) // 2
+        chat_y = WINDOW_HEIGHT - chat_height - 20
+        
+        # Dim background
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 100))
+        self.screen.blit(overlay, (0, 0))
+        
+        # Chat box background
+        pygame.draw.rect(self.screen, (30, 30, 30), (chat_x, chat_y, chat_width, chat_height))
+        pygame.draw.rect(self.screen, (100, 150, 255), (chat_x, chat_y, chat_width, chat_height), 3)
+        
+        # Title
+        title = "🤖 LARY Agent - Ask for help (Press ? to close)"
+        title_surf = self.font_small.render(title, True, (100, 180, 255))
+        self.screen.blit(title_surf, (chat_x + 10, chat_y + 5))
+        
+        # Response area (if response exists)
+        response_y = chat_y + 35
+        if response_text:
+            # Wrap text into lines
+            words = response_text.split()
+            lines = []
+            current_line = ""
+            for word in words:
+                test_line = current_line + (" " if current_line else "") + word
+                test_surf = self.font_tiny.render(test_line, True, WHITE)
+                if test_surf.get_width() > chat_width - 30:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+                else:
+                    current_line = test_line
+            if current_line:
+                lines.append(current_line)
+            
+            # Draw response lines (max 8 lines visible)
+            for i, line in enumerate(lines[:8]):
+                line_surf = self.font_tiny.render(line, True, (200, 200, 200))
+                self.screen.blit(line_surf, (chat_x + 15, response_y + i * 18))
+            
+            if waiting:
+                # Show "thinking" indicator
+                thinking_text = "⏳ Thinking..."
+                think_surf = self.font_small.render(thinking_text, True, (200, 150, 100))
+                self.screen.blit(think_surf, (chat_x + 15, response_y + min(len(lines), 8) * 18))
+        else:
+            # No response yet - show placeholder
+            placeholder = "Ask LARY anything about your cat or the game!"
+            placeholder_surf = self.font_small.render(placeholder, True, (100, 150, 150))
+            self.screen.blit(placeholder_surf, (chat_x + 15, response_y))
+        
+        # Input line
+        input_y = chat_y + chat_height - 50
+        prompt = "You: "
+        prompt_surf = self.font_small.render(prompt, True, (100, 200, 255))
+        self.screen.blit(prompt_surf, (chat_x + 10, input_y))
+        
+        # Input text
+        input_surf = self.font_small.render(input_text, True, (200, 200, 200))
+        self.screen.blit(input_surf, (chat_x + 50, input_y))
+        
+        # Blinking cursor
+        if frame_count % 60 > 30:
+            cursor_x = chat_x + 50 + input_surf.get_width() + 2
+            pygame.draw.line(
+                self.screen,
+                (200, 200, 200),
+                (cursor_x, input_y),
+                (cursor_x, input_y + 16),
+                2
+            )
+        
+        # Instructions at bottom
+        instructions = "Press ENTER to send | ESC to close | Max 100 chars"
+        inst_surf = self.font_tiny.render(instructions, True, (150, 150, 150))
+        self.screen.blit(inst_surf, (chat_x + 10, chat_y + chat_height - 20))
     
     def render(self, cat_status, current_action, show_toy_menu=False, context_menu=None, overlay_labels=None, visual_state=None, ui_agent=None):
         """Render complete game frame."""
@@ -917,6 +1084,15 @@ class GameDisplay:
         if overlay_labels:
             for text, pos in overlay_labels:
                 self.draw_label(text, pos)
+        
+        # Chat UI overlay
+        if visual_state and visual_state.get("chat_active"):
+            self.draw_chat_ui(
+                visual_state.get("chat_response", ""),
+                visual_state.get("chat_input", ""),
+                visual_state.get("chat_waiting", False),
+                self.animation_frame
+            )
         
         pygame.display.flip()
 
@@ -1078,6 +1254,27 @@ class LittleCatGame:
         self.sfx_volume = 0.5
         self.init_sound()
 
+        # Chat Agent (LARY) - AI Helper
+        self.chat_agent = None
+        self.chat_active = False
+        self.chat_input_text = ""
+        self.chat_response = ""
+        self.chat_cursor_blink = 0
+        self.chat_waiting_for_response = False
+        
+        if CHAT_ENABLED and create_chat_agent:
+            try:
+                self.chat_agent = create_chat_agent({
+                    "model": CHAT_MODEL,
+                    "max_tokens": CHAT_MAX_TOKENS,
+                    "timeout": CHAT_API_TIMEOUT,
+                    "max_history": CHAT_HISTORY_LENGTH
+                })
+                if self.chat_agent:
+                    print(f"✨ Chat Agent (LARY) initialized. Press '{CHAT_TOGGLE_KEY}' for help!")
+            except Exception as e:
+                print(f"⚠️  Chat agent setup failed: {e}")
+
         print(f"Loaded {self.cat.name}! Age: {self.cat.age:.1f} days")
     
     def handle_input(self):
@@ -1090,6 +1287,10 @@ class LittleCatGame:
                 self.last_input_time = time.time()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # Block all mouse clicks when chat is active
+                if self.chat_active:
+                    continue
+                
                 if self.mini_game and event.button == 1:
                     if self.display.is_point_on_cat(*event.pos):
                         self.resolve_mini_game(True)
@@ -1117,10 +1318,18 @@ class LittleCatGame:
                         self.open_context_menu(event.pos)
 
             if event.type == pygame.MOUSEBUTTONUP:
+                # Block mouse up when chat is active
+                if self.chat_active:
+                    continue
+                
                 if event.button == 1 and self.dragging:
                     self.dragging = False
 
             if event.type == pygame.MOUSEMOTION:
+                # Block mouse motion when chat is active
+                if self.chat_active:
+                    continue
+                
                 self.mouse_pos = event.pos
                 self.last_mouse_pos = event.pos
                 if self.dragging:
@@ -1150,6 +1359,40 @@ class LittleCatGame:
                 if event.key == pygame.K_ESCAPE and self.context_menu_active:
                     self.context_menu_active = False
                     continue
+                
+                # Chat Agent Toggle (?)
+                if self.chat_agent and event.unicode == '?' and not self.chat_active:
+                    self.chat_active = True
+                    self.chat_input_text = ""
+                    self.chat_response = ""
+                    self.chat_waiting_for_response = False
+                    continue
+                
+                # Chat input handling (when chat active)
+                if self.chat_active:
+                    if event.key == pygame.K_RETURN:
+                        # Send message to LARY agent
+                        if self.chat_input_text.strip():
+                            game_state = self.get_game_state_for_agent()
+                            self.chat_agent.request_help(
+                                self.chat_input_text,
+                                game_state,
+                                include_screenshot=True
+                            )
+                            self.chat_input_text = ""
+                            self.chat_waiting_for_response = True
+                        continue
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.chat_input_text = self.chat_input_text[:-1]
+                        continue
+                    elif event.key == pygame.K_ESCAPE:
+                        self.chat_active = False
+                        continue
+                    elif event.unicode.isprintable():
+                        if len(self.chat_input_text) < 100:  # Max input length
+                            self.chat_input_text += event.unicode
+                        continue
+                
                 # Handle toy selection if waiting
                 if self.waiting_for_toy:
                     if event.key == pygame.K_1:
@@ -1222,6 +1465,7 @@ class LittleCatGame:
         self.context_menu_page = 0
         self.context_menu_pages = [
             [
+                {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui},
                 {"label": "Pet", "icon": "😺", "action": lambda: self.perform_action('purr', "You petted the cat!")},
                 {"label": "Feed", "icon": "🍖", "action": lambda: self.perform_action('eat', "You fed the cat!")},
                 {"label": "Play", "icon": "🎾", "action": self.show_toy_menu},
@@ -1700,6 +1944,16 @@ class LittleCatGame:
         
         self.waiting_for_toy = True
     
+    def open_chat_ui(self):
+        """Open the chat/screen agent UI."""
+        if not self.chat_agent:
+            return
+        self.chat_active = True
+        self.chat_input_text = ""
+        self.chat_response = ""
+        self.chat_waiting_for_response = False
+        self.context_menu_active = False
+    
     def play_with_toy(self, toy_type):
         """Handle playing with a specific toy."""
         self.waiting_for_toy = False
@@ -2018,6 +2272,10 @@ class LittleCatGame:
         self.update_reminders()
         self.update_achievements()
         
+        # Chat agent update (check for responses from async AI)
+        if self.chat_active:
+            self.update_chat_response()
+        
         self.game_time += 1 / FPS
     
     def run(self):
@@ -2040,7 +2298,11 @@ class LittleCatGame:
                 "food_level": self.food_level,
                 "curious": self.curiosity_pause > 0,
                 "jump_progress": self.jump_progress,
-                "show_stats": self.show_stats_panel
+                "show_stats": self.show_stats_panel,
+                "chat_active": self.chat_active,
+                "chat_response": self.chat_response,
+                "chat_input": self.chat_input_text,
+                "chat_waiting": self.chat_waiting_for_response
             }
             self.display.render(cat_status, self.current_action, self.waiting_for_toy, context_menu, overlay_labels, visual_state, self.ui_agent)
             
@@ -2051,6 +2313,47 @@ class LittleCatGame:
         print(f"\nSaved {self.cat.name}'s brain. Goodbye!")
         pygame.quit()
         sys.exit()
+    
+    def get_game_state_for_agent(self) -> Dict:
+        """
+        Snapshot current game state for LARY agent context.
+        Called ONLY when user requests help (not every frame).
+        
+        Returns:
+            Dict with cat stats and game info
+        """
+        cat = self.cat
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "cat_name": cat.name,
+            "age": cat.age,
+            "hunger": cat.hunger,
+            "energy": cat.energy,
+            "happiness": cat.happiness,
+            "trust": cat.trust,
+            "personality": list(cat.personality.keys()) if hasattr(cat, 'personality') else [],
+            "last_action": self.current_action,
+            "trick_level": cat.trick_level if hasattr(cat, 'trick_level') else 1,
+            "achievements": list(cat.achievements) if hasattr(cat, 'achievements') else [],
+            "q_learning_active": True if hasattr(cat, 'q_table') else False,
+        }
+    
+    def update_chat_response(self):
+        """
+        Check for incoming chat responses from async API.
+        Called every frame while chat is active.
+        """
+        if not self.chat_agent or not self.chat_active:
+            return
+        
+        # Check for new response
+        response = self.chat_agent.get_response()
+        if response:
+            self.chat_response = response
+            self.chat_waiting_for_response = False
+        
+        # Update cursor blink animation
+        self.chat_cursor_blink = (self.chat_cursor_blink + 1) % 60
 
 
 if __name__ == "__main__":
