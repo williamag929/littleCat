@@ -1,0 +1,48 @@
+name: Release
+
+# Push a tag like v1.0.0 (or run manually) -> builds LittleCat.exe on Windows
+# and publishes it on the GitHub Releases page with auto-generated notes.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag to create, e.g. v1.0.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ github.event.inputs.version || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-build.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-build.txt
+
+      - name: Smoke test (brain + memory)
+        run: python test_memory_graph.py
+
+      - name: Build LittleCat.exe
+        run: python tools/build_release.py ${{ env.VERSION }}
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "$VERSION" "dist/LittleCat-$VERSION-windows.exe" \
+            --title "LittleCat $VERSION" \
+            --generate-notes \
+            --target "$GITHUB_SHA"
