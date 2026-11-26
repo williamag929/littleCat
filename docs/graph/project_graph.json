@@ -1,0 +1,3972 @@
+{
+  "schema": "littlecat.codegraph/v1",
+  "nodes": [
+    {
+      "id": "class:cat_brain.CatBrain",
+      "type": "class",
+      "label": "CatBrain",
+      "file": "src/cat_brain.py",
+      "line": 24,
+      "loc": 355
+    },
+    {
+      "id": "class:chat_agent.ChatAgent",
+      "type": "class",
+      "label": "ChatAgent",
+      "file": "src/chat_agent.py",
+      "line": 28,
+      "loc": 267
+    },
+    {
+      "id": "class:game.GameDisplay",
+      "type": "class",
+      "label": "GameDisplay",
+      "file": "src/game.py",
+      "line": 147,
+      "loc": 1146
+    },
+    {
+      "id": "class:game.LittleCatGame",
+      "type": "class",
+      "label": "LittleCatGame",
+      "file": "src/game.py",
+      "line": 1295,
+      "loc": 1214
+    },
+    {
+      "id": "class:memory_graph.MemoryGraph",
+      "type": "class",
+      "label": "MemoryGraph",
+      "file": "src/memory_graph.py",
+      "line": 78,
+      "loc": 235
+    },
+    {
+      "id": "class:screen_agent_poc.AgentConfig",
+      "type": "class",
+      "label": "AgentConfig",
+      "file": "src/screen_agent_poc.py",
+      "line": 30,
+      "loc": 12
+    },
+    {
+      "id": "class:screen_agent_poc.Calibration",
+      "type": "class",
+      "label": "Calibration",
+      "file": "src/screen_agent_poc.py",
+      "line": 45,
+      "loc": 5
+    },
+    {
+      "id": "class:screen_agent_poc.Color",
+      "type": "class",
+      "label": "Color",
+      "file": "src/screen_agent_poc.py",
+      "line": 23,
+      "loc": 4
+    },
+    {
+      "id": "class:screen_agent_poc.Region",
+      "type": "class",
+      "label": "Region",
+      "file": "src/screen_agent_poc.py",
+      "line": 15,
+      "loc": 5
+    },
+    {
+      "id": "class:trainer.CatTrainer",
+      "type": "class",
+      "label": "CatTrainer",
+      "file": "src/trainer.py",
+      "line": 17,
+      "loc": 172
+    },
+    {
+      "id": "class:ui_agent.SeniorUIAgent",
+      "type": "class",
+      "label": "SeniorUIAgent",
+      "file": "src/ui_agent.py",
+      "line": 11,
+      "loc": 404
+    },
+    {
+      "id": "data:.json",
+      "type": "data",
+      "label": ".json"
+    },
+    {
+      "id": "data:cats/<name>.json",
+      "type": "data",
+      "label": "cats/<name>.json"
+    },
+    {
+      "id": "data:exports/profile_*.json",
+      "type": "data",
+      "label": "exports/profile_*.json"
+    },
+    {
+      "id": "data:profiles.json",
+      "type": "data",
+      "label": "profiles.json"
+    },
+    {
+      "id": "data:realistic_cat.json",
+      "type": "data",
+      "label": "realistic_cat.json"
+    },
+    {
+      "id": "data:screen_agent.json",
+      "type": "data",
+      "label": "screen_agent.json"
+    },
+    {
+      "id": "data:trained_cat.json",
+      "type": "data",
+      "label": "trained_cat.json"
+    },
+    {
+      "id": "data:training_log.json",
+      "type": "data",
+      "label": "training_log.json"
+    },
+    {
+      "id": "func:autonomy.choose",
+      "type": "function",
+      "label": "choose",
+      "file": "src/autonomy.py",
+      "line": 111,
+      "loc": 18
+    },
+    {
+      "id": "func:autonomy.circadian_activity",
+      "type": "function",
+      "label": "circadian_activity",
+      "file": "src/autonomy.py",
+      "line": 32,
+      "loc": 8
+    },
+    {
+      "id": "func:autonomy.falling",
+      "type": "function",
+      "label": "falling",
+      "file": "src/autonomy.py",
+      "line": 28,
+      "loc": 2
+    },
+    {
+      "id": "func:autonomy.rising",
+      "type": "function",
+      "label": "rising",
+      "file": "src/autonomy.py",
+      "line": 23,
+      "loc": 3
+    },
+    {
+      "id": "func:autonomy.score_actions",
+      "type": "function",
+      "label": "score_actions",
+      "file": "src/autonomy.py",
+      "line": 57,
+      "loc": 52
+    },
+    {
+      "id": "func:cat_brain.CatBrain.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/cat_brain.py",
+      "line": 27,
+      "loc": 52
+    },
+    {
+      "id": "func:cat_brain.CatBrain._apply_trick_progress",
+      "type": "method",
+      "label": "_apply_trick_progress",
+      "file": "src/cat_brain.py",
+      "line": 257,
+      "loc": 9
+    },
+    {
+      "id": "func:cat_brain.CatBrain._bin",
+      "type": "method",
+      "label": "_bin",
+      "file": "src/cat_brain.py",
+      "line": 288,
+      "loc": 4
+    },
+    {
+      "id": "func:cat_brain.CatBrain._generate_personality",
+      "type": "method",
+      "label": "_generate_personality",
+      "file": "src/cat_brain.py",
+      "line": 223,
+      "loc": 10
+    },
+    {
+      "id": "func:cat_brain.CatBrain._get_mood",
+      "type": "method",
+      "label": "_get_mood",
+      "file": "src/cat_brain.py",
+      "line": 267,
+      "loc": 10
+    },
+    {
+      "id": "func:cat_brain.CatBrain._get_personality_modifiers",
+      "type": "method",
+      "label": "_get_personality_modifiers",
+      "file": "src/cat_brain.py",
+      "line": 234,
+      "loc": 22
+    },
+    {
+      "id": "func:cat_brain.CatBrain._get_state",
+      "type": "method",
+      "label": "_get_state",
+      "file": "src/cat_brain.py",
+      "line": 278,
+      "loc": 9
+    },
+    {
+      "id": "func:cat_brain.CatBrain._update_q",
+      "type": "method",
+      "label": "_update_q",
+      "file": "src/cat_brain.py",
+      "line": 293,
+      "loc": 8
+    },
+    {
+      "id": "func:cat_brain.CatBrain.decide_action",
+      "type": "method",
+      "label": "decide_action",
+      "file": "src/cat_brain.py",
+      "line": 140,
+      "loc": 44
+    },
+    {
+      "id": "func:cat_brain.CatBrain.get_status",
+      "type": "method",
+      "label": "get_status",
+      "file": "src/cat_brain.py",
+      "line": 203,
+      "loc": 19
+    },
+    {
+      "id": "func:cat_brain.CatBrain.learn_from_interaction",
+      "type": "method",
+      "label": "learn_from_interaction",
+      "file": "src/cat_brain.py",
+      "line": 80,
+      "loc": 59
+    },
+    {
+      "id": "func:cat_brain.CatBrain.load_brain",
+      "type": "method",
+      "label": "load_brain",
+      "file": "src/cat_brain.py",
+      "line": 331,
+      "loc": 48
+    },
+    {
+      "id": "func:cat_brain.CatBrain.save_brain",
+      "type": "method",
+      "label": "save_brain",
+      "file": "src/cat_brain.py",
+      "line": 302,
+      "loc": 28
+    },
+    {
+      "id": "func:cat_brain.CatBrain.update_state",
+      "type": "method",
+      "label": "update_state",
+      "file": "src/cat_brain.py",
+      "line": 185,
+      "loc": 15
+    },
+    {
+      "id": "func:cat_voice._sound",
+      "type": "function",
+      "label": "_sound",
+      "file": "src/cat_voice.py",
+      "line": 48,
+      "loc": 4
+    },
+    {
+      "id": "func:cat_voice.idle_chatter",
+      "type": "function",
+      "label": "idle_chatter",
+      "file": "src/cat_voice.py",
+      "line": 96,
+      "loc": 11
+    },
+    {
+      "id": "func:cat_voice.memory_line",
+      "type": "function",
+      "label": "memory_line",
+      "file": "src/cat_voice.py",
+      "line": 68,
+      "loc": 13
+    },
+    {
+      "id": "func:cat_voice.mood_word",
+      "type": "function",
+      "label": "mood_word",
+      "file": "src/cat_voice.py",
+      "line": 115,
+      "loc": 13
+    },
+    {
+      "id": "func:cat_voice.need_kind",
+      "type": "function",
+      "label": "need_kind",
+      "file": "src/cat_voice.py",
+      "line": 83,
+      "loc": 11
+    },
+    {
+      "id": "func:cat_voice.say",
+      "type": "function",
+      "label": "say",
+      "file": "src/cat_voice.py",
+      "line": 54,
+      "loc": 12
+    },
+    {
+      "id": "func:cat_voice.wellbeing",
+      "type": "function",
+      "label": "wellbeing",
+      "file": "src/cat_voice.py",
+      "line": 109,
+      "loc": 4
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/chat_agent.py",
+      "line": 31,
+      "loc": 40
+    },
+    {
+      "id": "func:chat_agent.ChatAgent._process_request",
+      "type": "method",
+      "label": "_process_request",
+      "file": "src/chat_agent.py",
+      "line": 158,
+      "loc": 96
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.build_game_context",
+      "type": "method",
+      "label": "build_game_context",
+      "file": "src/chat_agent.py",
+      "line": 100,
+      "loc": 26
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.capture_screenshot",
+      "type": "method",
+      "label": "capture_screenshot",
+      "file": "src/chat_agent.py",
+      "line": 72,
+      "loc": 27
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.clear_history",
+      "type": "method",
+      "label": "clear_history",
+      "file": "src/chat_agent.py",
+      "line": 288,
+      "loc": 3
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.get_response",
+      "type": "method",
+      "label": "get_response",
+      "file": "src/chat_agent.py",
+      "line": 255,
+      "loc": 12
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.get_usage_stats",
+      "type": "method",
+      "label": "get_usage_stats",
+      "file": "src/chat_agent.py",
+      "line": 284,
+      "loc": 3
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.is_available",
+      "type": "method",
+      "label": "is_available",
+      "file": "src/chat_agent.py",
+      "line": 292,
+      "loc": 3
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.is_rate_limited",
+      "type": "method",
+      "label": "is_rate_limited",
+      "file": "src/chat_agent.py",
+      "line": 268,
+      "loc": 15
+    },
+    {
+      "id": "func:chat_agent.ChatAgent.request_help",
+      "type": "method",
+      "label": "request_help",
+      "file": "src/chat_agent.py",
+      "line": 127,
+      "loc": 30
+    },
+    {
+      "id": "func:chat_agent.create_chat_agent",
+      "type": "function",
+      "label": "create_chat_agent",
+      "file": "src/chat_agent.py",
+      "line": 297,
+      "loc": 16
+    },
+    {
+      "id": "func:game.GameDisplay.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/game.py",
+      "line": 150,
+      "loc": 56
+    },
+    {
+      "id": "func:game.GameDisplay._clamp_rect",
+      "type": "method",
+      "label": "_clamp_rect",
+      "file": "src/game.py",
+      "line": 830,
+      "loc": 4
+    },
+    {
+      "id": "func:game.GameDisplay._speech_surface",
+      "type": "method",
+      "label": "_speech_surface",
+      "file": "src/game.py",
+      "line": 820,
+      "loc": 9
+    },
+    {
+      "id": "func:game.GameDisplay.apply_overlay_styles",
+      "type": "method",
+      "label": "apply_overlay_styles",
+      "file": "src/game.py",
+      "line": 207,
+      "loc": 9
+    },
+    {
+      "id": "func:game.GameDisplay.draw_cat",
+      "type": "method",
+      "label": "draw_cat",
+      "file": "src/game.py",
+      "line": 290,
+      "loc": 29
+    },
+    {
+      "id": "func:game.GameDisplay.draw_chat_ui",
+      "type": "method",
+      "label": "draw_chat_ui",
+      "file": "src/game.py",
+      "line": 1082,
+      "loc": 91
+    },
+    {
+      "id": "func:game.GameDisplay.draw_claws",
+      "type": "method",
+      "label": "draw_claws",
+      "file": "src/game.py",
+      "line": 773,
+      "loc": 5
+    },
+    {
+      "id": "func:game.GameDisplay.draw_context_menu",
+      "type": "method",
+      "label": "draw_context_menu",
+      "file": "src/game.py",
+      "line": 1038,
+      "loc": 42
+    },
+    {
+      "id": "func:game.GameDisplay.draw_ears",
+      "type": "method",
+      "label": "draw_ears",
+      "file": "src/game.py",
+      "line": 681,
+      "loc": 22
+    },
+    {
+      "id": "func:game.GameDisplay.draw_eating_cat",
+      "type": "method",
+      "label": "draw_eating_cat",
+      "file": "src/game.py",
+      "line": 559,
+      "loc": 29
+    },
+    {
+      "id": "func:game.GameDisplay.draw_face",
+      "type": "method",
+      "label": "draw_face",
+      "file": "src/game.py",
+      "line": 704,
+      "loc": 52
+    },
+    {
+      "id": "func:game.GameDisplay.draw_food",
+      "type": "method",
+      "label": "draw_food",
+      "file": "src/game.py",
+      "line": 1256,
+      "loc": 10
+    },
+    {
+      "id": "func:game.GameDisplay.draw_hover_card",
+      "type": "method",
+      "label": "draw_hover_card",
+      "file": "src/game.py",
+      "line": 863,
+      "loc": 30
+    },
+    {
+      "id": "func:game.GameDisplay.draw_idle_cat",
+      "type": "method",
+      "label": "draw_idle_cat",
+      "file": "src/game.py",
+      "line": 508,
+      "loc": 24
+    },
+    {
+      "id": "func:game.GameDisplay.draw_instructions",
+      "type": "method",
+      "label": "draw_instructions",
+      "file": "src/game.py",
+      "line": 973,
+      "loc": 16
+    },
+    {
+      "id": "func:game.GameDisplay.draw_interest",
+      "type": "method",
+      "label": "draw_interest",
+      "file": "src/game.py",
+      "line": 1267,
+      "loc": 6
+    },
+    {
+      "id": "func:game.GameDisplay.draw_jump_cat",
+      "type": "method",
+      "label": "draw_jump_cat",
+      "file": "src/game.py",
+      "line": 779,
+      "loc": 22
+    },
+    {
+      "id": "func:game.GameDisplay.draw_label",
+      "type": "method",
+      "label": "draw_label",
+      "file": "src/game.py",
+      "line": 802,
+      "loc": 17
+    },
+    {
+      "id": "func:game.GameDisplay.draw_playing_cat",
+      "type": "method",
+      "label": "draw_playing_cat",
+      "file": "src/game.py",
+      "line": 589,
+      "loc": 29
+    },
+    {
+      "id": "func:game.GameDisplay.draw_sitting_cat",
+      "type": "method",
+      "label": "draw_sitting_cat",
+      "file": "src/game.py",
+      "line": 619,
+      "loc": 20
+    },
+    {
+      "id": "func:game.GameDisplay.draw_sleeping_cat",
+      "type": "method",
+      "label": "draw_sleeping_cat",
+      "file": "src/game.py",
+      "line": 533,
+      "loc": 25
+    },
+    {
+      "id": "func:game.GameDisplay.draw_speech_bubble",
+      "type": "method",
+      "label": "draw_speech_bubble",
+      "file": "src/game.py",
+      "line": 835,
+      "loc": 15
+    },
+    {
+      "id": "func:game.GameDisplay.draw_sprite_pose",
+      "type": "method",
+      "label": "draw_sprite_pose",
+      "file": "src/game.py",
+      "line": 476,
+      "loc": 12
+    },
+    {
+      "id": "func:game.GameDisplay.draw_stats",
+      "type": "method",
+      "label": "draw_stats",
+      "file": "src/game.py",
+      "line": 920,
+      "loc": 52
+    },
+    {
+      "id": "func:game.GameDisplay.draw_stats_panel",
+      "type": "method",
+      "label": "draw_stats_panel",
+      "file": "src/game.py",
+      "line": 1274,
+      "loc": 19
+    },
+    {
+      "id": "func:game.GameDisplay.draw_thought_bubble",
+      "type": "method",
+      "label": "draw_thought_bubble",
+      "file": "src/game.py",
+      "line": 851,
+      "loc": 11
+    },
+    {
+      "id": "func:game.GameDisplay.draw_toy",
+      "type": "method",
+      "label": "draw_toy",
+      "file": "src/game.py",
+      "line": 1234,
+      "loc": 21
+    },
+    {
+      "id": "func:game.GameDisplay.draw_toy_menu",
+      "type": "method",
+      "label": "draw_toy_menu",
+      "file": "src/game.py",
+      "line": 990,
+      "loc": 31
+    },
+    {
+      "id": "func:game.GameDisplay.draw_walking_cat",
+      "type": "method",
+      "label": "draw_walking_cat",
+      "file": "src/game.py",
+      "line": 640,
+      "loc": 40
+    },
+    {
+      "id": "func:game.GameDisplay.get_jump_offset",
+      "type": "method",
+      "label": "get_jump_offset",
+      "file": "src/game.py",
+      "line": 764,
+      "loc": 8
+    },
+    {
+      "id": "func:game.GameDisplay.init_pixel_sprites",
+      "type": "method",
+      "label": "init_pixel_sprites",
+      "file": "src/game.py",
+      "line": 331,
+      "loc": 9
+    },
+    {
+      "id": "func:game.GameDisplay.is_point_on_cat",
+      "type": "method",
+      "label": "is_point_on_cat",
+      "file": "src/game.py",
+      "line": 217,
+      "loc": 6
+    },
+    {
+      "id": "func:game.GameDisplay.make_cat_sprite",
+      "type": "method",
+      "label": "make_cat_sprite",
+      "file": "src/game.py",
+      "line": 341,
+      "loc": 134
+    },
+    {
+      "id": "func:game.GameDisplay.move_cat_to_random_position",
+      "type": "method",
+      "label": "move_cat_to_random_position",
+      "file": "src/game.py",
+      "line": 894,
+      "loc": 4
+    },
+    {
+      "id": "func:game.GameDisplay.radial_layout",
+      "type": "method",
+      "label": "radial_layout",
+      "file": "src/game.py",
+      "line": 1022,
+      "loc": 15
+    },
+    {
+      "id": "func:game.GameDisplay.render",
+      "type": "method",
+      "label": "render",
+      "file": "src/game.py",
+      "line": 1174,
+      "loc": 59
+    },
+    {
+      "id": "func:game.GameDisplay.set_always_on_top",
+      "type": "method",
+      "label": "set_always_on_top",
+      "file": "src/game.py",
+      "line": 224,
+      "loc": 18
+    },
+    {
+      "id": "func:game.GameDisplay.set_click_through",
+      "type": "method",
+      "label": "set_click_through",
+      "file": "src/game.py",
+      "line": 243,
+      "loc": 24
+    },
+    {
+      "id": "func:game.GameDisplay.set_transparent_background",
+      "type": "method",
+      "label": "set_transparent_background",
+      "file": "src/game.py",
+      "line": 268,
+      "loc": 21
+    },
+    {
+      "id": "func:game.GameDisplay.update_animation",
+      "type": "method",
+      "label": "update_animation",
+      "file": "src/game.py",
+      "line": 757,
+      "loc": 6
+    },
+    {
+      "id": "func:game.GameDisplay.update_cat_movement",
+      "type": "method",
+      "label": "update_cat_movement",
+      "file": "src/game.py",
+      "line": 899,
+      "loc": 20
+    },
+    {
+      "id": "func:game.GameDisplay.update_pose",
+      "type": "method",
+      "label": "update_pose",
+      "file": "src/game.py",
+      "line": 489,
+      "loc": 18
+    },
+    {
+      "id": "func:game.LittleCatGame.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/game.py",
+      "line": 1298,
+      "loc": 121
+    },
+    {
+      "id": "func:game.LittleCatGame.ask_for_need",
+      "type": "method",
+      "label": "ask_for_need",
+      "file": "src/game.py",
+      "line": 1885,
+      "loc": 11
+    },
+    {
+      "id": "func:game.LittleCatGame.auto_perform_action",
+      "type": "method",
+      "label": "auto_perform_action",
+      "file": "src/game.py",
+      "line": 2170,
+      "loc": 49
+    },
+    {
+      "id": "func:game.LittleCatGame.award_achievement",
+      "type": "method",
+      "label": "award_achievement",
+      "file": "src/game.py",
+      "line": 1913,
+      "loc": 6
+    },
+    {
+      "id": "func:game.LittleCatGame.calculate_reward",
+      "type": "method",
+      "label": "calculate_reward",
+      "file": "src/game.py",
+      "line": 2148,
+      "loc": 21
+    },
+    {
+      "id": "func:game.LittleCatGame.create_new_cat",
+      "type": "method",
+      "label": "create_new_cat",
+      "file": "src/game.py",
+      "line": 1759,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.export_all_profiles",
+      "type": "method",
+      "label": "export_all_profiles",
+      "file": "src/game.py",
+      "line": 1808,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.export_profile",
+      "type": "method",
+      "label": "export_profile",
+      "file": "src/game.py",
+      "line": 1780,
+      "loc": 10
+    },
+    {
+      "id": "func:game.LittleCatGame.generate_new_cat_name",
+      "type": "method",
+      "label": "generate_new_cat_name",
+      "file": "src/game.py",
+      "line": 1768,
+      "loc": 11
+    },
+    {
+      "id": "func:game.LittleCatGame.get_cat_save_path",
+      "type": "method",
+      "label": "get_cat_save_path",
+      "file": "src/game.py",
+      "line": 1733,
+      "loc": 6
+    },
+    {
+      "id": "func:game.LittleCatGame.get_fixed_spot",
+      "type": "method",
+      "label": "get_fixed_spot",
+      "file": "src/game.py",
+      "line": 1690,
+      "loc": 5
+    },
+    {
+      "id": "func:game.LittleCatGame.get_game_state_for_agent",
+      "type": "method",
+      "label": "get_game_state_for_agent",
+      "file": "src/game.py",
+      "line": 2469,
+      "loc": 23
+    },
+    {
+      "id": "func:game.LittleCatGame.get_overlay_labels",
+      "type": "method",
+      "label": "get_overlay_labels",
+      "file": "src/game.py",
+      "line": 1965,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.handle_context_menu_click",
+      "type": "method",
+      "label": "handle_context_menu_click",
+      "file": "src/game.py",
+      "line": 1658,
+      "loc": 12
+    },
+    {
+      "id": "func:game.LittleCatGame.handle_input",
+      "type": "method",
+      "label": "handle_input",
+      "file": "src/game.py",
+      "line": 1420,
+      "loc": 181
+    },
+    {
+      "id": "func:game.LittleCatGame.hibernate_game",
+      "type": "method",
+      "label": "hibernate_game",
+      "file": "src/game.py",
+      "line": 2034,
+      "loc": 4
+    },
+    {
+      "id": "func:game.LittleCatGame.import_profile",
+      "type": "method",
+      "label": "import_profile",
+      "file": "src/game.py",
+      "line": 1791,
+      "loc": 16
+    },
+    {
+      "id": "func:game.LittleCatGame.init_sound",
+      "type": "method",
+      "label": "init_sound",
+      "file": "src/game.py",
+      "line": 1824,
+      "loc": 22
+    },
+    {
+      "id": "func:game.LittleCatGame.is_hovering_cat",
+      "type": "method",
+      "label": "is_hovering_cat",
+      "file": "src/game.py",
+      "line": 2220,
+      "loc": 3
+    },
+    {
+      "id": "func:game.LittleCatGame.is_mouse_near_cat",
+      "type": "method",
+      "label": "is_mouse_near_cat",
+      "file": "src/game.py",
+      "line": 1671,
+      "loc": 5
+    },
+    {
+      "id": "func:game.LittleCatGame.load_profiles_index",
+      "type": "method",
+      "label": "load_profiles_index",
+      "file": "src/game.py",
+      "line": 1701,
+      "loc": 22
+    },
+    {
+      "id": "func:game.LittleCatGame.next_cat",
+      "type": "method",
+      "label": "next_cat",
+      "file": "src/game.py",
+      "line": 1755,
+      "loc": 3
+    },
+    {
+      "id": "func:game.LittleCatGame.open_chat_ui",
+      "type": "method",
+      "label": "open_chat_ui",
+      "file": "src/game.py",
+      "line": 2060,
+      "loc": 9
+    },
+    {
+      "id": "func:game.LittleCatGame.open_context_menu",
+      "type": "method",
+      "label": "open_context_menu",
+      "file": "src/game.py",
+      "line": 1602,
+      "loc": 42
+    },
+    {
+      "id": "func:game.LittleCatGame.open_toy_page",
+      "type": "method",
+      "label": "open_toy_page",
+      "file": "src/game.py",
+      "line": 1651,
+      "loc": 6
+    },
+    {
+      "id": "func:game.LittleCatGame.perform_action",
+      "type": "method",
+      "label": "perform_action",
+      "file": "src/game.py",
+      "line": 1974,
+      "loc": 59
+    },
+    {
+      "id": "func:game.LittleCatGame.play_sfx",
+      "type": "method",
+      "label": "play_sfx",
+      "file": "src/game.py",
+      "line": 1847,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.play_with_toy",
+      "type": "method",
+      "label": "play_with_toy",
+      "file": "src/game.py",
+      "line": 2070,
+      "loc": 77
+    },
+    {
+      "id": "func:game.LittleCatGame.resolve_mini_game",
+      "type": "method",
+      "label": "resolve_mini_game",
+      "file": "src/game.py",
+      "line": 1948,
+      "loc": 16
+    },
+    {
+      "id": "func:game.LittleCatGame.run",
+      "type": "method",
+      "label": "run",
+      "file": "src/game.py",
+      "line": 2427,
+      "loc": 41
+    },
+    {
+      "id": "func:game.LittleCatGame.save_all_profiles",
+      "type": "method",
+      "label": "save_all_profiles",
+      "file": "src/game.py",
+      "line": 1817,
+      "loc": 6
+    },
+    {
+      "id": "func:game.LittleCatGame.save_profiles_index",
+      "type": "method",
+      "label": "save_profiles_index",
+      "file": "src/game.py",
+      "line": 1724,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.say",
+      "type": "method",
+      "label": "say",
+      "file": "src/game.py",
+      "line": 1865,
+      "loc": 19
+    },
+    {
+      "id": "func:game.LittleCatGame.set_active_cat",
+      "type": "method",
+      "label": "set_active_cat",
+      "file": "src/game.py",
+      "line": 1740,
+      "loc": 14
+    },
+    {
+      "id": "func:game.LittleCatGame.set_menu_page",
+      "type": "method",
+      "label": "set_menu_page",
+      "file": "src/game.py",
+      "line": 1645,
+      "loc": 5
+    },
+    {
+      "id": "func:game.LittleCatGame.show_toy_menu",
+      "type": "method",
+      "label": "show_toy_menu",
+      "file": "src/game.py",
+      "line": 2039,
+      "loc": 20
+    },
+    {
+      "id": "func:game.LittleCatGame.start_hunt",
+      "type": "method",
+      "label": "start_hunt",
+      "file": "src/game.py",
+      "line": 1677,
+      "loc": 7
+    },
+    {
+      "id": "func:game.LittleCatGame.start_jump",
+      "type": "method",
+      "label": "start_jump",
+      "file": "src/game.py",
+      "line": 1685,
+      "loc": 4
+    },
+    {
+      "id": "func:game.LittleCatGame.start_mini_game",
+      "type": "method",
+      "label": "start_mini_game",
+      "file": "src/game.py",
+      "line": 1934,
+      "loc": 13
+    },
+    {
+      "id": "func:game.LittleCatGame.toggle_mute",
+      "type": "method",
+      "label": "toggle_mute",
+      "file": "src/game.py",
+      "line": 1856,
+      "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.toggle_stats_panel",
+      "type": "method",
+      "label": "toggle_stats_panel",
+      "file": "src/game.py",
+      "line": 1696,
+      "loc": 4
+    },
+    {
+      "id": "func:game.LittleCatGame.update",
+      "type": "method",
+      "label": "update",
+      "file": "src/game.py",
+      "line": 2270,
+      "loc": 156
+    },
+    {
+      "id": "func:game.LittleCatGame.update_achievements",
+      "type": "method",
+      "label": "update_achievements",
+      "file": "src/game.py",
+      "line": 1920,
+      "loc": 13
+    },
+    {
+      "id": "func:game.LittleCatGame.update_chat_response",
+      "type": "method",
+      "label": "update_chat_response",
+      "file": "src/game.py",
+      "line": 2493,
+      "loc": 16
+    },
+    {
+      "id": "func:game.LittleCatGame.update_reminders",
+      "type": "method",
+      "label": "update_reminders",
+      "file": "src/game.py",
+      "line": 1897,
+      "loc": 15
+    },
+    {
+      "id": "func:game.LittleCatGame.update_voice",
+      "type": "method",
+      "label": "update_voice",
+      "file": "src/game.py",
+      "line": 2224,
+      "loc": 45
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/memory_graph.py",
+      "line": 81,
+      "loc": 14
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph._consolidate",
+      "type": "method",
+      "label": "_consolidate",
+      "file": "src/memory_graph.py",
+      "line": 299,
+      "loc": 14
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph._edge_id",
+      "type": "method",
+      "label": "_edge_id",
+      "file": "src/memory_graph.py",
+      "line": 272,
+      "loc": 2
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph._reinforce",
+      "type": "method",
+      "label": "_reinforce",
+      "file": "src/memory_graph.py",
+      "line": 287,
+      "loc": 11
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph._touch_node",
+      "type": "method",
+      "label": "_touch_node",
+      "file": "src/memory_graph.py",
+      "line": 275,
+      "loc": 11
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.decay",
+      "type": "method",
+      "label": "decay",
+      "file": "src/memory_graph.py",
+      "line": 154,
+      "loc": 14
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.expectation",
+      "type": "method",
+      "label": "expectation",
+      "file": "src/memory_graph.py",
+      "line": 178,
+      "loc": 18
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.favorites",
+      "type": "method",
+      "label": "favorites",
+      "file": "src/memory_graph.py",
+      "line": 202,
+      "loc": 5
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.from_dict",
+      "type": "method",
+      "label": "from_dict",
+      "file": "src/memory_graph.py",
+      "line": 246,
+      "loc": 11
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.from_legacy",
+      "type": "method",
+      "label": "from_legacy",
+      "file": "src/memory_graph.py",
+      "line": 259,
+      "loc": 10
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.habit_after",
+      "type": "method",
+      "label": "habit_after",
+      "file": "src/memory_graph.py",
+      "line": 197,
+      "loc": 4
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.neighbors",
+      "type": "method",
+      "label": "neighbors",
+      "file": "src/memory_graph.py",
+      "line": 170,
+      "loc": 7
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.recall",
+      "type": "method",
+      "label": "recall",
+      "file": "src/memory_graph.py",
+      "line": 211,
+      "loc": 6
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.recent_actions",
+      "type": "method",
+      "label": "recent_actions",
+      "file": "src/memory_graph.py",
+      "line": 208,
+      "loc": 2
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.record",
+      "type": "method",
+      "label": "record",
+      "file": "src/memory_graph.py",
+      "line": 97,
+      "loc": 56
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.summary",
+      "type": "method",
+      "label": "summary",
+      "file": "src/memory_graph.py",
+      "line": 218,
+      "loc": 8
+    },
+    {
+      "id": "func:memory_graph.MemoryGraph.to_dict",
+      "type": "method",
+      "label": "to_dict",
+      "file": "src/memory_graph.py",
+      "line": 228,
+      "loc": 16
+    },
+    {
+      "id": "func:memory_graph._bin_label",
+      "type": "function",
+      "label": "_bin_label",
+      "file": "src/memory_graph.py",
+      "line": 55,
+      "loc": 6
+    },
+    {
+      "id": "func:memory_graph.extract_stimuli",
+      "type": "function",
+      "label": "extract_stimuli",
+      "file": "src/memory_graph.py",
+      "line": 73,
+      "loc": 3
+    },
+    {
+      "id": "func:memory_graph.state_tags",
+      "type": "function",
+      "label": "state_tags",
+      "file": "src/memory_graph.py",
+      "line": 63,
+      "loc": 8
+    },
+    {
+      "id": "func:screen_agent_poc.adaptive_duration",
+      "type": "function",
+      "label": "adaptive_duration",
+      "file": "src/screen_agent_poc.py",
+      "line": 225,
+      "loc": 4
+    },
+    {
+      "id": "func:screen_agent_poc.build_parser",
+      "type": "function",
+      "label": "build_parser",
+      "file": "src/screen_agent_poc.py",
+      "line": 307,
+      "loc": 6
+    },
+    {
+      "id": "func:screen_agent_poc.calibrate",
+      "type": "function",
+      "label": "calibrate",
+      "file": "src/screen_agent_poc.py",
+      "line": 187,
+      "loc": 36
+    },
+    {
+      "id": "func:screen_agent_poc.calibration_from_dict",
+      "type": "function",
+      "label": "calibration_from_dict",
+      "file": "src/screen_agent_poc.py",
+      "line": 135,
+      "loc": 6
+    },
+    {
+      "id": "func:screen_agent_poc.calibration_to_dict",
+      "type": "function",
+      "label": "calibration_to_dict",
+      "file": "src/screen_agent_poc.py",
+      "line": 130,
+      "loc": 3
+    },
+    {
+      "id": "func:screen_agent_poc.color_mask",
+      "type": "function",
+      "label": "color_mask",
+      "file": "src/screen_agent_poc.py",
+      "line": 94,
+      "loc": 12
+    },
+    {
+      "id": "func:screen_agent_poc.find_centroid",
+      "type": "function",
+      "label": "find_centroid",
+      "file": "src/screen_agent_poc.py",
+      "line": 108,
+      "loc": 14
+    },
+    {
+      "id": "func:screen_agent_poc.get_mouse_position",
+      "type": "function",
+      "label": "get_mouse_position",
+      "file": "src/screen_agent_poc.py",
+      "line": 60,
+      "loc": 3
+    },
+    {
+      "id": "func:screen_agent_poc.load_calibration",
+      "type": "function",
+      "label": "load_calibration",
+      "file": "src/screen_agent_poc.py",
+      "line": 143,
+      "loc": 6
+    },
+    {
+      "id": "func:screen_agent_poc.main",
+      "type": "function",
+      "label": "main",
+      "file": "src/screen_agent_poc.py",
+      "line": 315,
+      "loc": 21
+    },
+    {
+      "id": "func:screen_agent_poc.play",
+      "type": "function",
+      "label": "play",
+      "file": "src/screen_agent_poc.py",
+      "line": 241,
+      "loc": 64
+    },
+    {
+      "id": "func:screen_agent_poc.press_key",
+      "type": "function",
+      "label": "press_key",
+      "file": "src/screen_agent_poc.py",
+      "line": 124,
+      "loc": 4
+    },
+    {
+      "id": "func:screen_agent_poc.preview_detection",
+      "type": "function",
+      "label": "preview_detection",
+      "file": "src/screen_agent_poc.py",
+      "line": 157,
+      "loc": 28
+    },
+    {
+      "id": "func:screen_agent_poc.sample_color_at_mouse",
+      "type": "function",
+      "label": "sample_color_at_mouse",
+      "file": "src/screen_agent_poc.py",
+      "line": 65,
+      "loc": 10
+    },
+    {
+      "id": "func:screen_agent_poc.save_calibration",
+      "type": "function",
+      "label": "save_calibration",
+      "file": "src/screen_agent_poc.py",
+      "line": 151,
+      "loc": 4
+    },
+    {
+      "id": "func:screen_agent_poc.select_region",
+      "type": "function",
+      "label": "select_region",
+      "file": "src/screen_agent_poc.py",
+      "line": 77,
+      "loc": 15
+    },
+    {
+      "id": "func:screen_agent_poc.update_learning",
+      "type": "function",
+      "label": "update_learning",
+      "file": "src/screen_agent_poc.py",
+      "line": 231,
+      "loc": 8
+    },
+    {
+      "id": "func:screen_agent_poc.wait_for_enter",
+      "type": "function",
+      "label": "wait_for_enter",
+      "file": "src/screen_agent_poc.py",
+      "line": 56,
+      "loc": 2
+    },
+    {
+      "id": "func:trainer.CatTrainer.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/trainer.py",
+      "line": 20,
+      "loc": 3
+    },
+    {
+      "id": "func:trainer.CatTrainer.describe_interaction",
+      "type": "method",
+      "label": "describe_interaction",
+      "file": "src/trainer.py",
+      "line": 116,
+      "loc": 10
+    },
+    {
+      "id": "func:trainer.CatTrainer.export_training_log",
+      "type": "method",
+      "label": "export_training_log",
+      "file": "src/trainer.py",
+      "line": 177,
+      "loc": 6
+    },
+    {
+      "id": "func:trainer.CatTrainer.negative_interaction",
+      "type": "method",
+      "label": "negative_interaction",
+      "file": "src/trainer.py",
+      "line": 103,
+      "loc": 8
+    },
+    {
+      "id": "func:trainer.CatTrainer.neglect_interaction",
+      "type": "method",
+      "label": "neglect_interaction",
+      "file": "src/trainer.py",
+      "line": 112,
+      "loc": 3
+    },
+    {
+      "id": "func:trainer.CatTrainer.positive_interaction",
+      "type": "method",
+      "label": "positive_interaction",
+      "file": "src/trainer.py",
+      "line": 90,
+      "loc": 12
+    },
+    {
+      "id": "func:trainer.CatTrainer.print_summary",
+      "type": "method",
+      "label": "print_summary",
+      "file": "src/trainer.py",
+      "line": 127,
+      "loc": 30
+    },
+    {
+      "id": "func:trainer.CatTrainer.save_trained_cat",
+      "type": "method",
+      "label": "save_trained_cat",
+      "file": "src/trainer.py",
+      "line": 184,
+      "loc": 5
+    },
+    {
+      "id": "func:trainer.CatTrainer.simulate_human_interaction",
+      "type": "method",
+      "label": "simulate_human_interaction",
+      "file": "src/trainer.py",
+      "line": 24,
+      "loc": 65
+    },
+    {
+      "id": "func:trainer.CatTrainer.test_decision_making",
+      "type": "method",
+      "label": "test_decision_making",
+      "file": "src/trainer.py",
+      "line": 158,
+      "loc": 18
+    },
+    {
+      "id": "func:trainer.main",
+      "type": "function",
+      "label": "main",
+      "file": "src/trainer.py",
+      "line": 191,
+      "loc": 45
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/ui_agent.py",
+      "line": 20,
+      "loc": 115
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.celebrate_achievement",
+      "type": "method",
+      "label": "celebrate_achievement",
+      "file": "src/ui_agent.py",
+      "line": 364,
+      "loc": 17
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.format_status_text",
+      "type": "method",
+      "label": "format_status_text",
+      "file": "src/ui_agent.py",
+      "line": 306,
+      "loc": 32
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_action_response",
+      "type": "method",
+      "label": "get_action_response",
+      "file": "src/ui_agent.py",
+      "line": 136,
+      "loc": 33
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_hint",
+      "type": "method",
+      "label": "get_hint",
+      "file": "src/ui_agent.py",
+      "line": 218,
+      "loc": 38
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_personality_insight",
+      "type": "method",
+      "label": "get_personality_insight",
+      "file": "src/ui_agent.py",
+      "line": 382,
+      "loc": 33
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_state_message",
+      "type": "method",
+      "label": "get_state_message",
+      "file": "src/ui_agent.py",
+      "line": 170,
+      "loc": 47
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_status_color",
+      "type": "method",
+      "label": "get_status_color",
+      "file": "src/ui_agent.py",
+      "line": 287,
+      "loc": 18
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.get_thought_bubble",
+      "type": "method",
+      "label": "get_thought_bubble",
+      "file": "src/ui_agent.py",
+      "line": 257,
+      "loc": 29
+    },
+    {
+      "id": "func:ui_agent.SeniorUIAgent.suggest_interaction",
+      "type": "method",
+      "label": "suggest_interaction",
+      "file": "src/ui_agent.py",
+      "line": 339,
+      "loc": 24
+    },
+    {
+      "id": "module:autonomy",
+      "type": "module",
+      "label": "autonomy",
+      "loc": 129,
+      "file": "src/autonomy.py"
+    },
+    {
+      "id": "module:cat_brain",
+      "type": "module",
+      "label": "cat_brain",
+      "loc": 379,
+      "file": "src/cat_brain.py"
+    },
+    {
+      "id": "module:cat_voice",
+      "type": "module",
+      "label": "cat_voice",
+      "loc": 128,
+      "file": "src/cat_voice.py"
+    },
+    {
+      "id": "module:chat_agent",
+      "type": "module",
+      "label": "chat_agent",
+      "loc": 313,
+      "file": "src/chat_agent.py"
+    },
+    {
+      "id": "module:config",
+      "type": "module",
+      "label": "config",
+      "loc": 100,
+      "file": "src/config.py"
+    },
+    {
+      "id": "module:game",
+      "type": "module",
+      "label": "game",
+      "loc": 2514,
+      "file": "src/game.py"
+    },
+    {
+      "id": "module:memory_graph",
+      "type": "module",
+      "label": "memory_graph",
+      "loc": 313,
+      "file": "src/memory_graph.py"
+    },
+    {
+      "id": "module:screen_agent_poc",
+      "type": "module",
+      "label": "screen_agent_poc",
+      "loc": 343,
+      "file": "src/screen_agent_poc.py"
+    },
+    {
+      "id": "module:trainer",
+      "type": "module",
+      "label": "trainer",
+      "loc": 240,
+      "file": "src/trainer.py"
+    },
+    {
+      "id": "module:ui_agent",
+      "type": "module",
+      "label": "ui_agent",
+      "loc": 415,
+      "file": "src/ui_agent.py"
+    }
+  ],
+  "edges": [
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.__init__"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._apply_trick_progress"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._bin"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._generate_personality"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._get_mood"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._get_personality_modifiers"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._get_state"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain._update_q"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.decide_action"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.load_brain"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "class:cat_brain.CatBrain",
+      "rel": "has_method",
+      "to": "func:cat_brain.CatBrain.update_state"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.__init__"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent._process_request"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.build_game_context"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.capture_screenshot"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.clear_history"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.get_response"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.get_usage_stats"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.is_available"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.is_rate_limited"
+    },
+    {
+      "from": "class:chat_agent.ChatAgent",
+      "rel": "has_method",
+      "to": "func:chat_agent.ChatAgent.request_help"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.__init__"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay._clamp_rect"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.apply_overlay_styles"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_chat_ui"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_claws"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_context_menu"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_eating_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_food"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_hover_card"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_idle_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_instructions"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_interest"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_jump_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_label"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_playing_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_sitting_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_sleeping_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_speech_bubble"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_sprite_pose"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_stats"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_stats_panel"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_thought_bubble"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_toy"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_toy_menu"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_walking_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.get_jump_offset"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.init_pixel_sprites"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.is_point_on_cat"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.make_cat_sprite"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.move_cat_to_random_position"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.radial_layout"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.set_always_on_top"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.set_click_through"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.set_transparent_background"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.update_animation"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.update_cat_movement"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.update_pose"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.__init__"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.ask_for_need"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.auto_perform_action"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.award_achievement"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.calculate_reward"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.create_new_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.export_all_profiles"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.export_profile"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.generate_new_cat_name"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.get_fixed_spot"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.get_game_state_for_agent"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.get_overlay_labels"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.handle_context_menu_click"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.handle_input"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.hibernate_game"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.import_profile"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.init_sound"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.is_hovering_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.is_mouse_near_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.load_profiles_index"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.next_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.open_chat_ui"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.open_context_menu"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.open_toy_page"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.play_with_toy"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.resolve_mini_game"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.run"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.save_all_profiles"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.set_active_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.set_menu_page"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.show_toy_menu"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.start_hunt"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.start_jump"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.start_mini_game"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.toggle_mute"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.toggle_stats_panel"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_achievements"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_chat_response"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_reminders"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_voice"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.__init__"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph._consolidate"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph._edge_id"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph._reinforce"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph._touch_node"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.decay"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.expectation"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.favorites"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.from_dict"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.from_legacy"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.habit_after"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.neighbors"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.recall"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.recent_actions"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.record"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.summary"
+    },
+    {
+      "from": "class:memory_graph.MemoryGraph",
+      "rel": "has_method",
+      "to": "func:memory_graph.MemoryGraph.to_dict"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.__init__"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.describe_interaction"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.export_training_log"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.negative_interaction"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.neglect_interaction"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.positive_interaction"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.print_summary"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.save_trained_cat"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.simulate_human_interaction"
+    },
+    {
+      "from": "class:trainer.CatTrainer",
+      "rel": "has_method",
+      "to": "func:trainer.CatTrainer.test_decision_making"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.__init__"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.celebrate_achievement"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.format_status_text"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_action_response"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_hint"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_personality_insight"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_state_message"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_status_color"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.get_thought_bubble"
+    },
+    {
+      "from": "class:ui_agent.SeniorUIAgent",
+      "rel": "has_method",
+      "to": "func:ui_agent.SeniorUIAgent.suggest_interaction"
+    },
+    {
+      "from": "func:autonomy.falling",
+      "rel": "calls",
+      "to": "func:autonomy.rising"
+    },
+    {
+      "from": "func:autonomy.score_actions",
+      "rel": "calls",
+      "to": "func:autonomy.circadian_activity"
+    },
+    {
+      "from": "func:autonomy.score_actions",
+      "rel": "calls",
+      "to": "func:autonomy.falling"
+    },
+    {
+      "from": "func:autonomy.score_actions",
+      "rel": "calls",
+      "to": "func:autonomy.rising"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.__init__",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._generate_personality"
+    },
+    {
+      "from": "func:cat_brain.CatBrain._get_state",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._bin"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.decide_action",
+      "rel": "calls",
+      "to": "func:autonomy.choose"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.decide_action",
+      "rel": "calls",
+      "to": "func:autonomy.score_actions"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.decide_action",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._get_state"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.decide_action",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.recent_actions"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.decide_action",
+      "rel": "calls",
+      "to": "func:memory_graph.state_tags"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.get_status",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._get_mood"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.get_status",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.summary"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.learn_from_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._apply_trick_progress"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.learn_from_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._get_state"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.learn_from_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain._update_q"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.learn_from_interaction",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.record"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.load_brain",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.from_dict"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.load_brain",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.from_legacy"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.load_brain",
+      "rel": "reads",
+      "to": "data:cats/<name>.json"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.save_brain",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.to_dict"
+    },
+    {
+      "from": "func:cat_brain.CatBrain.save_brain",
+      "rel": "writes",
+      "to": "data:cats/<name>.json"
+    },
+    {
+      "from": "func:cat_voice.idle_chatter",
+      "rel": "calls",
+      "to": "func:cat_voice.memory_line"
+    },
+    {
+      "from": "func:cat_voice.idle_chatter",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:cat_voice.say",
+      "rel": "calls",
+      "to": "func:cat_voice._sound"
+    },
+    {
+      "from": "func:chat_agent.ChatAgent._process_request",
+      "rel": "calls",
+      "to": "func:chat_agent.ChatAgent.build_game_context"
+    },
+    {
+      "from": "func:chat_agent.ChatAgent._process_request",
+      "rel": "calls",
+      "to": "func:chat_agent.ChatAgent.capture_screenshot"
+    },
+    {
+      "from": "func:chat_agent.ChatAgent.request_help",
+      "rel": "calls",
+      "to": "func:chat_agent.ChatAgent.is_rate_limited"
+    },
+    {
+      "from": "func:game.GameDisplay.__init__",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.apply_overlay_styles"
+    },
+    {
+      "from": "func:game.GameDisplay.__init__",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.init_pixel_sprites"
+    },
+    {
+      "from": "func:game.GameDisplay._speech_surface",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.apply_overlay_styles",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.set_always_on_top"
+    },
+    {
+      "from": "func:game.GameDisplay.apply_overlay_styles",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.set_click_through"
+    },
+    {
+      "from": "func:game.GameDisplay.apply_overlay_styles",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.set_transparent_background"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_eating_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_idle_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_jump_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_playing_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_sitting_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_sleeping_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_sprite_pose"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_walking_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.get_jump_offset"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.update_pose"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_chat_ui",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_context_menu",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_context_menu",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_label"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_context_menu",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.radial_layout"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_eating_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_hover_card",
+      "rel": "calls",
+      "to": "func:cat_voice.mood_word"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_hover_card",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._clamp_rect"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_hover_card",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_idle_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_idle_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_instructions",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_interest",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_label"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_jump_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_claws"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_jump_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_jump_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_jump_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.get_jump_offset"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_label",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._clamp_rect"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_label",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_playing_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_playing_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_sitting_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_sitting_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_sleeping_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_speech_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._clamp_rect"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_speech_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_stats",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_stats",
+      "rel": "calls",
+      "to": "func:ui_agent.SeniorUIAgent.format_status_text"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_stats",
+      "rel": "calls",
+      "to": "func:ui_agent.SeniorUIAgent.get_status_color"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_stats_panel",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_thought_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._clamp_rect"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_thought_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_toy_menu",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_walking_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_ears"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_walking_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_face"
+    },
+    {
+      "from": "func:game.GameDisplay.init_pixel_sprites",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.make_cat_sprite"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_cat"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_chat_ui"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_context_menu"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_food"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_hover_card"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_instructions"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_label"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_speech_bubble"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_stats"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_stats_panel"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_thought_bubble"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_toy"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_toy_menu"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.update_animation"
+    },
+    {
+      "from": "func:game.GameDisplay.set_click_through",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.set_transparent_background"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.load_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:chat_agent.create_chat_agent"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.apply_overlay_styles"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.init_sound"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.load_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.ask_for_need",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.ask_for_need",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.auto_perform_action",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "func:game.LittleCatGame.auto_perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.calculate_reward"
+    },
+    {
+      "from": "func:game.LittleCatGame.auto_perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.is_mouse_near_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.award_achievement",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.award_achievement",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.create_new_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.generate_new_cat_name"
+    },
+    {
+      "from": "func:game.LittleCatGame.create_new_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.create_new_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.set_active_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.export_all_profiles",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.export_profile",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.export_profile",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.export_profile",
+      "rel": "writes",
+      "to": "data:exports/profile_*.json"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_context_menu_click",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.radial_layout"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.load_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:chat_agent.ChatAgent.request_help"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.apply_overlay_styles"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.is_point_on_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_game_state_for_agent"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.handle_context_menu_click"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.is_mouse_near_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.next_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.open_context_menu"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_with_toy"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.resolve_mini_game"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.show_toy_menu"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.start_hunt"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.toggle_mute"
+    },
+    {
+      "from": "func:game.LittleCatGame.import_profile",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.load_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.import_profile",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.is_hovering_cat",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.is_point_on_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.load_profiles_index",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "func:game.LittleCatGame.next_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.set_active_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.load_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_with_toy"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.set_menu_page"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_toy_page",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_toy_page",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.set_menu_page"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.award_achievement"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.calculate_reward"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.perform_action",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.calculate_reward"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.start_jump"
+    },
+    {
+      "from": "func:game.LittleCatGame.play_with_toy",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.start_mini_game"
+    },
+    {
+      "from": "func:game.LittleCatGame.resolve_mini_game",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "func:game.LittleCatGame.resolve_mini_game",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.resolve_mini_game",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.award_achievement"
+    },
+    {
+      "from": "func:game.LittleCatGame.resolve_mini_game",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.resolve_mini_game",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.start_jump"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:cat_voice.wellbeing"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_overlay_labels"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.handle_input"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_all_profiles"
+    },
+    {
+      "from": "func:game.LittleCatGame.run",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update"
+    },
+    {
+      "from": "func:game.LittleCatGame.save_all_profiles",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:game.LittleCatGame.save_all_profiles",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "func:game.LittleCatGame.save_all_profiles",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.save_profiles_index",
+      "rel": "writes",
+      "to": "data:profiles.json"
+    },
+    {
+      "from": "func:game.LittleCatGame.set_active_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "func:game.LittleCatGame.set_active_cat",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.save_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame.show_toy_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_hunt",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_jump",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.decide_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.update_state"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.move_cat_to_random_position"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.update_cat_movement"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.ask_for_need"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.auto_perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_fixed_spot"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.is_mouse_near_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.resolve_mini_game"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update_achievements"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update_chat_response"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update_reminders"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update_voice"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_achievements",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.award_achievement"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_chat_response",
+      "rel": "calls",
+      "to": "func:chat_agent.ChatAgent.get_response"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_reminders",
+      "rel": "calls",
+      "to": "func:cat_voice.need_kind"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_reminders",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.ask_for_need"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:cat_voice.idle_chatter"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.is_hovering_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:ui_agent.SeniorUIAgent.get_hint"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_voice",
+      "rel": "calls",
+      "to": "func:ui_agent.SeniorUIAgent.get_thought_bubble"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph._reinforce",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph._edge_id"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.expectation",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph._edge_id"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.from_legacy",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.record"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.habit_after",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.neighbors"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph._consolidate"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph._reinforce"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph._touch_node"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.decay"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.extract_stimuli"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.record",
+      "rel": "calls",
+      "to": "func:memory_graph.state_tags"
+    },
+    {
+      "from": "func:memory_graph.MemoryGraph.summary",
+      "rel": "calls",
+      "to": "func:memory_graph.MemoryGraph.favorites"
+    },
+    {
+      "from": "func:memory_graph.state_tags",
+      "rel": "calls",
+      "to": "func:memory_graph._bin_label"
+    },
+    {
+      "from": "func:screen_agent_poc.calibrate",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.preview_detection"
+    },
+    {
+      "from": "func:screen_agent_poc.calibrate",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.sample_color_at_mouse"
+    },
+    {
+      "from": "func:screen_agent_poc.calibrate",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.select_region"
+    },
+    {
+      "from": "func:screen_agent_poc.calibrate",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.wait_for_enter"
+    },
+    {
+      "from": "func:screen_agent_poc.load_calibration",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.calibration_from_dict"
+    },
+    {
+      "from": "func:screen_agent_poc.main",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.build_parser"
+    },
+    {
+      "from": "func:screen_agent_poc.main",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.calibrate"
+    },
+    {
+      "from": "func:screen_agent_poc.main",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.load_calibration"
+    },
+    {
+      "from": "func:screen_agent_poc.main",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.play"
+    },
+    {
+      "from": "func:screen_agent_poc.main",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.save_calibration"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.adaptive_duration"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.color_mask"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.find_centroid"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.press_key"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.save_calibration"
+    },
+    {
+      "from": "func:screen_agent_poc.play",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.update_learning"
+    },
+    {
+      "from": "func:screen_agent_poc.preview_detection",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.color_mask"
+    },
+    {
+      "from": "func:screen_agent_poc.preview_detection",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.find_centroid"
+    },
+    {
+      "from": "func:screen_agent_poc.sample_color_at_mouse",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.get_mouse_position"
+    },
+    {
+      "from": "func:screen_agent_poc.save_calibration",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.calibration_to_dict"
+    },
+    {
+      "from": "func:screen_agent_poc.select_region",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.get_mouse_position"
+    },
+    {
+      "from": "func:screen_agent_poc.select_region",
+      "rel": "calls",
+      "to": "func:screen_agent_poc.wait_for_enter"
+    },
+    {
+      "from": "func:trainer.CatTrainer.print_summary",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "func:trainer.CatTrainer.save_trained_cat",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.save_brain"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.decide_action"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.learn_from_interaction"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.update_state"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.describe_interaction"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.negative_interaction"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.neglect_interaction"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.positive_interaction"
+    },
+    {
+      "from": "func:trainer.CatTrainer.simulate_human_interaction",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.print_summary"
+    },
+    {
+      "from": "func:trainer.CatTrainer.test_decision_making",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.decide_action"
+    },
+    {
+      "from": "func:trainer.CatTrainer.test_decision_making",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "func:trainer.main",
+      "rel": "calls",
+      "to": "func:cat_brain.CatBrain.get_status"
+    },
+    {
+      "from": "func:trainer.main",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.save_trained_cat"
+    },
+    {
+      "from": "func:trainer.main",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.simulate_human_interaction"
+    },
+    {
+      "from": "func:trainer.main",
+      "rel": "calls",
+      "to": "func:trainer.CatTrainer.test_decision_making"
+    },
+    {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.choose"
+    },
+    {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.circadian_activity"
+    },
+    {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.falling"
+    },
+    {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.rising"
+    },
+    {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.score_actions"
+    },
+    {
+      "from": "module:cat_brain",
+      "rel": "defines",
+      "to": "class:cat_brain.CatBrain"
+    },
+    {
+      "from": "module:cat_brain",
+      "rel": "imports",
+      "to": "module:autonomy"
+    },
+    {
+      "from": "module:cat_brain",
+      "rel": "imports",
+      "to": "module:memory_graph"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice._sound"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.idle_chatter"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.memory_line"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.mood_word"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.need_kind"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.wellbeing"
+    },
+    {
+      "from": "module:chat_agent",
+      "rel": "defines",
+      "to": "class:chat_agent.ChatAgent"
+    },
+    {
+      "from": "module:chat_agent",
+      "rel": "defines",
+      "to": "func:chat_agent.create_chat_agent"
+    },
+    {
+      "from": "module:game",
+      "rel": "defines",
+      "to": "class:game.GameDisplay"
+    },
+    {
+      "from": "module:game",
+      "rel": "defines",
+      "to": "class:game.LittleCatGame"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:cat_brain"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:cat_voice"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:chat_agent"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:config"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:ui_agent"
+    },
+    {
+      "from": "module:game",
+      "rel": "reads_writes",
+      "to": "data:.json"
+    },
+    {
+      "from": "module:game",
+      "rel": "reads_writes",
+      "to": "data:profiles.json"
+    },
+    {
+      "from": "module:memory_graph",
+      "rel": "defines",
+      "to": "class:memory_graph.MemoryGraph"
+    },
+    {
+      "from": "module:memory_graph",
+      "rel": "defines",
+      "to": "func:memory_graph._bin_label"
+    },
+    {
+      "from": "module:memory_graph",
+      "rel": "defines",
+      "to": "func:memory_graph.extract_stimuli"
+    },
+    {
+      "from": "module:memory_graph",
+      "rel": "defines",
+      "to": "func:memory_graph.state_tags"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "class:screen_agent_poc.AgentConfig"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "class:screen_agent_poc.Calibration"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "class:screen_agent_poc.Color"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "class:screen_agent_poc.Region"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.adaptive_duration"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.build_parser"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.calibrate"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.calibration_from_dict"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.calibration_to_dict"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.color_mask"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.find_centroid"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.get_mouse_position"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.load_calibration"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.main"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.play"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.press_key"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.preview_detection"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.sample_color_at_mouse"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.save_calibration"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.select_region"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.update_learning"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "defines",
+      "to": "func:screen_agent_poc.wait_for_enter"
+    },
+    {
+      "from": "module:screen_agent_poc",
+      "rel": "reads_writes",
+      "to": "data:screen_agent.json"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "defines",
+      "to": "class:trainer.CatTrainer"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "defines",
+      "to": "func:trainer.main"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "imports",
+      "to": "module:cat_brain"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "reads_writes",
+      "to": "data:realistic_cat.json"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "reads_writes",
+      "to": "data:trained_cat.json"
+    },
+    {
+      "from": "module:trainer",
+      "rel": "reads_writes",
+      "to": "data:training_log.json"
+    },
+    {
+      "from": "module:ui_agent",
+      "rel": "defines",
+      "to": "class:ui_agent.SeniorUIAgent"
+    }
+  ]
+}
