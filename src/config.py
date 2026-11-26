@@ -7,7 +7,16 @@ Modify these values to customize cat behavior and learning speed
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 FPS = 30
-GAME_SPEED = 0.005  # Time multiplier (higher = faster time progression)
+# In-game hours per frame. 0.0025 @30FPS = 4.5 game-hours per real minute:
+#   hunger 0->100 in ~15 min, energy 70->0 in ~10 min, adult (199 days) after ~18h of play.
+# (was 0.02 hardcoded in game.py: hungry in <2 min, which felt stressful)
+GAME_SPEED = 0.0025
+
+# Speech bubble (one voice, above the cat)
+SPEECH_DURATION = 3.5          # seconds a line stays on screen
+SPEECH_AMBIENT_COOLDOWN = 25   # min seconds between unsolicited lines (chatter, hints)
+SPEECH_NEED_COOLDOWN = 60      # min seconds between repeating the same need ("snack?")
+HOVER_CARD_DELAY = 0.35        # seconds hovering the cat before the status card shows
 
 # Cat Brain Settings
 INITIAL_HAPPINESS = 50      # 0-100
@@ -88,5 +97,3 @@ CHAT_UI_HEIGHT = 280                     # Chat box height (pixels)
 
 # Cost Warning: gpt-4-vision is ~$0.03 per image + tokens
 # Monitor OPENAI_API_KEY usage in dashboard
-
-print("Config loaded successfully!")

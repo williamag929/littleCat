@@ -53,12 +53,9 @@ def test_game_with_ui_agent():
             cat_status = game.cat.get_status()
             
             # Check for UI agent messages
-            if game.agent_message:
-                print(f"   Frame {i}: Agent message: '{game.agent_message}'")
-            
-            if game.agent_hint:
-                print(f"   Frame {i}: Agent hint: '{game.agent_hint}'")
-            
+            if game.speech:
+                print(f"   Frame {i}: Cat says: '{game.speech['text']}'")
+
             if game.thought_bubble:
                 print(f"   Frame {i}: Thought bubble: '{game.thought_bubble}'")
             
@@ -71,16 +68,16 @@ def test_game_with_ui_agent():
         print("\n3. Testing action with UI Agent feedback...")
         game.perform_action('play', "Test play action")
         
-        if game.agent_message:
-            print(f"✓ UI Agent response: '{game.agent_message}'")
+        if game.speech:
+            print(f"✓ Cat response: '{game.speech['text']}'")
         else:
-            print("⚠ No UI Agent response (might appear later)")
+            print("⚠ No cat response (might appear later)")
         
         # Test another action
         game.perform_action('purr', "Test pet action")
-        if game.agent_message:
-            print(f"✓ UI Agent response: '{game.agent_message}'")
-        
+        if game.speech:
+            print(f"✓ Cat response: '{game.speech['text']}'")
+
         # Clean up
         print("\n4. Cleaning up...")
         game.running = False

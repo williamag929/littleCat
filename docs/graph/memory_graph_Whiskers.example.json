@@ -1,0 +1,761 @@
+{
+  "schema": "littlecat.memory/v1",
+  "params": {
+    "max_episodes": 200,
+    "learning_rate": 0.15,
+    "valence_rate": 0.25,
+    "half_life_days": 30.0,
+    "prune_below": 0.02
+  },
+  "last_decay_age": 468.377,
+  "next_episode": 21,
+  "nodes": [
+    {
+      "id": "action:eat",
+      "type": "action",
+      "label": "eat",
+      "count": 5,
+      "valence": 0.7232,
+      "first_age": 464.059,
+      "last_age": 468.377
+    },
+    {
+      "id": "action:groom",
+      "type": "action",
+      "label": "groom",
+      "count": 1,
+      "valence": 0.125,
+      "first_age": 466.257,
+      "last_age": 466.257
+    },
+    {
+      "id": "action:play",
+      "type": "action",
+      "label": "play",
+      "count": 4,
+      "valence": 0.2293,
+      "first_age": 464.561,
+      "last_age": 468.126
+    },
+    {
+      "id": "action:rest",
+      "type": "action",
+      "label": "rest",
+      "count": 5,
+      "valence": 0.3813,
+      "first_age": 464.31,
+      "last_age": 466.066
+    },
+    {
+      "id": "action:sleep",
+      "type": "action",
+      "label": "sleep",
+      "count": 5,
+      "valence": 0.4736,
+      "first_age": 463.808,
+      "last_age": 466.872
+    },
+    {
+      "id": "source:player",
+      "type": "source",
+      "label": "player",
+      "count": 4,
+      "valence": 0.2445,
+      "first_age": 466.192,
+      "last_age": 466.712
+    },
+    {
+      "id": "source:self",
+      "type": "source",
+      "label": "self",
+      "count": 16,
+      "valence": 0.6867,
+      "first_age": 463.808,
+      "last_age": 468.377
+    },
+    {
+      "id": "stimulus:ball",
+      "type": "stimulus",
+      "label": "ball",
+      "count": 1,
+      "valence": 0.125,
+      "first_age": 466.649,
+      "last_age": 466.649
+    },
+    {
+      "id": "stimulus:brush",
+      "type": "stimulus",
+      "label": "brush",
+      "count": 1,
+      "valence": 0.125,
+      "first_age": 466.257,
+      "last_age": 466.257
+    },
+    {
+      "id": "stimulus:food",
+      "type": "stimulus",
+      "label": "food",
+      "count": 5,
+      "valence": 0.7232,
+      "first_age": 464.059,
+      "last_age": 468.377
+    },
+    {
+      "id": "stimulus:mini_game",
+      "type": "stimulus",
+      "label": "mini_game",
+      "count": 1,
+      "valence": -0.025,
+      "first_age": 466.712,
+      "last_age": 466.712
+    }
+  ],
+  "edges": [
+    {
+      "id": "action:eat|followed_by|action:groom",
+      "from": "action:eat",
+      "rel": "followed_by",
+      "to": "action:groom",
+      "strength": 0.1422013067864209,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.257
+    },
+    {
+      "id": "action:eat|followed_by|action:play",
+      "from": "action:eat",
+      "rel": "followed_by",
+      "to": "action:play",
+      "strength": 0.14403652740519665,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.649
+    },
+    {
+      "id": "action:eat|followed_by|action:rest",
+      "from": "action:eat",
+      "rel": "followed_by",
+      "to": "action:rest",
+      "strength": 0.13654788281331387,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 464.31
+    },
+    {
+      "id": "action:eat|followed_by|action:sleep",
+      "from": "action:eat",
+      "rel": "followed_by",
+      "to": "action:sleep",
+      "strength": 0.13894272317677928,
+      "valence": 0.25,
+      "count": 1,
+      "last_age": 465.062
+    },
+    {
+      "id": "action:eat|involves|stimulus:food",
+      "from": "action:eat",
+      "rel": "involves",
+      "to": "stimulus:food",
+      "strength": 0.5308,
+      "valence": 0.7232,
+      "count": 5,
+      "last_age": 468.377
+    },
+    {
+      "id": "action:eat|rewarded_by|source:player",
+      "from": "action:eat",
+      "rel": "rewarded_by",
+      "to": "source:player",
+      "strength": 0.1422013067864209,
+      "valence": 0.25,
+      "count": 1,
+      "last_age": 466.192
+    },
+    {
+      "id": "action:eat|rewarded_by|source:self",
+      "from": "action:eat",
+      "rel": "rewarded_by",
+      "to": "source:self",
+      "strength": 0.4556,
+      "valence": 0.6309,
+      "count": 4,
+      "last_age": 468.377
+    },
+    {
+      "id": "action:groom|followed_by|action:sleep",
+      "from": "action:groom",
+      "rel": "followed_by",
+      "to": "action:sleep",
+      "strength": 0.14320418076005847,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.37
+    },
+    {
+      "id": "action:groom|involves|stimulus:brush",
+      "from": "action:groom",
+      "rel": "involves",
+      "to": "stimulus:brush",
+      "strength": 0.1422013067864209,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.257
+    },
+    {
+      "id": "action:groom|rewarded_by|source:player",
+      "from": "action:groom",
+      "rel": "rewarded_by",
+      "to": "source:player",
+      "strength": 0.1422013067864209,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.257
+    },
+    {
+      "id": "action:play|followed_by|action:eat",
+      "from": "action:play",
+      "rel": "followed_by",
+      "to": "action:eat",
+      "strength": 0.2674,
+      "valence": 0.4375,
+      "count": 2,
+      "last_age": 468.377
+    },
+    {
+      "id": "action:play|followed_by|action:play",
+      "from": "action:play",
+      "rel": "followed_by",
+      "to": "action:play",
+      "strength": 0.14403652740519665,
+      "valence": -0.025,
+      "count": 1,
+      "last_age": 466.712
+    },
+    {
+      "id": "action:play|followed_by|action:sleep",
+      "from": "action:play",
+      "rel": "followed_by",
+      "to": "action:sleep",
+      "strength": 0.14487371190446724,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.872
+    },
+    {
+      "id": "action:play|involves|stimulus:ball",
+      "from": "action:play",
+      "rel": "involves",
+      "to": "stimulus:ball",
+      "strength": 0.14403652740519665,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.649
+    },
+    {
+      "id": "action:play|involves|stimulus:mini_game",
+      "from": "action:play",
+      "rel": "involves",
+      "to": "stimulus:mini_game",
+      "strength": 0.14403652740519665,
+      "valence": -0.025,
+      "count": 1,
+      "last_age": 466.712
+    },
+    {
+      "id": "action:play|rewarded_by|source:player",
+      "from": "action:play",
+      "rel": "rewarded_by",
+      "to": "source:player",
+      "strength": 0.2664675756996138,
+      "valence": 0.0688,
+      "count": 2,
+      "last_age": 466.712
+    },
+    {
+      "id": "action:play|rewarded_by|source:self",
+      "from": "action:play",
+      "rel": "rewarded_by",
+      "to": "source:self",
+      "strength": 0.2658547704882955,
+      "valence": 0.2188,
+      "count": 2,
+      "last_age": 468.126
+    },
+    {
+      "id": "action:rest|followed_by|action:eat",
+      "from": "action:rest",
+      "rel": "followed_by",
+      "to": "action:eat",
+      "strength": 0.1422013067864209,
+      "valence": 0.25,
+      "count": 1,
+      "last_age": 466.192
+    },
+    {
+      "id": "action:rest|followed_by|action:play",
+      "from": "action:rest",
+      "rel": "followed_by",
+      "to": "action:play",
+      "strength": 0.137341541012098,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 464.561
+    },
+    {
+      "id": "action:rest|followed_by|action:rest",
+      "from": "action:rest",
+      "rel": "followed_by",
+      "to": "action:rest",
+      "strength": 0.36394054450204655,
+      "valence": 0.2891,
+      "count": 3,
+      "last_age": 466.066
+    },
+    {
+      "id": "action:rest|rewarded_by|source:self",
+      "from": "action:rest",
+      "rel": "rewarded_by",
+      "to": "source:self",
+      "strength": 0.5210255880654461,
+      "valence": 0.3813,
+      "count": 5,
+      "last_age": 466.066
+    },
+    {
+      "id": "action:sleep|followed_by|action:eat",
+      "from": "action:sleep",
+      "rel": "followed_by",
+      "to": "action:eat",
+      "strength": 0.25945779803256086,
+      "valence": 0.3438,
+      "count": 2,
+      "last_age": 466.621
+    },
+    {
+      "id": "action:sleep|followed_by|action:play",
+      "from": "action:sleep",
+      "rel": "followed_by",
+      "to": "action:play",
+      "strength": 0.14913319212133253,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 468.126
+    },
+    {
+      "id": "action:sleep|followed_by|action:rest",
+      "from": "action:sleep",
+      "rel": "followed_by",
+      "to": "action:rest",
+      "strength": 0.1397503009226855,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 465.313
+    },
+    {
+      "id": "action:sleep|followed_by|action:sleep",
+      "from": "action:sleep",
+      "rel": "followed_by",
+      "to": "action:sleep",
+      "strength": 0.14320418076005847,
+      "valence": 0.125,
+      "count": 1,
+      "last_age": 466.377
+    },
+    {
+      "id": "action:sleep|rewarded_by|source:self",
+      "from": "action:sleep",
+      "rel": "rewarded_by",
+      "to": "source:self",
+      "strength": 0.5258915742132162,
+      "valence": 0.4736,
+      "count": 5,
+      "last_age": 466.872
+    }
+  ],
+  "episodes": [
+    {
+      "id": "ep_000001",
+      "t": "2026-02-06T16:52:15.718058",
+      "age": 463.808,
+      "action": "sleep",
+      "source": "self",
+      "context": null,
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:sleep",
+        "source:self"
+      ],
+      "prev": null,
+      "salience": 2.0
+    },
+    {
+      "id": "ep_000002",
+      "t": "2026-02-06T16:52:25.800251",
+      "age": 464.059,
+      "action": "eat",
+      "source": "self",
+      "context": null,
+      "response": "Cat meows for food...",
+      "reward": 0.5,
+      "state": {},
+      "tags": [
+        "stimulus:food"
+      ],
+      "links": [
+        "action:eat",
+        "source:self",
+        "stimulus:food"
+      ],
+      "prev": "ep_000001",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000003",
+      "t": "2026-02-06T16:52:35.908016",
+      "age": 464.31,
+      "action": "rest",
+      "source": "self",
+      "context": null,
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:rest",
+        "source:self"
+      ],
+      "prev": "ep_000002",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000004",
+      "t": "2026-02-06T16:52:46.016587",
+      "age": 464.561,
+      "action": "play",
+      "source": "self",
+      "context": null,
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:play",
+        "source:self"
+      ],
+      "prev": "ep_000003",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000005",
+      "t": "2026-02-06T16:52:56.124414",
+      "age": 464.812,
+      "action": "eat",
+      "source": "self",
+      "context": null,
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "state": {},
+      "tags": [
+        "stimulus:food"
+      ],
+      "links": [
+        "action:eat",
+        "source:self",
+        "stimulus:food"
+      ],
+      "prev": "ep_000004",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000006",
+      "t": "2026-02-06T16:53:06.224726",
+      "age": 465.062,
+      "action": "sleep",
+      "source": "self",
+      "context": null,
+      "response": "Cat yawns and sleeps",
+      "reward": 1.0,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:sleep",
+        "source:self"
+      ],
+      "prev": "ep_000005",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000007",
+      "t": "2026-02-06T16:53:16.346722",
+      "age": 465.313,
+      "action": "rest",
+      "source": "self",
+      "context": null,
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:rest",
+        "source:self"
+      ],
+      "prev": "ep_000006",
+      "salience": 1.0
+    },
+    {
+      "id": "ep_000008",
+      "t": "2026-02-06T16:53:26.463212",
+      "age": 465.564,
+      "action": "rest",
+      "source": "self",
+      "context": null,
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:rest",
+        "source:self"
+      ],
+      "prev": "ep_000007",
+      "salience": 0.833
+    },
+    {
+      "id": "ep_000009",
+      "t": "2026-02-06T16:53:36.576382",
+      "age": 465.815,
+      "action": "rest",
+      "source": "self",
+      "context": null,
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:rest",
+        "source:self"
+      ],
+      "prev": "ep_000008",
+      "salience": 0.75
+    },
+    {
+      "id": "ep_000010",
+      "t": "2026-02-06T16:53:46.692146",
+      "age": 466.066,
+      "action": "rest",
+      "source": "self",
+      "context": null,
+      "response": "Cat is resting",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:rest",
+        "source:self"
+      ],
+      "prev": "ep_000009",
+      "salience": 0.7
+    },
+    {
+      "id": "ep_000011",
+      "t": "2026-02-13T13:45:47.615290",
+      "age": 466.192,
+      "action": "eat",
+      "source": "player",
+      "context": null,
+      "response": "You fed the cat!",
+      "reward": 1.0,
+      "state": {},
+      "tags": [
+        "stimulus:food"
+      ],
+      "links": [
+        "action:eat",
+        "source:player",
+        "stimulus:food"
+      ],
+      "prev": "ep_000010",
+      "salience": 1.333
+    },
+    {
+      "id": "ep_000012",
+      "t": "2026-02-13T13:45:50.240766",
+      "age": 466.257,
+      "action": "groom",
+      "source": "player",
+      "context": null,
+      "response": "You gently groomed the cat",
+      "reward": 0.5,
+      "state": {},
+      "tags": [
+        "stimulus:brush"
+      ],
+      "links": [
+        "action:groom",
+        "source:player",
+        "stimulus:brush"
+      ],
+      "prev": "ep_000011",
+      "salience": 1.5
+    },
+    {
+      "id": "ep_000013",
+      "t": "2026-02-13T13:45:54.751822",
+      "age": 466.37,
+      "action": "sleep",
+      "source": "self",
+      "context": null,
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:sleep",
+        "source:self"
+      ],
+      "prev": "ep_000012",
+      "salience": 0.833
+    },
+    {
+      "id": "ep_000014",
+      "t": "2026-02-13T13:45:55.055082",
+      "age": 466.377,
+      "action": "sleep",
+      "source": "self",
+      "context": null,
+      "response": "Cat is sleeping peacefully",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:sleep",
+        "source:self"
+      ],
+      "prev": "ep_000013",
+      "salience": 0.75
+    },
+    {
+      "id": "ep_000015",
+      "t": "2026-02-13T13:46:04.892485",
+      "age": 466.621,
+      "action": "eat",
+      "source": "self",
+      "context": null,
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "state": {},
+      "tags": [
+        "stimulus:food"
+      ],
+      "links": [
+        "action:eat",
+        "source:self",
+        "stimulus:food"
+      ],
+      "prev": "ep_000014",
+      "salience": 1.25
+    },
+    {
+      "id": "ep_000016",
+      "t": "2026-02-13T13:46:06.074382",
+      "age": 466.649,
+      "action": "play",
+      "source": "player",
+      "context": null,
+      "response": "Played with Ball 🔴",
+      "reward": 0.5,
+      "state": {},
+      "tags": [
+        "stimulus:ball"
+      ],
+      "links": [
+        "action:play",
+        "source:player",
+        "stimulus:ball"
+      ],
+      "prev": "ep_000015",
+      "salience": 1.0
+    },
+    {
+      "id": "ep_000017",
+      "t": "2026-02-13T13:46:08.562102",
+      "age": 466.712,
+      "action": "play",
+      "source": "player",
+      "context": null,
+      "response": "Mini-game missed",
+      "reward": -0.1,
+      "state": {},
+      "tags": [
+        "stimulus:mini_game"
+      ],
+      "links": [
+        "action:play",
+        "source:player",
+        "stimulus:mini_game"
+      ],
+      "prev": "ep_000016",
+      "salience": 0.433
+    },
+    {
+      "id": "ep_000018",
+      "t": "2026-02-13T13:46:15.025014",
+      "age": 466.872,
+      "action": "sleep",
+      "source": "self",
+      "context": null,
+      "response": "Cat yawns and sleeps",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:sleep",
+        "source:self"
+      ],
+      "prev": "ep_000017",
+      "salience": 0.7
+    },
+    {
+      "id": "ep_000019",
+      "t": "2026-02-13T13:47:05.700632",
+      "age": 468.126,
+      "action": "play",
+      "source": "self",
+      "context": null,
+      "response": "Cat is playing with a toy!",
+      "reward": 0.5,
+      "state": {},
+      "tags": [],
+      "links": [
+        "action:play",
+        "source:self"
+      ],
+      "prev": "ep_000018",
+      "salience": 0.75
+    },
+    {
+      "id": "ep_000020",
+      "t": "2026-02-13T13:47:15.842063",
+      "age": 468.377,
+      "action": "eat",
+      "source": "self",
+      "context": null,
+      "response": "Cat meows for food...",
+      "reward": 1.0,
+      "state": {},
+      "tags": [
+        "stimulus:food"
+      ],
+      "links": [
+        "action:eat",
+        "source:self",
+        "stimulus:food"
+      ],
+      "prev": "ep_000019",
+      "salience": 1.2
+    }
+  ]
+}

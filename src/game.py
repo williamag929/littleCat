@@ -11,6 +11,7 @@ import random
 import math
 from cat_brain import CatBrain
 from ui_agent import SeniorUIAgent
+import cat_voice
 import time
 from datetime import datetime
 from typing import Dict, Optional, Tuple, List
@@ -35,11 +36,20 @@ pygame.init()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 FPS = 30
-GAME_SPEED = 0.02  # Time multiplier for simulation (slower days)
+GAME_SPEED = 0.0025  # In-game hours per frame (overridden by config.py)
+SPEECH_DURATION = 3.5
+SPEECH_AMBIENT_COOLDOWN = 25
+SPEECH_NEED_COOLDOWN = 60
+HOVER_CARD_DELAY = 0.35
 
 # Optional behavior settings (can be overridden in config.py)
 try:
     import config as cfg
+    GAME_SPEED = getattr(cfg, "GAME_SPEED", GAME_SPEED)
+    SPEECH_DURATION = getattr(cfg, "SPEECH_DURATION", SPEECH_DURATION)
+    SPEECH_AMBIENT_COOLDOWN = getattr(cfg, "SPEECH_AMBIENT_COOLDOWN", SPEECH_AMBIENT_COOLDOWN)
+    SPEECH_NEED_COOLDOWN = getattr(cfg, "SPEECH_NEED_COOLDOWN", SPEECH_NEED_COOLDOWN)
+    HOVER_CARD_DELAY = getattr(cfg, "HOVER_CARD_DELAY", HOVER_CARD_DELAY)
     ADULT_AGE_DAYS = getattr(cfg, "ADULT_AGE_DAYS", 199)
     BUSY_THRESHOLD_SECONDS = getattr(cfg, "BUSY_THRESHOLD_SECONDS", 20)
     ADULT_SLEEP_MULTIPLIER = getattr(cfg, "ADULT_SLEEP_MULTIPLIER", 2.5)
@@ -78,7 +88,7 @@ except Exception:
 # Pixel-art sprite settings (90s style)
 USE_PIXEL_SPRITES = True
 SPRITE_SIZE = 32
-SPRITE_SCALE = 2
+SPRITE_SCALE = 3
 
 # Desktop overlay mode
 DESKTOP_OVERLAY = True
@@ -156,6 +166,11 @@ class GameDisplay:
         self.font_medium = pygame.font.Font(None, 28)
         self.font_small = pygame.font.Font(None, 20)
         self.font_tiny = pygame.font.Font(None, 14)
+        # Emoji-capable font for the cat's speech (default font draws emoji as boxes)
+        emoji_path = pygame.font.match_font("segoeuiemoji") or pygame.font.match_font("notocoloremoji")
+        self.font_speech = pygame.font.Font(emoji_path, 17) if emoji_path else self.font_small
+        self.font_speech_small = pygame.font.Font(emoji_path, 14) if emoji_path else self.font_tiny
+        self.speech_cache = {}
         self.label_cache = {}
         self.instruction_surfaces = None  # Cache for static instruction text
         
@@ -284,12 +299,7 @@ class GameDisplay:
         # Pixel-art sprite render (90s style)
         if self.use_pixel_sprites:
             self.draw_sprite_pose(hunger, y_offset=jump_offset)
-            if action == "jump" and jump_progress is not None and jump_progress >= 0.5:
-                self.draw_claws((self.cat_x, self.cat_y + jump_offset + 10))
-            if action != "idle":
-                action_text = f"{action.upper()}"
-                self.draw_label(action_text, (self.cat_x, self.cat_y - 100))
-            return
+            return  # the pose shows the action; words live in the speech bubble
         
         # Draw based on current pose
         if action == "jump" and jump_progress is not None:
@@ -306,113 +316,176 @@ class GameDisplay:
             self.draw_walking_cat(mood, hunger)
         else:  # idle
             self.draw_idle_cat(mood, hunger)
-        
-        # Action indicator above cat
-        if action != "idle":
-            action_text = f"{action.upper()}"
-            self.draw_label(action_text, (self.cat_x, self.cat_y - 100))
+
+    # Pose -> frame sequence (frames repeat to control rhythm: blinks are rare, tails sway slowly)
+    SPRITE_SEQUENCES = {
+        "idle": [0, 0, 1, 1, 0, 0, 2, 2, 0, 0, 1, 1, 0, 3],   # tail sway + occasional blink
+        "walk": [0, 1, 2, 3],
+        "sit": [0, 0, 1, 1],                                   # happy eyes ^^, tail flick
+        "sleep": [0, 0, 1, 1],                                 # slow breathing + zZ
+        "eat": [0, 1],
+        "play": [0, 1, 2, 1],                                  # crouch -> pounce
+        "groom": [0, 1],
+    }
 
     def init_pixel_sprites(self):
-        """Generate simple 90s-style pixel sprites for the cat."""
-        self.sprites = {
-            "idle": [self.make_cat_sprite("idle", f) for f in range(4)],
-            "walk": [self.make_cat_sprite("walk", f) for f in range(4)],
-            "sit": [self.make_cat_sprite("sit", f) for f in range(2)],
-            "sleep": [self.make_cat_sprite("sleep", f) for f in range(2)],
-            "eat": [self.make_cat_sprite("eat", f) for f in range(2)],
-            "play": [self.make_cat_sprite("play", f) for f in range(3)],
-        }
-        self.scaled_sprites = {
-            pose: [
-                pygame.transform.scale(frame, (SPRITE_SIZE * self.sprite_scale, SPRITE_SIZE * self.sprite_scale))
-                for frame in frames
-            ]
-            for pose, frames in self.sprites.items()
-        }
+        """Build pixel-art sprites (right-facing + mirrored) once at startup."""
+        counts = {"idle": 4, "walk": 4, "sit": 2, "sleep": 2, "eat": 2, "play": 3, "groom": 2}
+        size = SPRITE_SIZE * self.sprite_scale
+        self.scaled_sprites, self.scaled_sprites_left = {}, {}
+        for pose, n in counts.items():
+            frames = [pygame.transform.scale(self.make_cat_sprite(pose, f), (size, size)) for f in range(n)]
+            self.scaled_sprites[pose] = frames
+            self.scaled_sprites_left[pose] = [pygame.transform.flip(f, True, False) for f in frames]
 
     def make_cat_sprite(self, pose, frame):
-        """Create a single pixel-art frame for a pose."""
-        surf = pygame.Surface((SPRITE_SIZE, SPRITE_SIZE), pygame.SRCALPHA)
+        """Draw one 32x32 pixel-art frame of a ginger tabby, then auto-outline it."""
+        S = SPRITE_SIZE
+        surf = pygame.Surface((S, S), pygame.SRCALPHA)
+        OUT, FUR, DARK = (74, 44, 33), (247, 160, 72), (214, 112, 44)
+        CREAM, PINK, EYE, SHINE = (255, 228, 190), (244, 150, 160), (45, 30, 30), (255, 255, 255)
 
-        def px(x, y, color):
-            if 0 <= x < SPRITE_SIZE and 0 <= y < SPRITE_SIZE:
-                surf.set_at((x, y), color)
+        def px(x, y, c):
+            if 0 <= x < S and 0 <= y < S:
+                surf.set_at((int(x), int(y)), c)
 
-        def rect(x, y, w, h, color):
-            pygame.draw.rect(surf, color, (x, y, w, h))
+        def ell(x, y, w, h, c):
+            pygame.draw.ellipse(surf, c, (x, y, w, h))
 
-        # Body base
-        if pose == "sleep":
-            rect(6, 16, 20, 8, ORANGE)
-            rect(2, 17, 8, 6, ORANGE)
-            # Eyes closed
-            px(5, 19, BLACK)
-            px(7, 19, BLACK)
-            # Tail curl
-            rect(24, 18, 4, 4, ORANGE)
-        else:
-            rect(8, 14, 16, 12, ORANGE)
-            rect(10, 6, 12, 10, ORANGE)
+        def rect(x, y, w, h, c):
+            pygame.draw.rect(surf, c, (x, y, w, h))
 
-            # Ears
-            px(11, 4, ORANGE)
-            px(20, 4, ORANGE)
-            px(12, 5, ORANGE)
-            px(19, 5, ORANGE)
+        def tail(points, c=FUR):
+            for (x, y) in points:
+                pygame.draw.circle(surf, c, (x, y), 1)
+                rect(x - 1, y - 1, 2, 2, c)
 
-            # Eyes
-            px(13, 10, BLACK)
-            px(18, 10, BLACK)
+        def eyes(lx, rx, y, mode):
+            for ex in (lx, rx):
+                if mode == "open":
+                    rect(ex, y, 2, 2, EYE)
+                    px(ex, y, SHINE)
+                elif mode == "happy":       # ^ ^
+                    px(ex, y + 1, EYE); px(ex + 1, y, EYE); px(ex + 2, y + 1, EYE)
+                else:                        # closed / blink
+                    rect(ex, y + 1, 2, 1, EYE)
 
-            # Mouth (pose-based)
-            if pose == "eat" and frame % 2 == 0:
-                px(15, 12, BLACK)
-            elif pose == "play":
-                px(14, 12, BLACK)
-                px(16, 12, BLACK)
+        if pose in ("idle", "sit", "eat", "groom"):
+            # ---------- front-facing sitting cat ----------
+            dip = 3 if pose == "eat" else 0
+            sway = [0, 1, 0, -1][frame % 4] if pose == "idle" else (frame % 2)
+            if pose == "sit":   # tail wrapped around the paws
+                tail([(22, 29), (24, 28), (25, 26 - sway)])
+            else:               # tail up, swaying
+                tail([(22, 27), (24, 25), (25, 22), (25 + sway, 19), (24 + sway, 17)])
+            ell(9, 15, 14, 15, FUR)                     # body
+            ell(12, 18, 8, 10, CREAM)                   # chest
+            rect(11, 27, 4, 3, CREAM); rect(17, 27, 4, 3, CREAM)  # front paws
+            hx, hy = 8, 5 + dip
+            if pose == "groom" and frame % 2:           # licking a raised paw
+                rect(19, 16, 4, 5, CREAM)
+            ear_l = [(hx + 1, hy + 5), (hx + 2, hy - 3), (hx + 7, hy + 1)]
+            ear_r = [(hx + 15, hy + 5), (hx + 14, hy - 3), (hx + 9, hy + 1)]
+            pygame.draw.polygon(surf, FUR, ear_l); pygame.draw.polygon(surf, FUR, ear_r)
+            px(hx + 3, hy, PINK); px(hx + 3, hy + 1, PINK); px(hx + 13, hy, PINK); px(hx + 13, hy + 1, PINK)
+            ell(hx, hy, 16, 13, FUR)                    # head
+            ell(hx + 4, hy + 7, 8, 5, CREAM)            # muzzle
+            for sx in (hx + 6, hx + 8, hx + 10):        # forehead stripes
+                rect(sx, hy + 1, 1, 2, DARK)
+            rect(hx, hy + 6, 2, 1, DARK); rect(hx + 14, hy + 6, 2, 1, DARK)  # cheek stripes
+            if pose == "eat":
+                mode = "closed"
+            elif pose in ("sit", "groom"):
+                mode = "happy"
             else:
-                px(15, 12, BLACK)
-
-            # Tail
-            tail_shift = (frame % 3) - 1
-            rect(24 + tail_shift, 16, 4, 8, ORANGE)
-
-            # Legs (walk frames)
+                mode = "closed" if frame == 3 else "open"
+            eyes(hx + 4, hx + 10, hy + 5, mode)
+            MOUTH = (170, 95, 80)
+            px(hx + 7, hy + 7, PINK); px(hx + 8, hy + 7, PINK)      # nose
+            px(hx + 7, hy + 8, MOUTH); px(hx + 8, hy + 8, MOUTH)    # soft little "w" mouth
+            px(hx + 6, hy + 9, MOUTH); px(hx + 9, hy + 9, MOUTH)
+            if pose == "eat" and frame % 2 == 0:
+                px(hx + 7, hy + 9, PINK); px(hx + 8, hy + 9, PINK)    # chewing tongue
+        elif pose == "sleep":
+            # ---------- curled-up loaf ----------
+            breathe = frame % 2
+            ell(6, 17 - breathe, 21, 12 + breathe, FUR)          # body
+            for sx in (14, 18, 22):
+                rect(sx, 18 - breathe, 1, 3, DARK)                 # back stripes
+            tail([(25, 27), (21, 29), (16, 29), (11, 29)])         # tail wrapped in front
+            pygame.draw.polygon(surf, FUR, [(5, 17), (6, 11), (10, 15)])
+            pygame.draw.polygon(surf, FUR, [(13, 15), (15, 11), (16, 17)])
+            px(7, 14, PINK); px(14, 14, PINK)
+            ell(3, 14, 14, 11, FUR)                                # head resting on paws
+            ell(6, 20, 8, 4, CREAM)
+            eyes(6, 11, 17, "closed")
+            px(9, 20, PINK)
+        else:
+            # ---------- side view (walk / play), facing right ----------
+            ground = 29
             if pose == "walk":
-                if frame % 2 == 0:
-                    rect(10, 26, 2, 4, ORANGE)
-                    rect(20, 24, 2, 6, ORANGE)
-                else:
-                    rect(10, 24, 2, 6, ORANGE)
-                    rect(20, 26, 2, 4, ORANGE)
-            elif pose == "sit":
-                rect(12, 24, 8, 6, ORANGE)
+                bob = frame % 2
+                # (x, lift): diagonal leg pairs alternate
+                legs = [(8, 0), (12, 2), (19, 2), (23, 0)] if frame in (0, 1) else [(8, 2), (12, 0), (19, 0), (23, 2)]
+                body_y, head_y, tail_pts = 14 + bob, 7 + bob, [(6, 17), (4, 14), (3, 11), (4, 8)]
+                paws_up = False
+            else:  # play: crouch (0), mid (1), pounce with front paws up (2)
+                lift = [0, 2, 5][frame % 3]
+                body_y, head_y = 16 - lift, 9 - lift
+                paws_up = frame % 3 == 2
+                legs = [(8, 0), (12, 0)] + ([] if paws_up else [(19, 0), (23, 0)])
+                tail_pts = [(6, 18), (4, 15), (3, 11), (5, 8)] if frame % 3 else [(6, 18), (3, 18), (1, 15)]
+            tail(tail_pts)
+            for (lx, lift_px) in legs:
+                top = body_y + 7
+                bottom = ground - lift_px
+                rect(lx, top, 3, max(2, bottom - top), FUR)
+                rect(lx, bottom - 2, 3, 2, CREAM)                # paw
+            if paws_up:                                          # front paws reaching forward
+                rect(23, body_y + 2, 6, 3, FUR); rect(27, body_y + 2, 2, 3, CREAM)
+                rect(22, body_y + 6, 6, 3, FUR); rect(26, body_y + 6, 2, 3, CREAM)
+            ell(5, body_y, 21, 11, FUR)                      # body
+            ell(9, body_y + 6, 13, 5, CREAM)                 # belly
+            for sx in (10, 13, 16):
+                rect(sx, body_y + 1, 1, 3, DARK)
+            hx, hy = 18, head_y
+            pygame.draw.polygon(surf, FUR, [(hx + 1, hy + 4), (hx + 2, hy - 3), (hx + 6, hy + 1)])
+            pygame.draw.polygon(surf, FUR, [(hx + 7, hy + 1), (hx + 10, hy - 3), (hx + 11, hy + 4)])
+            px(hx + 3, hy, PINK); px(hx + 9, hy, PINK)
+            ell(hx, hy, 13, 11, FUR)                         # head
+            ell(hx + 7, hy + 5, 6, 4, CREAM)                 # muzzle
+            rect(hx + 4, hy + 1, 1, 2, DARK); rect(hx + 6, hy + 1, 1, 2, DARK)
+            eyes(hx + 8, hx + 8, hy + 4, "open")
+            px(hx + 12, hy + 6, PINK)                        # nose
 
-        # Play pose: slight bounce
-        if pose == "play":
-            bounce = (frame % 3)
-            bounced = pygame.Surface((SPRITE_SIZE, SPRITE_SIZE), pygame.SRCALPHA)
-            bounced.blit(surf, (0, -bounce))
-            surf = bounced
+        # Auto-outline: every empty pixel touching fur becomes a dark outline pixel
+        filled = {(x, y) for x in range(S) for y in range(S) if surf.get_at((x, y)).a > 0}
+        for (x, y) in list(filled):
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if 0 <= nx < S and 0 <= ny < S and (nx, ny) not in filled:
+                    surf.set_at((nx, ny), OUT)
 
+        if pose == "sleep":  # floating zZ (after outline so letters stay thin)
+            z_y = 6 - frame * 2
+            for (zx, zy, n) in ((24, z_y + 4, 3), (27, z_y, 4)):
+                rect(zx, zy, n, 1, (120, 130, 200)); rect(zx, zy + n - 1, n, 1, (120, 130, 200))
+                for i in range(n):
+                    px(zx + n - 1 - i, zy + i, (120, 130, 200))
         return surf
 
     def draw_sprite_pose(self, hunger, y_offset=0):
-        """Draw current sprite pose with animation frame."""
+        """Draw current sprite pose with animation frame, mirrored when walking left."""
         pose = self.current_pose
-        frames = self.scaled_sprites.get(pose, self.scaled_sprites.get("idle", []))
+        bank = self.scaled_sprites if self.facing_right else self.scaled_sprites_left
+        frames = bank.get(pose) or bank.get("idle", [])
         if not frames:
             return
-
-        frame = frames[self.animation_frame % len(frames)]
+        seq = self.SPRITE_SEQUENCES.get(pose, list(range(len(frames))))
+        frame = frames[seq[self.animation_frame % len(seq)] % len(frames)]
         x = int(self.cat_x - (SPRITE_SIZE * self.sprite_scale) / 2)
         y = int(self.cat_y - (SPRITE_SIZE * self.sprite_scale) / 2 + y_offset)
         self.screen.blit(frame, (x, y))
 
-        # Hungry "Mau Mau" bubble
-        if hunger >= 70:
-            self.draw_label("Mau Mau", (x + 58, y - 28))
-    
     def update_pose(self, action):
         """Update current pose based on action."""
         pose_map = {
@@ -421,11 +494,13 @@ class GameDisplay:
             'play': 'play',
             'purr': 'sit',
             'hide': 'sit',
-            'rest': 'sit',
-            'groom': 'sit',
+            'rest': 'sleep',
+            'groom': 'groom',
             'talk': 'sit',
             'train': 'play',
             'jump': 'play',
+            'walk': 'walk',
+            'sit': 'sit',
             'idle': 'idle'
         }
         self.current_pose = pose_map.get(action, 'idle')
@@ -670,8 +745,6 @@ class GameDisplay:
             open_h = 6 + open_amount
             pygame.draw.arc(self.screen, BLACK,
                           (x - 8, y + 6, 16, open_h), 0, 3.14, 2)
-            # Small "Mau Mau" text bubble
-            self.draw_label("Mau Mau", (x + 40, y - 20))
         elif "GRUMPY" in mood:
             # Slight frown (less sad)
             pygame.draw.arc(self.screen, BLACK,
@@ -733,31 +806,91 @@ class GameDisplay:
         not true LRU. This is acceptable since labels are typically accessed in similar
         patterns each frame.
         """
-        if text in self.label_cache:
-            text_surf = self.label_cache[text]
-        else:
-            text_surf = self.font_small.render(text, True, BLACK)
-            self.label_cache[text] = text_surf
-            # More efficient cache management - clear oldest half when limit reached
-            if len(self.label_cache) > 50:
-                # Keep only most recently added items (MRU eviction)
-                items = list(self.label_cache.items())
-                self.label_cache = dict(items[-25:])
+        if not text:
+            return
+        # Soft pill in the same palette as the speech bubble (was a black box)
+        text_surf = self._speech_surface(text, self.font_speech_small)
         text_rect = text_surf.get_rect(center=center_pos)
-
-        padding_x = 8
-        padding_y = 4
-        bg_rect = pygame.Rect(
-            text_rect.left - padding_x,
-            text_rect.top - padding_y,
-            text_rect.width + padding_x * 2,
-            text_rect.height + padding_y * 2
-        )
-
-        pygame.draw.rect(self.screen, WHITE, bg_rect)
-        pygame.draw.rect(self.screen, BLACK, bg_rect, 2)
+        bg_rect = self._clamp_rect(text_rect.inflate(18, 8))
+        text_rect.center = bg_rect.center
+        pygame.draw.rect(self.screen, (255, 250, 244), bg_rect, border_radius=bg_rect.height // 2)
+        pygame.draw.rect(self.screen, (235, 170, 150), bg_rect, 1, border_radius=bg_rect.height // 2)
         self.screen.blit(text_surf, text_rect)
     
+    def _speech_surface(self, text, font):
+        key = (text, id(font))
+        surf = self.speech_cache.get(key)
+        if surf is None:
+            surf = font.render(text, True, (60, 45, 40))
+            if len(self.speech_cache) > 60:
+                self.speech_cache.clear()
+            self.speech_cache[key] = surf
+        return surf
+
+    def _clamp_rect(self, rect):
+        rect.left = max(6, min(rect.left, self.window_width - rect.width - 6))
+        rect.top = max(6, min(rect.top, self.window_height - rect.height - 6))
+        return rect
+
+    def draw_speech_bubble(self, text, alpha=1.0):
+        """Rounded speech bubble with a tail pointing at the cat."""
+        surf = self._speech_surface(text, self.font_speech)
+        w, h = surf.get_width() + 24, surf.get_height() + 14
+        rise = int((1.0 - alpha) * 8)  # tiny pop-in
+        rect = self._clamp_rect(pygame.Rect(self.cat_x - w // 2, self.cat_y - 105 + rise, w, h))
+        tail_x = max(rect.left + 14, min(self.cat_x, rect.right - 14))
+        tail = [(tail_x - 7, rect.bottom - 2), (tail_x + 7, rect.bottom - 2), (tail_x + 2, rect.bottom + 10)]
+        shadow = rect.move(2, 3)
+        pygame.draw.rect(self.screen, (120, 100, 95), shadow, border_radius=12)
+        pygame.draw.polygon(self.screen, (255, 250, 244), tail)
+        pygame.draw.rect(self.screen, (255, 250, 244), rect, border_radius=12)
+        pygame.draw.rect(self.screen, (235, 170, 150), rect, 2, border_radius=12)
+        pygame.draw.lines(self.screen, (235, 170, 150), False, [tail[0], tail[2], tail[1]], 2)
+        self.screen.blit(surf, (rect.left + 12, rect.top + 7))
+
+    def draw_thought_bubble(self, text):
+        """Small cloud with dots: what the cat thinks (quieter than speech)."""
+        surf = self._speech_surface(text, self.font_speech_small)
+        w, h = surf.get_width() + 18, surf.get_height() + 10
+        rect = self._clamp_rect(pygame.Rect(self.cat_x + 18, self.cat_y - 95, w, h))
+        for i, r in enumerate((3, 5)):
+            pygame.draw.circle(self.screen, (250, 248, 255), (self.cat_x + 10 + i * 8, self.cat_y - 48 - i * 12), r)
+            pygame.draw.circle(self.screen, (190, 180, 220), (self.cat_x + 10 + i * 8, self.cat_y - 48 - i * 12), r, 1)
+        pygame.draw.rect(self.screen, (250, 248, 255), rect, border_radius=14)
+        pygame.draw.rect(self.screen, (190, 180, 220), rect, 1, border_radius=14)
+        self.screen.blit(surf, (rect.left + 9, rect.top + 5))
+
+    def draw_hover_card(self, cat_status, health):
+        """Cute status card next to the cat while the mouse hovers it."""
+        rows = [
+            ("💚", "Health", health, (120, 200, 140)),
+            ("❤️", "Happy", cat_status['happiness'], (240, 120, 140)),
+            ("🍗", "Tummy", 100 - cat_status['hunger'], (245, 175, 90)),
+            ("⚡", "Energy", cat_status['energy'], (250, 210, 90)),
+            ("🤝", "Bond", cat_status['trust'], (170, 150, 230)),
+        ]
+        title = self._speech_surface(f"{cat_status['name']} · {cat_voice.mood_word(cat_status)}", self.font_speech)
+        width = max(190, title.get_width() + 24)
+        height = 38 + len(rows) * 22 + 8
+        side = 1 if self.cat_x + 60 + width < self.window_width else -1
+        left = self.cat_x + 55 if side > 0 else self.cat_x - 55 - width
+        rect = self._clamp_rect(pygame.Rect(left, self.cat_y - 40, width, height))  # below the speech bubble
+        pygame.draw.rect(self.screen, (120, 100, 95), rect.move(2, 3), border_radius=12)
+        pygame.draw.rect(self.screen, (255, 250, 244), rect, border_radius=12)
+        pygame.draw.rect(self.screen, (235, 170, 150), rect, 2, border_radius=12)
+        self.screen.blit(title, (rect.left + 12, rect.top + 8))
+        y = rect.top + 38
+        for icon, name, value, color in rows:
+            self.screen.blit(self._speech_surface(icon, self.font_speech_small), (rect.left + 10, y - 2))
+            self.screen.blit(self._speech_surface(name, self.font_speech_small), (rect.left + 32, y - 1))
+            bar = pygame.Rect(rect.left + 90, y + 3, width - 104, 10)
+            pygame.draw.rect(self.screen, (238, 230, 225), bar, border_radius=5)
+            fill = bar.copy()
+            fill.width = max(0, int(bar.width * max(0, min(100, value)) / 100))
+            if fill.width:
+                pygame.draw.rect(self.screen, color, fill, border_radius=5)
+            y += 22
+
     def move_cat_to_random_position(self):
         """Make cat walk to a random position."""
         self.target_x = random.randint(self.min_x, self.max_x)
@@ -886,99 +1019,65 @@ class GameDisplay:
             text_surf = self.font_small.render(line, True, color)
             self.screen.blit(text_surf, (box_x + 20, box_y + 20 + i * 22))
 
-    def draw_context_menu(self, menu_pos, items, mouse_pos=None):
-        """Draw improved circular menu with gradient background and text labels."""
+    def radial_layout(self, menu_pos, count):
+        """Shared geometry for drawing and clicking the radial menu.
+
+        Returns ([(x, y) per item], (cx, cy)). The ring grows with the number of
+        items so buttons never overlap, and is nudged to stay on screen.
+        """
+        spacing = RADIAL_ITEM_RADIUS * 2 + 12
+        radius = max(RADIAL_MENU_RADIUS, int(count * spacing / (2 * math.pi)))
+        margin = radius + RADIAL_ITEM_RADIUS + 34
+        cx = max(margin, min(self.window_width - margin, menu_pos[0]))
+        cy = max(margin, min(self.window_height - margin, menu_pos[1]))
+        step = (2 * math.pi) / max(1, count)
+        points = [(cx + math.cos(-math.pi / 2 + i * step) * radius,
+                   cy + math.sin(-math.pi / 2 + i * step) * radius) for i in range(count)]
+        return points, (cx, cy)
+
+    def draw_context_menu(self, menu_pos, items, mouse_pos=None, opened_ms=None):
+        """Cute radial menu: cream emoji buttons in a ring around the cat.
+
+        Everything is opaque on purpose: alpha-blending over the magenta
+        color-key turns into a purple halo on the real desktop.
+        """
         if not items:
             return
+        points, (cx, cy) = self.radial_layout(menu_pos, len(items))
+        # Pop-open animation (~150 ms): buttons slide out from the cat
+        t = 1.0
+        if opened_ms is not None:
+            t = max(0.0, min(1.0, (pygame.time.get_ticks() - opened_ms) / 150.0))
+        ease = 1 - (1 - t) ** 3
 
-        cx, cy = menu_pos
-        count = len(items)
-        if count == 0:
-            return
+        hovered_index = None
+        for i, (ix, iy) in enumerate(points):
+            if mouse_pos and (mouse_pos[0] - ix) ** 2 + (mouse_pos[1] - iy) ** 2 <= (RADIAL_ITEM_RADIUS + 4) ** 2:
+                hovered_index = i
 
-        # Keep within window bounds by nudging center
-        margin = RADIAL_MENU_RADIUS + 40
-        cx = max(margin, min(self.window_width - margin, cx))
-        cy = max(margin, min(self.window_height - margin, cy))
+        for i, (item, (ix, iy)) in enumerate(zip(items, points)):
+            x = int(cx + (ix - cx) * ease)
+            y = int(cy + (iy - cy) * ease)
+            hovered = i == hovered_index
+            r = RADIAL_ITEM_RADIUS + (RADIAL_HOVER_BUMP if hovered else 0)
+            is_nav = item.get("keep_open")
+            fill = (255, 226, 214) if hovered else ((246, 240, 255) if is_nav else (255, 250, 244))
+            border = (235, 140, 120) if hovered else ((190, 180, 220) if is_nav else (235, 170, 150))
+            pygame.draw.circle(self.screen, (150, 120, 110), (x + 1, y + 3), r)  # soft shadow
+            pygame.draw.circle(self.screen, fill, (x, y), r)
+            pygame.draw.circle(self.screen, border, (x, y), r, 2)
+            icon = self._speech_surface(item.get("icon", "•"), self.font_speech)
+            self.screen.blit(icon, icon.get_rect(center=(x, y + 1)))
 
-        # Draw semi-transparent gradient background circle (dimmed)
-        background_radius = RADIAL_MENU_RADIUS + 50
-        overlay = pygame.Surface((background_radius * 2, background_radius * 2), pygame.SRCALPHA)
-        
-        # Gradient effect: dark center fading out
-        for r in range(background_radius, 0, -5):
-            alpha = int(120 * (1 - r / background_radius))  # Fade from 120 to 0
-            color = (20, 20, 30, alpha)  # Dark blue-gray
-            pygame.draw.circle(overlay, color, (background_radius, background_radius), r)
-        
-        self.screen.blit(overlay, (int(cx - background_radius), int(cy - background_radius)))
+        # Name of the hovered button in a pill, pushed outward from the ring
+        if hovered_index is not None and t >= 1.0:
+            ix, iy = points[hovered_index]
+            dx, dy = ix - cx, iy - cy
+            dist = max(1.0, math.hypot(dx, dy))
+            off = RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP + 18
+            self.draw_label(items[hovered_index].get("label", ""),
+                            (int(ix + dx / dist * off), int(iy + dy / dist * off)))
 
-        base_angle = -math.pi / 2
-        step = (2 * math.pi) / count
-
-        # Draw connecting lines from center (optional subtle feature)
-        for i in range(count):
-            angle = base_angle + i * step
-            ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
-            iy = cy + math.sin(angle) * RADIAL_MENU_RADIUS
-            pygame.draw.line(self.screen, (80, 80, 100, 100), (int(cx), int(cy)), (int(ix), int(iy)), 1)
-
-        # Draw center dot with glow effect
-        pygame.draw.circle(self.screen, (100, 150, 255), (int(cx), int(cy)), 14)
-        pygame.draw.circle(self.screen, (150, 200, 255), (int(cx), int(cy)), 14, 2)
-
-        # Draw menu items
-        for i, item in enumerate(items):
-            angle = base_angle + i * step
-            ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
-            iy = cy + math.sin(angle) * RADIAL_MENU_RADIUS
-
-            hovered = False
-            if mouse_pos:
-                dx = mouse_pos[0] - ix
-                dy = mouse_pos[1] - iy
-                hovered = (dx * dx + dy * dy) <= (RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP) ** 2
-
-            radius = RADIAL_ITEM_RADIUS + (RADIAL_HOVER_BUMP if hovered else 0)
-            
-            # Draw item button with gradient effect
-            if hovered:
-                # Brighter on hover - gradient from blue to cyan
-                pygame.draw.circle(self.screen, (120, 180, 255), (int(ix), int(iy)), radius)
-                pygame.draw.circle(self.screen, (150, 200, 255), (int(ix), int(iy)), radius, 3)
-                glow_radius = int(radius * 1.15)
-                pygame.draw.circle(self.screen, (120, 180, 255, 100), (int(ix), int(iy)), glow_radius, 1)
-            else:
-                # Dark gradient blue
-                pygame.draw.circle(self.screen, (60, 100, 150), (int(ix), int(iy)), radius)
-                pygame.draw.circle(self.screen, (100, 150, 200), (int(ix), int(iy)), radius, 2)
-
-            # Draw text label
-            label = item.get("label", "")
-            if label:
-                text_color = (255, 255, 255) if hovered else (200, 220, 240)
-                label_surf = self.font_small.render(label, True, text_color)
-                label_rect = label_surf.get_rect(center=(int(ix), int(iy)))
-                
-                # Add slight shadow effect for better readability
-                shadow_surf = self.font_small.render(label, True, (20, 20, 30, 180))
-                shadow_rect = shadow_surf.get_rect(center=(int(ix) + 1, int(iy) + 1))
-                self.screen.blit(shadow_surf, shadow_rect)
-                self.screen.blit(label_surf, label_rect)
-
-            # Show tooltip on hover
-            if hovered and label:
-                tooltip_y = int(iy + radius + 20)
-                tooltip_text = item.get("tooltip", label)
-                tooltip_surf = self.font_tiny.render(tooltip_text, True, (200, 220, 240))
-                tooltip_rect = tooltip_surf.get_rect(center=(int(ix), tooltip_y))
-                
-                # Tooltip background
-                tooltip_bg = pygame.Surface((tooltip_rect.width + 16, tooltip_rect.height + 8), pygame.SRCALPHA)
-                pygame.draw.rect(tooltip_bg, (30, 50, 80, 200), tooltip_bg.get_rect(), border_radius=4)
-                self.screen.blit(tooltip_bg, (tooltip_rect.x - 8, tooltip_rect.y - 4))
-                self.screen.blit(tooltip_surf, tooltip_rect)
-    
     
     def draw_chat_ui(self, response_text, input_text, waiting, frame_count):
         """
@@ -1095,11 +1194,9 @@ class GameDisplay:
         self.draw_cat(current_action, cat_status['mood'], cat_status['hunger'], jump_progress)
         if visual_state:
             if visual_state.get("toy"):
-                self.draw_toy(visual_state["toy"], (self.cat_x + 40, self.cat_y + 20))
+                self.draw_toy(visual_state["toy"], (self.cat_x + 62, self.cat_y + 34))
             if visual_state.get("food_level", 0) > 0:
-                self.draw_food(visual_state["food_level"], (self.cat_x - 50, self.cat_y + 30))
-            if visual_state.get("curious"):
-                self.draw_interest((self.cat_x + 10, self.cat_y - 80))
+                self.draw_food(visual_state["food_level"], (self.cat_x - 66, self.cat_y + 40))
             if visual_state.get("show_stats"):
                 self.draw_stats_panel(cat_status, (self.cat_x + 120, self.cat_y - 40))
         if SHOW_UI:
@@ -1108,11 +1205,21 @@ class GameDisplay:
         if show_toy_menu:
             self.draw_toy_menu()
         if context_menu:
-            self.draw_context_menu(context_menu["pos"], context_menu["items"], context_menu.get("mouse_pos"))
+            self.draw_context_menu(context_menu["pos"], context_menu["items"], context_menu.get("mouse_pos"),
+                                   context_menu.get("opened"))
         if overlay_labels:
             for text, pos in overlay_labels:
                 self.draw_label(text, pos)
-        
+
+        # The cat's single voice: speech bubble > thought bubble; hover card on mouse-over
+        if visual_state:
+            if visual_state.get("hover_card"):
+                self.draw_hover_card(cat_status, visual_state.get("health", 0))
+            if visual_state.get("speech"):
+                self.draw_speech_bubble(visual_state["speech"], visual_state.get("speech_alpha", 1.0))
+            elif visual_state.get("thought") and not visual_state.get("hover_card"):
+                self.draw_thought_bubble(visual_state["thought"])
+
         # Chat UI overlay
         if visual_state and visual_state.get("chat_active"):
             self.draw_chat_ui(
@@ -1236,13 +1343,12 @@ class LittleCatGame:
         self.context_menu_active = False
         self.context_menu_pos = (0, 0)
         self.context_menu_items = []
-        self.context_menu_page = 0
+        self.context_menu_page = "care"
+        self.context_menu_pages = {}
+        self.context_menu_opened = None
 
-        # Reminders and achievements
-        self.reminders = []
-        self.reminder_cooldowns = {}
+        # Needs/routine checks and achievements (shown through self.say)
         self.reminder_timer = 0
-        self.achievement_notifications = []
         self.achievement_timer = 0
 
         # Mini-game state
@@ -1265,14 +1371,17 @@ class LittleCatGame:
 
         # UI Agent - intelligent UI enhancement system
         self.ui_agent = SeniorUIAgent()
-        self.agent_message = None
-        self.agent_message_timer = 0
-        self.agent_hint = None
-        self.agent_hint_timer = 0
+        # One voice for the cat: a single speech bubble with priorities + cooldowns
+        # priority: 1 ambient chatter/hints, 2 reply to you, 3 gentle need, 4 celebration
+        self.speech = None            # {'text', 'expires', 'priority', 'born'}
+        self.last_ambient_speech = -999.0
+        self.need_cooldowns = {}
         self.thought_bubble = None
-        self.agent_suggestion = None
-        self.agent_suggestion_timer = 0
-        self.personality_insight_timer = 0
+        self.thought_timer = 0.0
+        self.hint_timer = 0.0
+        self.chatter_timer = 0.0
+        self.hover_time = 0.0
+        self.last_hover_greet = -999.0
         self.last_input_time = time.time()
         self.young_play_cooldown = 0.0
 
@@ -1363,6 +1472,7 @@ class LittleCatGame:
                 
                 self.mouse_pos = event.pos
                 self.last_mouse_pos = event.pos
+                self.mouse_seen = True
                 if self.dragging:
                     self.display.cat_x = event.pos[0] + self.drag_offset_x
                     self.display.cat_y = event.pos[1] + self.drag_offset_y
@@ -1490,90 +1600,70 @@ class LittleCatGame:
                     print(f"Loaded {self.cat.name}!")
 
     def open_context_menu(self, pos):
-        """Open context menu near the mouse cursor."""
+        """Open the radial menu as a ring around the cat (which holds still)."""
         self.context_menu_active = True
-        self.context_menu_pos = pos
-        self.context_menu_page = 0
-        self.context_menu_pages = [
-            [
-                {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui},
-                {"label": "Pet", "icon": "😺", "action": lambda: self.perform_action('purr', "You petted the cat!")},
-                {"label": "Feed", "icon": "🍖", "action": lambda: self.perform_action('eat', "You fed the cat!")},
-                {"label": "Play", "icon": "🎾", "action": self.show_toy_menu},
-                {"label": "Groom", "icon": "🧼", "action": lambda: self.perform_action('groom', "You gently groomed the cat")},
-                {"label": "Talk", "icon": "💬", "action": lambda: self.perform_action('talk', "You calmly talked to the cat")},
-                {"label": "Train", "icon": "⭐", "action": lambda: self.perform_action('train', "You did a short training session")},
-                {"label": "Sleep", "icon": "💤", "action": lambda: self.perform_action('sleep', "Cat is sleeping peacefully")},
-                {"label": "Rest", "icon": "🛋️", "action": lambda: self.perform_action('rest', "Cat is resting")},
-                {"label": "Stats", "icon": "📊", "action": self.toggle_stats_panel},
+        self.context_menu_pos = (int(self.display.cat_x), int(self.display.cat_y))
+        act = lambda a, msg: (lambda: self.perform_action(a, msg))
+        nav = lambda page: (lambda: self.set_menu_page(page))
+        self.context_menu_pages = {
+            # Page 1: caring for the cat (what you do 95% of the time)
+            "care": [
+                {"label": "Pet", "icon": "🤚", "action": act('purr', "You petted the cat!")},
+                {"label": "Feed", "icon": "🐟", "action": act('eat', "You fed the cat!")},
+                {"label": "Play", "icon": "🧶", "action": self.open_toy_page, "keep_open": True},
+                {"label": "Groom", "icon": "✨", "action": act('groom', "You gently groomed the cat")},
+                {"label": "Talk", "icon": "💬", "action": act('talk', "You calmly talked to the cat")},
+                {"label": "Train", "icon": "⭐", "action": act('train', "You did a short training session")},
+                {"label": "Nap", "icon": "💤", "action": act('sleep', "Cat is sleeping peacefully")},
+                {"label": "More", "icon": "⚙️", "action": nav("more"), "keep_open": True},
             ],
-            [
-                {"label": "Next Cat", "icon": "🔁", "action": self.next_cat},
-                {"label": "New Cat", "icon": "➕", "action": self.create_new_cat},
-                {"label": "Export", "icon": "⤴", "action": self.export_profile},
-                {"label": "Import", "icon": "⤵", "action": self.import_profile},
-                {"label": "Export All", "icon": "📦", "action": self.export_all_profiles},
+            "toys": [
+                {"label": "Ball", "icon": "🔴", "action": lambda: self.play_with_toy('ball')},
+                {"label": "Fish", "icon": "🐠", "action": lambda: self.play_with_toy('fish')},
+                {"label": "Mouse", "icon": "🐭", "action": lambda: self.play_with_toy('mouse')},
+                {"label": "Bird", "icon": "🐦", "action": lambda: self.play_with_toy('bird')},
+                {"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True},
+            ],
+            "more": [
+                {"label": "Rest", "icon": "☁️", "action": act('rest', "Cat is resting")},
+                {"label": "Stats", "icon": "📊", "action": self.toggle_stats_panel},
+                {"label": "Next cat", "icon": "🔁", "action": self.next_cat},
+                {"label": "New cat", "icon": "🐱", "action": self.create_new_cat},
                 {"label": "Save", "icon": "💾", "action": lambda: self.cat.save_brain(self.save_path)},
                 {"label": "Load", "icon": "📂", "action": lambda: self.cat.load_brain(self.save_path)},
-                {"label": "Hibernate", "icon": "🌙", "action": self.hibernate_game},
-            ]
-        ]
-        self.context_menu_items = self.build_radial_menu_items()
+                {"label": "Export", "icon": "📤", "action": self.export_profile},
+                {"label": "Import", "icon": "📥", "action": self.import_profile},
+                {"label": "Export all", "icon": "📦", "action": self.export_all_profiles},
+                {"label": "Goodnight (exit)", "icon": "🌙", "action": self.hibernate_game},
+                {"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True},
+            ],
+        }
+        if self.chat_agent:
+            self.context_menu_pages["more"].insert(0, {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui})
+        self.set_menu_page("care")
 
-    def build_radial_menu_items(self):
-        """Build current page items with navigation arrows."""
-        pages = getattr(self, "context_menu_pages", [])
-        if not pages:
-            return []
-        items = list(pages[self.context_menu_page])
-        if len(pages) > 1:
-            items.append({"label": "Prev", "icon": "<", "action": self.prev_menu_page, "keep_open": True})
-            items.append({"label": "Next", "icon": ">", "action": self.next_menu_page, "keep_open": True})
-        return items
+    def set_menu_page(self, page):
+        """Switch radial menu page (replays the pop-open animation)."""
+        self.context_menu_page = page
+        self.context_menu_items = list(self.context_menu_pages.get(page, []))
+        self.context_menu_opened = pygame.time.get_ticks()
 
-    def next_menu_page(self):
-        """Go to next radial menu page."""
-        pages = getattr(self, "context_menu_pages", [])
-        if not pages:
+    def open_toy_page(self):
+        if self.cat.energy < 20:
+            self.context_menu_active = False
+            self.perform_action('sleep', "Cat is too tired to play")
             return
-        self.context_menu_page = (self.context_menu_page + 1) % len(pages)
-        self.context_menu_items = self.build_radial_menu_items()
-
-    def prev_menu_page(self):
-        """Go to previous radial menu page."""
-        pages = getattr(self, "context_menu_pages", [])
-        if not pages:
-            return
-        self.context_menu_page = (self.context_menu_page - 1) % len(pages)
-        self.context_menu_items = self.build_radial_menu_items()
+        self.set_menu_page("toys")
 
     def handle_context_menu_click(self, pos):
-        """Handle clicks on context menu items."""
-        cx, cy = self.context_menu_pos
-        count = len(self.context_menu_items)
-        if count == 0:
-            self.context_menu_active = False
-            return
-
-        # Keep within window bounds by nudging center (match draw logic)
-        margin = RADIAL_MENU_RADIUS + 40
-        cx = max(margin, min(self.display.window_width - margin, cx))
-        cy = max(margin, min(self.display.window_height - margin, cy))
-
-        base_angle = -math.pi / 2
-        step = (2 * math.pi) / count
-
-        for i, item in enumerate(self.context_menu_items):
-            angle = base_angle + i * step
-            ix = cx + math.cos(angle) * RADIAL_MENU_RADIUS
-            iy = cy + math.sin(angle) * RADIAL_MENU_RADIUS
-            dx = pos[0] - ix
-            dy = pos[1] - iy
-            if (dx * dx + dy * dy) <= (RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP) ** 2:
+        """Click a button (same geometry as drawing); clicking elsewhere closes."""
+        points, _ = self.display.radial_layout(self.context_menu_pos, len(self.context_menu_items))
+        for item, (ix, iy) in zip(self.context_menu_items, points):
+            if (pos[0] - ix) ** 2 + (pos[1] - iy) ** 2 <= (RADIAL_ITEM_RADIUS + RADIAL_HOVER_BUMP) ** 2:
                 action = item.get("action")
                 if action:
                     action()
-                if item.get("keep_open"):
+                if item.get("keep_open") and self.context_menu_active:
                     return
                 break
         self.context_menu_active = False
@@ -1772,56 +1862,60 @@ class LittleCatGame:
         self.ambient_channel.set_volume(volume)
         print(">>> Muted" if self.muted else ">>> Unmuted")
 
-    def add_reminder(self, text, duration=4.0):
-        """Add a short reminder message."""
-        expires_at = self.game_time + duration
-        self.reminders.append({'text': text, 'expires': expires_at})
-        if len(self.reminders) > 3:
-            self.reminders.pop(0)
+    def say(self, text, priority=1, duration=None):
+        """Let the cat speak. One bubble at a time; lower priority never interrupts.
+
+        Ambient lines (priority 1) also respect a global cooldown so the cat
+        talks like a pet, not like a notification center.
+        """
+        if not text:
+            return False
+        now = self.game_time
+        active = self.speech and self.speech['expires'] > now
+        if active and priority < self.speech['priority']:
+            return False
+        if priority <= 1 and (active or now - self.last_ambient_speech < SPEECH_AMBIENT_COOLDOWN):
+            return False
+        if priority <= 1:
+            self.last_ambient_speech = now
+        self.speech = {'text': text, 'priority': priority, 'born': now,
+                       'expires': now + (duration or SPEECH_DURATION)}
+        return True
+
+    def ask_for_need(self, key, kind):
+        """Gently ask for something, at most once per SPEECH_NEED_COOLDOWN."""
+        # A patient cat: waits 3x longer while you're busy, and never stacks requests
+        user_busy = (time.time() - self.last_input_time) >= BUSY_THRESHOLD_SECONDS
+        cooldown = SPEECH_NEED_COOLDOWN * (3 if user_busy else 1)
+        last = self.need_cooldowns.get(key, -999)
+        last_any = max(self.need_cooldowns.values(), default=-999)
+        if self.game_time - last < cooldown or self.game_time - last_any < cooldown / 2:
+            return
+        if self.say(cat_voice.say(kind, self.cat), priority=3):
+            self.need_cooldowns[key] = self.game_time
 
     def update_reminders(self):
-        """Update reminder queue and add routine reminders."""
+        """Needs and routines become sweet requests in the speech bubble."""
         self.reminder_timer += 1 / FPS
-        if self.reminder_timer >= 2:
-            self.reminder_timer = 0
-            cat_hour = (self.cat.age * 24) % 24
-
-            def can_remind(key, cooldown=15):
-                last = self.reminder_cooldowns.get(key, -999)
-                return (self.game_time - last) >= cooldown
-
-            if self.cat.hunger > 75 and can_remind('hungry'):
-                self.add_reminder("Reminder: I'm hungry!")
-                self.reminder_cooldowns['hungry'] = self.game_time
-            if self.cat.energy < 25 and can_remind('tired'):
-                self.add_reminder("Reminder: I need sleep")
-                self.reminder_cooldowns['tired'] = self.game_time
-            if self.cat.trust < 30 and can_remind('social'):
-                self.add_reminder("Reminder: Talk or pet me")
-                self.reminder_cooldowns['social'] = self.game_time
-
-            if 7 <= cat_hour <= 9 and self.cat.hunger > 50 and can_remind('breakfast'):
-                self.add_reminder("Routine: Breakfast time")
-                self.reminder_cooldowns['breakfast'] = self.game_time
-            if 20 <= cat_hour <= 22 and self.cat.energy < 60 and can_remind('bedtime'):
-                self.add_reminder("Routine: Bedtime soon")
-                self.reminder_cooldowns['bedtime'] = self.game_time
-
-        # Filter expired reminders efficiently - only when checking reminders
-        if self.reminders:
-            self.reminders = [r for r in self.reminders if r['expires'] > self.game_time]
+        if self.reminder_timer < 2:
+            return
+        self.reminder_timer = 0
+        kind = cat_voice.need_kind(self.cat)
+        if kind:
+            self.ask_for_need(kind, kind)
+            return
+        cat_hour = (self.cat.age * 24) % 24
+        if 7 <= cat_hour <= 9 and self.cat.hunger > 50:
+            self.ask_for_need('breakfast', 'breakfast')
+        elif 20 <= cat_hour <= 22 and self.cat.energy < 60:
+            self.ask_for_need('bedtime', 'bedtime')
 
     def award_achievement(self, key, text):
         """Award an achievement to the active cat."""
         if key in self.cat.achievements:
             return
         self.cat.achievements.add(key)
-        expires_at = self.game_time + 5.0
-        # Use UI Agent celebration message
-        celebration = self.ui_agent.celebrate_achievement(text)
-        self.achievement_notifications.append({'text': celebration, 'expires': expires_at})
-        if len(self.achievement_notifications) > 3:
-            self.achievement_notifications.pop(0)
+        self.say(cat_voice.say("achievement", self.cat, name=text), priority=4, duration=4.5)
 
     def update_achievements(self):
         """Check and award achievements periodically."""
@@ -1836,10 +1930,6 @@ class LittleCatGame:
                 self.award_achievement('trick_2', 'Trickster')
             if self.cat.age >= 1:
                 self.award_achievement('first_day', 'First Day')
-
-        # Filter expired achievements efficiently - only during achievement check timer
-        if self.achievement_notifications:
-            self.achievement_notifications = [a for a in self.achievement_notifications if a['expires'] > self.game_time]
 
     def start_mini_game(self, toy_type):
         """Start a simple toy mini-game (click the cat in time)."""
@@ -1863,58 +1953,36 @@ class LittleCatGame:
             self.cat.happiness = min(100, self.cat.happiness + 6)
             self.cat.trust = min(100, self.cat.trust + 3)
             self.cat.learn_from_interaction('play', 'Mini-game success', 0.6)
+            self.say(cat_voice.say('minigame_win', self.cat), priority=2)
             self.award_achievement('mini_game', 'Quick Paws')
             self.start_jump()
         else:
-            self.cat.happiness = max(0, self.cat.happiness - 2)
+            # A miss is not a punishment: no happiness loss, just a funny line
             self.cat.learn_from_interaction('play', 'Mini-game missed', -0.1)
+            self.say(cat_voice.say('minigame_miss', self.cat), priority=2)
         self.mini_game = None
 
     def get_overlay_labels(self):
         """Build overlay labels for reminders, achievements, and mini-games."""
+        # Everything the cat "says" now lives in the speech bubble above it.
+        # Only the mini-game call-to-action stays as a small label under the cat.
         labels = []
-        y = 60
-        
-        # UI Agent messages
-        if self.agent_message:
-            labels.append((self.agent_message, (self.display.window_width // 2, y)))
-            y += 35
-        
-        if self.agent_hint:
-            labels.append((self.agent_hint, (self.display.window_width // 2, y)))
-            y += 35
-        
-        for reminder in self.reminders:
-            labels.append((reminder['text'], (180, y)))
-            y += 28
-        for ach in self.achievement_notifications:
-            labels.append((ach['text'], (220, y)))
-            y += 28
         if self.mini_game:
-            labels.append((self.mini_game['prompt'], (self.display.window_width // 2, 80)))
-        
-        # Smart interaction suggestion
-        if self.agent_suggestion:
-            labels.append((self.agent_suggestion, (self.display.window_width // 2, y)))
-            y += 35
-
-        # Thought bubble above cat
-        if self.thought_bubble and not SHOW_UI:
-            labels.append((self.thought_bubble, (self.display.cat_x, self.display.cat_y - 90)))
-        
+            labels.append(("click me!", (self.display.cat_x, self.display.cat_y + 55)))
         return labels
     
     def perform_action(self, action, message):
         """Player performs an action with the cat."""
         print(f">>> {message}")
         self.play_sfx(action)
+        self.cat.current_intent = None  # player-driven, not the cat's own idea
         
         # Determine reward based on action and cat state
         reward = self.calculate_reward(action)
         
         # Cat learns from this interaction
-        self.cat.learn_from_interaction(action, message, reward)
-        
+        self.cat.learn_from_interaction(action, message, reward, source="player", context="human_nearby")
+
         # Update cat state based on action
         if action == 'play':
             self.cat.happiness = min(100, self.cat.happiness + 20)
@@ -1947,11 +2015,8 @@ class LittleCatGame:
             self.cat.energy = max(0, self.cat.energy - 10)
             self.cat.hunger = min(100, self.cat.hunger + 5)
 
-        # Get UI Agent response for this action
-        agent_response = self.ui_agent.get_action_response(action, self.cat)
-        if agent_response:
-            self.agent_message = agent_response
-            self.agent_message_timer = 3.0  # Show for 3 seconds
+        # The cat answers in its own voice
+        self.say(cat_voice.say(action, self.cat), priority=2)
 
         # Action-based achievements
         if action == 'eat':
@@ -2047,13 +2112,15 @@ class LittleCatGame:
             return
         
         print(f">>> {toy['message']}")
+        self.cat.current_intent = None
+        self.say(f"{toy['emoji']}! {cat_voice.say('play', self.cat)}", priority=2)
         
         # Calculate reward
         reward = self.calculate_reward('play')
         
         # Cat learns from this interaction
         message = f"Played with {toy['name']} {toy['emoji']}"
-        self.cat.learn_from_interaction('play', message, reward)
+        self.cat.learn_from_interaction('play', message, reward, source="player", context="human_nearby")
         
         # Update cat state based on toy choice
         self.cat.happiness = min(100, self.cat.happiness + toy['happiness_gain'])
@@ -2119,7 +2186,8 @@ class LittleCatGame:
             'train': "Cat practices a little trick"
         }
         message = messages.get(action, f"Cat is {action}ing")
-        self.cat.learn_from_interaction(action, message, reward)
+        self.cat.learn_from_interaction(action, message, reward, source="self",
+                                        context="human_nearby" if self.is_mouse_near_cat(self.mouse_pos, radius=150) else "alone")
         
         # Update cat state based on action
         if action == 'play':
@@ -2149,60 +2217,63 @@ class LittleCatGame:
             self.cat.energy = max(0, self.cat.energy - 8)
             self.cat.hunger = min(100, self.cat.hunger + 4)
     
+    def is_hovering_cat(self):
+        return (getattr(self, "mouse_seen", False) and not self.dragging and not self.context_menu_active
+                and self.display.is_point_on_cat(*self.mouse_pos))
+
+    def update_voice(self):
+        """Speech, thoughts, hover card and gentle chatter - one calm channel."""
+        dt = 1 / FPS
+        if self.speech and self.speech['expires'] <= self.game_time:
+            self.speech = None
+
+        # Hover: show the status card and say hi (not too often)
+        if self.is_hovering_cat():
+            self.hover_time += dt
+            if self.hover_time >= HOVER_CARD_DELAY and self.game_time - self.last_hover_greet > 40:
+                self.last_hover_greet = self.game_time
+                kind = "hover_sleepy" if self.current_action == "sleep" else "hover"
+                self.say(cat_voice.say(kind, self.cat), priority=2, duration=2.5)
+        else:
+            self.hover_time = 0.0
+
+        # Thought bubble: stable for a few seconds instead of re-rolling every frame
+        self.thought_timer -= dt
+        if self.cat.current_intent and self.action_timer > 0:
+            self.thought_bubble = self.cat.current_intent
+        elif self.thought_timer <= 0:
+            self.thought_timer = 6.0
+            self.thought_bubble = self.ui_agent.get_thought_bubble(self.cat) if random.random() < 0.35 else None
+
+        # Respect a busy human and a sleeping cat: no small talk then
+        user_busy = (time.time() - self.last_input_time) >= BUSY_THRESHOLD_SECONDS
+        if user_busy or self.current_action == "sleep":
+            return
+
+        # First minutes only: a few tutorial whispers, in the cat's voice
+        self.hint_timer += dt
+        if self.game_time < 600 and self.hint_timer >= 90:
+            self.hint_timer = 0
+            hint = self.ui_agent.get_hint({'cat_brain': self.cat})
+            if hint:
+                for prefix in ("💡 Tip: ", "💡 Hint: ", "💡 Info: "):
+                    hint = hint.replace(prefix, "psst... ")
+                self.say(hint, priority=1, duration=5.0)
+
+        # Occasional happy chatter / memories (global cooldown applies in say())
+        self.chatter_timer += dt
+        if self.chatter_timer >= 15:
+            self.chatter_timer = 0
+            if random.random() < 0.5:
+                self.say(cat_voice.idle_chatter(self.cat), priority=1)
+
     def update(self):
         """Update game state."""
         # Update cat internal state
         delta_time = GAME_SPEED
         self.cat.update_state(delta_time)
 
-        # Update UI Agent timers and messages
-        if self.agent_message_timer > 0:
-            self.agent_message_timer -= 1 / FPS
-        else:
-            self.agent_message = None
-        
-        if self.agent_hint_timer > 0:
-            self.agent_hint_timer -= 1 / FPS
-        else:
-            self.agent_hint = None
-        
-        # Periodically get state-based messages from UI Agent
-        state_message = self.ui_agent.get_state_message(self.cat)
-        if state_message and not self.agent_message:
-            self.agent_message = state_message
-            self.agent_message_timer = 4.0
-        
-        # Show hints occasionally for new users
-        if not self.agent_hint and random.random() < 0.001:  # Small chance each frame
-            game_state = {'cat_brain': self.cat}
-            hint = self.ui_agent.get_hint(game_state)
-            if hint:
-                self.agent_hint = hint
-                self.agent_hint_timer = 8.0
-        
-        # Update thought bubble
-        self.thought_bubble = self.ui_agent.get_thought_bubble(self.cat)
-
-        # Update smart interaction suggestion
-        if self.agent_suggestion_timer > 0:
-            self.agent_suggestion_timer -= 1 / FPS
-        else:
-            self.agent_suggestion = None
-        if not self.agent_suggestion and not self.agent_message and random.random() < 0.002:
-            suggestion = self.ui_agent.suggest_interaction(self.cat)
-            if suggestion:
-                self.agent_suggestion = suggestion
-                self.agent_suggestion_timer = 5.0
-
-        # Periodically show personality insights
-        self.personality_insight_timer += 1 / FPS
-        if self.personality_insight_timer >= 30:  # Every 30 seconds
-            self.personality_insight_timer = 0
-            if not self.agent_message:
-                insight = self.ui_agent.get_personality_insight(self.cat)
-                if insight:
-                    self.agent_message = insight
-                    self.agent_message_timer = 4.0
+        self.update_voice()
 
         is_adult = self.cat.age >= ADULT_AGE_DAYS
         is_busy = (time.time() - self.last_input_time) >= BUSY_THRESHOLD_SECONDS
@@ -2231,7 +2302,7 @@ class LittleCatGame:
             self.display.cat_speed = min(self.display.cat_speed, 1.2)
             if self.action_timer <= 0:
                 if self.cat.hunger > 70:
-                    self.add_reminder("Adult cat: hungry")
+                    self.ask_for_need("need_hungry", "need_hungry")
                     self.current_action = "talk"
                     self.action_timer = 2.5
                 elif self.cat.energy < 40:
@@ -2249,6 +2320,7 @@ class LittleCatGame:
                 self.young_play_cooldown -= 1 / FPS
             if self.is_mouse_near_cat(self.last_mouse_pos, radius=YOUNG_PLAY_DISTANCE):
                 if self.young_play_cooldown <= 0 and self.cat.energy > 40 and self.cat.hunger < 70:
+                    self.cat.current_intent = "gonna catch it!"
                     self.auto_perform_action("play")
                     self.current_action = "play"
                     self.action_timer = 1.5
@@ -2263,7 +2335,12 @@ class LittleCatGame:
             self.jump_progress = 0.0
         
         # Update cat movement animation
-        if self.current_action in ("idle", "walk") or self.hunt_timer > 0:
+        if self.context_menu_active:
+            # Hold still while the menu ring is open around the cat
+            self.display.target_x, self.display.target_y = self.context_menu_pos
+            self.display.cat_x, self.display.cat_y = self.context_menu_pos
+            self.is_moving = False
+        elif self.current_action in ("idle", "walk") or self.hunt_timer > 0:
             self.is_moving = self.display.update_cat_movement()
             
             # Randomly wander
@@ -2360,14 +2437,20 @@ class LittleCatGame:
             cat_status = self.cat.get_status()
             context_menu = None
             if self.context_menu_active:
-                context_menu = {"pos": self.context_menu_pos, "items": self.context_menu_items, "mouse_pos": self.mouse_pos}
+                context_menu = {"pos": self.context_menu_pos, "items": self.context_menu_items,
+                                "mouse_pos": self.mouse_pos, "opened": getattr(self, "context_menu_opened", None)}
             overlay_labels = self.get_overlay_labels()
             visual_state = {
                 "toy": self.toy_visual,
                 "food_level": self.food_level,
-                "curious": self.curiosity_pause > 0,
+                "curious": self.curiosity_pause > 0 and not self.speech,
                 "jump_progress": self.jump_progress,
                 "show_stats": self.show_stats_panel,
+                "speech": self.speech['text'] if self.speech else None,
+                "speech_alpha": min(1.0, (self.game_time - self.speech['born']) / 0.2) if self.speech else 1.0,
+                "thought": self.thought_bubble if not SHOW_UI else None,
+                "hover_card": self.hover_time >= HOVER_CARD_DELAY,
+                "health": cat_voice.wellbeing(cat_status),
                 "chat_active": self.chat_active,
                 "chat_response": self.chat_response,
                 "chat_input": self.chat_input_text,

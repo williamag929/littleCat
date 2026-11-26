@@ -9,6 +9,17 @@ import json
 from datetime import datetime
 import hashlib
 
+try:  # run as `python src/game.py` (src on sys.path)
+    from memory_graph import MemoryGraph, state_tags
+    import autonomy
+except ImportError:  # imported as package: `from src.cat_brain import CatBrain`
+    from .memory_graph import MemoryGraph, state_tags
+    from . import autonomy
+
+# Self-initiated actions only get a fraction of the reward: the cat should learn
+# mostly from YOU, not from praising itself (prevents weights saturating at 1.0).
+SELF_REWARD_SCALE = 0.3
+
 
 class CatBrain:
     """Neural-inspired learning system for the cat pet."""
@@ -28,6 +39,8 @@ class CatBrain:
         self.memories = deque(maxlen=self.max_memory)  # Store interactions with automatic size limit
         self.learned_behaviors = defaultdict(float)  # action -> success rate
         self.action_history = []  # Track recent actions
+        self.memory_graph = MemoryGraph()  # Associative JSON memory (nodes/edges/episodes)
+        self.current_intent = None  # Last autonomous reason, e.g. "so hungry..."
 
         # Q-learning (lightweight RL)
         self.q_table = defaultdict(lambda: defaultdict(float))
@@ -64,26 +77,38 @@ class CatBrain:
         # Cache personality modifiers for performance
         self._personality_modifiers = None
         
-    def learn_from_interaction(self, action, human_response, reward):
+    def learn_from_interaction(self, action, human_response, reward, source="player", context=None):
         """
         Learn from human interactions.
-        
+
         Args:
             action: What the cat did (str)
             human_response: What the human did in response (str)
             reward: Positive/negative feedback (-1 to 1)
+            source: "player" (you did it) or "self" (cat acted on its own)
+            context: optional situation, e.g. 'human_nearby' / 'alone'
         """
-        # Record memory
+        # Associative graph memory (records the state *before* the action changes it)
+        self.memory_graph.record(
+            action, human_response, reward, age=self.age, source=source, context=context,
+            state={'happiness': self.happiness, 'hunger': self.hunger,
+                   'energy': self.energy, 'trust': self.trust},
+        )
+        if source == "self":
+            reward *= SELF_REWARD_SCALE
+
+        # Record memory (legacy flat list, kept for compatibility)
         memory = {
             'timestamp': datetime.now().isoformat(),
             'action': action,
             'response': human_response,
             'reward': reward,
-            'age': self.age
+            'age': self.age,
+            'source': source,
         }
         self.memories.append(memory)
         # deque automatically maintains maxlen, no manual pop needed
-        
+
         # Update learned behavior weights
         self.learned_behaviors[action] += reward * 0.1
         self.learned_behaviors[action] = np.clip(self.learned_behaviors[action], -1, 1)
@@ -123,60 +148,39 @@ class CatBrain:
         Returns:
             Next action (str) and confidence (float)
         """
-        # Adjust weights based on emotional state
-        action_weights = self.behavior_weights.copy()
-        
-        # Apply cached personality influences (subtle bias)
-        personality_mods = self._get_personality_modifiers()
-        for action, modifier in personality_mods.items():
-            if action in action_weights:
-                action_weights[action] = min(1.0, action_weights.get(action, 0.2) + modifier)
+        # Utility AI: needs x personality x circadian rhythm x memory x boredom
+        tags = tuple(state_tags(self.happiness, self.hunger, self.energy, self.trust))
+        scores = autonomy.score_actions(
+            {'happiness': self.happiness, 'hunger': self.hunger,
+             'energy': self.energy, 'trust': self.trust},
+            self.personality,
+            learned_weights=self.behavior_weights,
+            memory=self.memory_graph,
+            tags=tags,
+            context=context,
+            recent=self.memory_graph.recent_actions(5),
+        )
 
-        # Hunger influences eating behavior
-        if self.hunger > 70:
-            action_weights['eat'] = min(1.0, action_weights['eat'] + 0.5)
-        
-        # Low energy influences sleep
-        if self.energy < 30:
-            action_weights['sleep'] = min(1.0, action_weights['sleep'] + 0.6)
-        
-        # Trust and happiness influence play/purr
-        if self.trust > 60 and context == 'human_nearby':
-            action_weights['play'] = min(1.0, action_weights['play'] + 0.3)
-            action_weights['purr'] = min(1.0, action_weights['purr'] + 0.4)
-            action_weights['talk'] = min(1.0, action_weights.get('talk', 0.2) + 0.2)
-            action_weights['train'] = min(1.0, action_weights.get('train', 0.2) + 0.15)
-        
-        # Fear/low trust influences hiding
-        if self.trust < 40:
-            action_weights['hide'] = min(1.0, action_weights['hide'] + 0.3)
-        
-        # Add some randomness (cats are unpredictable!) - optimized to avoid unnecessary array
-        weighted_actions = {
-            action: weight + np.random.normal(0, 0.1)
-            for action, weight in action_weights.items()
-        }
-        
-        # Q-learning: epsilon-greedy action selection
+        # Q-learning adds a small bonus on top of utilities (it no longer overrides needs)
         state = self._get_state(context)
-        actions = list(action_weights.keys())
-        use_explore = np.random.random() < self.epsilon
+        q_values = self.q_table.get(state, {})
+        for action in scores:
+            scores[action] += 0.15 * float(np.clip(q_values.get(action, 0.0), -1, 1))
+            scores[action] = max(0.0, scores[action])
 
-        if not use_explore:
-            q_values = self.q_table.get(state, {})
-            if q_values:
-                best_action = max(actions, key=lambda a: q_values.get(a, 0.0))
-                confidence = np.clip(q_values.get(best_action, 0.0), 0, 1)
-            else:
-                best_action = max(weighted_actions, key=weighted_actions.get)
-                confidence = np.clip(weighted_actions[best_action], 0, 1)
-        else:
-            best_action = np.random.choice(actions)
+        if np.random.random() < self.epsilon:
+            # Exploration: cats are unpredictable, but low confidence means
+            # the game rarely auto-performs a purely random action.
+            best_action = str(np.random.choice(list(scores)))
             confidence = 0.2
+            reason = autonomy.REASONS.get(best_action, best_action)
+        else:
+            best_action, confidence, reason = autonomy.choose(scores)
 
+        self.current_intent = reason
         self.last_state = state
         self.last_action = best_action
-        return best_action, confidence
+        return best_action, float(confidence)
     
     def update_state(self, time_delta=1):
         """Update cat's internal state over time."""
@@ -211,7 +215,9 @@ class CatBrain:
             'personality': self.personality,
             'trick_level': self.trick_level,
             'trick_xp': round(self.trick_xp, 1),
-            'achievements_count': len(self.achievements)
+            'achievements_count': len(self.achievements),
+            'intent': self.current_intent,
+            'memory_graph': self.memory_graph.summary(),
         }
 
     def _generate_personality(self, name):
@@ -311,6 +317,7 @@ class CatBrain:
             'trick_level': self.trick_level,
             'trick_xp': self.trick_xp,
             'achievements': list(self.achievements),
+            'memory_graph': self.memory_graph.to_dict(),
             'q_learning': {
                 'alpha': self.alpha,
                 'gamma': self.gamma,
@@ -341,6 +348,11 @@ class CatBrain:
             # Convert loaded memories list to deque with maxlen
             loaded_memories = data.get('memories', [])
             self.memories = deque(loaded_memories, maxlen=self.max_memory)
+            if data.get('memory_graph'):
+                self.memory_graph = MemoryGraph.from_dict(data['memory_graph'])
+            else:
+                # Older save files: rebuild the graph from the flat memory list
+                self.memory_graph = MemoryGraph.from_legacy(loaded_memories)
             self.personality = data.get('personality', self.personality)
             # Invalidate cached personality modifiers after loading
             self._personality_modifiers = None

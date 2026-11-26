@@ -128,8 +128,8 @@ class SeniorUIAgent:
             'hunger': "💡 Tip: Don't forget to feed me when I'm hungry!",
             'energy': "💡 Hint: I need rest when my energy is low!",
             'trust': "💡 Tip: Building trust takes time and positive interactions!",
-            'personality': "💡 Info: My personality develops based on how you treat me!",
-            'save': "💡 Hint: Press E to export my brain and save my learning!",
+            'personality': "💡 Info: I remember what we do together, and my favorite toys!",
+            'save': "💡 Hint: Press E to save everything I've learned!",
             'overlay': "💡 Tip: Press U to toggle UI, C for click-through mode!"
         }
         
