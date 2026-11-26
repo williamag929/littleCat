@@ -19,7 +19,10 @@ from typing import Dict, Optional, Tuple, List
 # Load environment variables (.env file)
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    if getattr(sys, "frozen", False):  # .exe: read the .env sitting next to it
+        load_dotenv(os.path.join(os.path.dirname(sys.executable), ".env"))
+    else:
+        load_dotenv()
 except ImportError:
     pass  # dotenv optional, will try without it
 
@@ -104,7 +107,11 @@ TRANSPARENT_BACKGROUND = True  # Windows overlay transparency (color key)
 TRANSPARENT_COLOR = (255, 0, 255)
 
 # Profiles and exports
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+if getattr(sys, "frozen", False):
+    # Packaged .exe (PyInstaller): keep saves next to the executable, not in the temp unpack dir
+    DATA_DIR = os.path.join(os.path.dirname(sys.executable), 'LittleCat-data')
+else:
+    DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 CATS_DIR = os.path.join(DATA_DIR, 'cats')
 EXPORT_DIR = os.path.join(DATA_DIR, 'exports')
 PROFILES_INDEX = os.path.join(DATA_DIR, 'profiles.json')
@@ -200,6 +207,7 @@ class GameDisplay:
         self.sprites = {}
         if self.use_pixel_sprites:
             self.init_pixel_sprites()
+        self.init_item_sprites()
 
         # Apply overlay styles (Windows only, optional)
         self.apply_overlay_styles(CLICK_THROUGH)
@@ -1194,9 +1202,9 @@ class GameDisplay:
         self.draw_cat(current_action, cat_status['mood'], cat_status['hunger'], jump_progress)
         if visual_state:
             if visual_state.get("toy"):
-                self.draw_toy(visual_state["toy"], (self.cat_x + 62, self.cat_y + 34))
+                self.draw_toy(visual_state["toy"], (self.cat_x + 70, self.cat_y + 42))
             if visual_state.get("food_level", 0) > 0:
-                self.draw_food(visual_state["food_level"], (self.cat_x - 66, self.cat_y + 40))
+                self.draw_food(visual_state["food_level"], (self.cat_x - 66, self.cat_y + 42))
             if visual_state.get("show_stats"):
                 self.draw_stats_panel(cat_status, (self.cat_x + 120, self.cat_y - 40))
         if SHOW_UI:
@@ -1231,38 +1239,112 @@ class GameDisplay:
         
         pygame.display.flip()
 
+    @staticmethod
+    def _auto_outline(surf, color=(74, 44, 33)):
+        """Pixel-art outline: every empty pixel touching a filled one gets `color`."""
+        w, h = surf.get_size()
+        filled = {(x, y) for x in range(w) for y in range(h) if surf.get_at((x, y)).a > 0}
+        for (x, y) in list(filled):
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in filled:
+                    surf.set_at((nx, ny), color)
+        return surf
+
+    def make_item_sprite(self, kind, frame=0):
+        """16x16 pixel-art props in the same style/palette as the cat."""
+        S = 16
+        s = pygame.Surface((S, S), pygame.SRCALPHA)
+        px = lambda x, y, c: s.set_at((x, y), c) if 0 <= x < S and 0 <= y < S else None
+        rect = lambda x, y, w, h, c: pygame.draw.rect(s, c, (x, y, w, h))
+        ell = lambda x, y, w, h, c: pygame.draw.ellipse(s, c, (x, y, w, h))
+        EYE, WHITE_, PINK = (45, 30, 30), (255, 255, 255), (244, 150, 160)
+
+        if kind.startswith("bowl"):
+            level = int(kind[-1])            # bowl0..bowl3
+            BLUE_, BLUE_D, BLUE_L = (110, 170, 230), (80, 130, 200), (170, 210, 245)
+            KIB, KIB_D = (205, 130, 70), (160, 95, 50)
+            if level:                        # kibble mound (drawn first, sits behind the rim)
+                top = 7 - level * 2
+                ell(3, top, 10, 4 + level * 2, KIB)
+                for (kx, ky) in ((5, top + 1), (8, top + 1), (10, top + 2), (6, top + 3), (9, top + 3), (7, top + 2)):
+                    px(kx, ky, KIB_D)
+                if level == 3:               # a little fish treat on top
+                    rect(7, top - 1, 3, 2, (150, 200, 230)); px(10, top - 2, (150, 200, 230)); px(10, top, (150, 200, 230))
+            pygame.draw.polygon(s, BLUE_, [(1, 9), (14, 9), (12, 14), (3, 14)])
+            rect(1, 8, 14, 2, BLUE_L)        # rim
+            rect(3, 11, 10, 1, BLUE_D)       # band
+            px(7, 12, WHITE_); px(8, 12, WHITE_); px(6, 11, WHITE_); px(9, 11, WHITE_)  # paw decal
+        elif kind == "ball":                 # yarn ball with a loose thread
+            RED_, RED_D = (232, 92, 110), (190, 60, 85)
+            ell(3, 3, 10, 10, RED_)
+            for yy in range(3, 13):          # diagonal yarn strands inside the ball
+                for xx in range(3, 13):
+                    if s.get_at((xx, yy)).a and (xx + yy) % 4 == 0:
+                        px(xx, yy, RED_D)
+            px(5, 5, (250, 170, 180)); px(6, 4, (250, 170, 180))   # shine
+            tail = [(12, 11), (13, 13), (15, 14)] if frame % 2 == 0 else [(12, 11), (14, 12), (15, 14)]
+            for (tx, ty) in tail:
+                px(tx, ty, RED_D)
+        elif kind == "fish":                 # plush fish, tail wiggles
+            TEAL, TEAL_D = (100, 190, 210), (60, 150, 180)
+            ell(3, 5, 9, 7, TEAL)
+            up = frame % 2
+            pygame.draw.polygon(s, TEAL, [(11, 8), (15, 5 + up), (15, 11 + up)])
+            rect(6, 6, 1, 5, TEAL_D); rect(8, 6, 1, 5, TEAL_D)
+            px(4, 7, EYE); px(3, 9, PINK)
+        elif kind == "mouse":                # grey toy mouse, tail swish
+            GREY, GREY_L = (170, 165, 175), (205, 200, 210)
+            ell(4, 7, 9, 6, GREY)
+            ell(10, 9, 4, 3, GREY)
+            pygame.draw.circle(s, GREY_L, (10, 7), 2)   # ear, next to the head
+            px(10, 7, PINK)
+            px(11, 9, EYE); px(14, 10, PINK)
+            tail = [(3, 11), (2, 12), (1, 11), (0, 10)] if frame % 2 == 0 else [(3, 11), (2, 13), (1, 13), (0, 14)]
+            for (tx, ty) in tail:
+                px(tx, ty, PINK)
+        elif kind == "bird":                 # little chick toy, flapping
+            YEL, YEL_D, ORANGE_ = (250, 210, 90), (225, 170, 50), (240, 140, 60)
+            ell(4, 6, 9, 8, YEL)
+            pygame.draw.circle(s, YEL, (10, 6), 3)
+            if frame % 2 == 0:
+                pygame.draw.polygon(s, YEL_D, [(5, 9), (8, 9), (6, 5)])     # wing up
+            else:
+                pygame.draw.polygon(s, YEL_D, [(5, 9), (9, 10), (6, 12)])   # wing down
+            px(11, 5, EYE)
+            rect(13, 6, 2, 1, ORANGE_)
+            px(7, 14, ORANGE_); px(9, 14, ORANGE_)
+        return self._auto_outline(s)
+
+    def init_item_sprites(self):
+        scale = self.sprite_scale
+        kinds = {"bowl1": 1, "bowl2": 1, "bowl3": 1, "bowl0": 1, "ball": 2, "fish": 2, "mouse": 2, "bird": 2}
+        self.item_sprites = {
+            k: [pygame.transform.scale(self.make_item_sprite(k, f), (16 * scale, 16 * scale)) for f in range(n)]
+            for k, n in kinds.items()
+        }
+
     def draw_toy(self, toy, pos):
-        """Draw a simple toy icon near the cat."""
+        """Draw the toy the cat is playing with (pixel-art, animated)."""
+        frames = self.item_sprites.get(toy)
+        if not frames:
+            return
         x, y = pos
-        wobble = (self.animation_frame % 6) - 3
-        y += wobble // 2
+        t = self.animation_frame
         if toy == "ball":
-            pygame.draw.circle(self.screen, RED, (x, y), 8)
-            pygame.draw.line(self.screen, DARK_GRAY, (x - 10, y + 8), (x - 16, y + 12), 2)
-            pygame.draw.line(self.screen, DARK_GRAY, (x + 10, y + 8), (x + 16, y + 12), 2)
-        elif toy == "fish":
-            pygame.draw.ellipse(self.screen, BLUE, (x - 10, y - 4, 20, 8))
-            pygame.draw.circle(self.screen, BLUE, (x - 12, y), 3)
-            pygame.draw.line(self.screen, DARK_GRAY, (x + 10, y - 2), (x + 15, y - 6), 2)
-        elif toy == "mouse":
-            pygame.draw.ellipse(self.screen, DARK_GRAY, (x - 8, y - 5, 16, 10))
-            pygame.draw.circle(self.screen, DARK_GRAY, (x + 6, y - 5), 3)
-            pygame.draw.line(self.screen, DARK_GRAY, (x - 10, y + 2), (x - 18, y + 6), 2)
+            y -= abs(((t * 3) % 12) - 6) * 2          # bounce
         elif toy == "bird":
-            pygame.draw.circle(self.screen, GREEN, (x, y), 6)
-            pygame.draw.polygon(self.screen, GREEN, [(x + 6, y), (x + 12, y - 3), (x + 12, y + 3)])
-            pygame.draw.line(self.screen, DARK_GRAY, (x - 6, y - 2), (x - 12, y - 6), 2)
+            y -= 6 + (t % 2) * 3                       # hovering
+        elif toy == "mouse":
+            x += ((t % 4) - 2) * 2                     # scurry
+        frame = frames[t % len(frames)]
+        self.screen.blit(frame, frame.get_rect(midbottom=(int(x), int(y))))
 
     def draw_food(self, level, pos):
-        """Draw a food bowl that empties as level decreases."""
-        x, y = pos
-        pygame.draw.arc(self.screen, BLUE, (x - 18, y - 4, 36, 16), 0, 3.14, 3)
-        fill_width = int(28 * max(0.0, min(1.0, level)))
-        if fill_width > 0:
-            pygame.draw.rect(self.screen, ORANGE, (x - 14, y - 8, fill_width, 6))
-        if level > 0.2 and (self.animation_frame % 10) < 5:
-            pygame.draw.line(self.screen, DARK_GRAY, (x - 6, y - 14), (x - 2, y - 18), 2)
-            pygame.draw.line(self.screen, DARK_GRAY, (x + 6, y - 14), (x + 2, y - 18), 2)
+        """Food bowl: kibble mound shrinks as the cat eats."""
+        level = max(0.0, min(1.0, level))
+        key = f"bowl{min(3, math.ceil(level * 3))}"
+        frame = self.item_sprites[key][0]
+        self.screen.blit(frame, frame.get_rect(midbottom=(int(pos[0]), int(pos[1]))))
 
     def draw_interest(self, pos):
         """Draw a small curiosity bubble."""
@@ -1534,8 +1616,8 @@ class LittleCatGame:
                             self.chat_input_text += event.unicode
                         continue
                 
-                # Handle toy selection if waiting
-                if self.waiting_for_toy:
+                # Handle toy selection if waiting (keys 1-4 on the toy ring)
+                if self.waiting_for_toy or (self.context_menu_active and self.context_menu_page == "toys"):
                     if event.key == pygame.K_1:
                         self.play_with_toy('ball')
                     elif event.key == pygame.K_2:
@@ -2043,19 +2125,9 @@ class LittleCatGame:
         if self.cat.energy < 20:
             self.perform_action('sleep', "Cat is too tired to play")
             return
-        
-        print("\n" + "="*40)
-        print("Choose a toy to play with:")
-        print("="*40)
-        print("1) Ball 🔴 - Fast bouncing fun!")
-        print("2) Fish 🐟 - Wiggly and fun!")
-        print("3) Mouse 🐭 - Small and sneaky!")
-        print("4) Bird 🐦 - Flying and exciting!")
-        print("="*40)
-        print("Press: 1, 2, 3, or 4 to select toy (ESC to cancel)")
-        print("="*40 + "\n")
-        
-        self.waiting_for_toy = True
+        # Same cute toy ring as the right-click menu (keys 1-4 still work)
+        self.open_context_menu(None)
+        self.set_menu_page("toys")
     
     def open_chat_ui(self):
         """Open the chat/screen agent UI."""
@@ -2070,6 +2142,7 @@ class LittleCatGame:
     def play_with_toy(self, toy_type):
         """Handle playing with a specific toy."""
         self.waiting_for_toy = False
+        self.context_menu_active = False
         
         # Toy descriptions and effects
         toys = {
