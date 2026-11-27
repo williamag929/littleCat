@@ -865,33 +865,48 @@ class GameDisplay:
         rect.top = max(6, min(rect.top, self.window_height - rect.height - 6))
         return rect
 
+    # One bubble style for everything the cat says or thinks (same card as the hover card)
+    BUBBLE_FILL = (255, 250, 244)
+    BUBBLE_BORDER = (235, 170, 150)
+    BUBBLE_SHADOW = (120, 100, 95)
+    THOUGHT_TEXT = (130, 110, 105)
+
+    def _bubble_rect(self, surf, rise=0):
+        w, h = surf.get_width() + 24, surf.get_height() + 14
+        return self._clamp_rect(pygame.Rect(self.cat_x - w // 2, self.cat_y - 105 + rise, w, h))
+
+    def _bubble_card(self, rect):
+        pygame.draw.rect(self.screen, self.BUBBLE_SHADOW, rect.move(2, 3), border_radius=12)
+        pygame.draw.rect(self.screen, self.BUBBLE_FILL, rect, border_radius=12)
+        pygame.draw.rect(self.screen, self.BUBBLE_BORDER, rect, 2, border_radius=12)
+
     def draw_speech_bubble(self, text, alpha=1.0):
         """Rounded speech bubble with a tail pointing at the cat."""
         surf = self._speech_surface(text, self.font_speech)
-        w, h = surf.get_width() + 24, surf.get_height() + 14
         rise = int((1.0 - alpha) * 8)  # tiny pop-in
-        rect = self._clamp_rect(pygame.Rect(self.cat_x - w // 2, self.cat_y - 105 + rise, w, h))
+        rect = self._bubble_rect(surf, rise)
         tail_x = max(rect.left + 14, min(self.cat_x, rect.right - 14))
         tail = [(tail_x - 7, rect.bottom - 2), (tail_x + 7, rect.bottom - 2), (tail_x + 2, rect.bottom + 10)]
-        shadow = rect.move(2, 3)
-        pygame.draw.rect(self.screen, (120, 100, 95), shadow, border_radius=12)
-        pygame.draw.polygon(self.screen, (255, 250, 244), tail)
-        pygame.draw.rect(self.screen, (255, 250, 244), rect, border_radius=12)
-        pygame.draw.rect(self.screen, (235, 170, 150), rect, 2, border_radius=12)
-        pygame.draw.lines(self.screen, (235, 170, 150), False, [tail[0], tail[2], tail[1]], 2)
+        self._bubble_card(rect)
+        pygame.draw.polygon(self.screen, self.BUBBLE_FILL, tail)
+        pygame.draw.lines(self.screen, self.BUBBLE_BORDER, False, [tail[0], tail[2], tail[1]], 2)
         self.screen.blit(surf, (rect.left + 12, rect.top + 7))
 
     def draw_thought_bubble(self, text):
-        """Small cloud with dots: what the cat thinks (quieter than speech)."""
-        surf = self._speech_surface(text, self.font_speech_small)
-        w, h = surf.get_width() + 18, surf.get_height() + 10
-        rect = self._clamp_rect(pygame.Rect(self.cat_x + 18, self.cat_y - 95, w, h))
-        for i, r in enumerate((3, 5)):
-            pygame.draw.circle(self.screen, (250, 248, 255), (self.cat_x + 10 + i * 8, self.cat_y - 48 - i * 12), r)
-            pygame.draw.circle(self.screen, (190, 180, 220), (self.cat_x + 10 + i * 8, self.cat_y - 48 - i * 12), r, 1)
-        pygame.draw.rect(self.screen, (250, 248, 255), rect, border_radius=14)
-        pygame.draw.rect(self.screen, (190, 180, 220), rect, 1, border_radius=14)
-        self.screen.blit(surf, (rect.left + 9, rect.top + 5))
+        """Same card as speech, but a trail of little bubbles and softer text: the cat is thinking."""
+        surf = self._speech_surface(text, self.font_speech)
+        if not hasattr(self, "_thought_cache") or self._thought_cache[0] != text:
+            soft = self.font_speech.render(text, True, self.THOUGHT_TEXT)
+            self._thought_cache = (text, soft)
+        soft = self._thought_cache[1]
+        rect = self._bubble_rect(surf)
+        cx = max(rect.left + 14, min(self.cat_x, rect.right - 14))
+        for (dx, dy, r) in ((-2, 9, 5), (2, 20, 3)):   # bubbles shrinking towards the cat's head
+            pos = (cx + dx, rect.bottom + dy)
+            pygame.draw.circle(self.screen, self.BUBBLE_FILL, pos, r)
+            pygame.draw.circle(self.screen, self.BUBBLE_BORDER, pos, r, 2 if r > 3 else 1)
+        self._bubble_card(rect)
+        self.screen.blit(soft, (rect.left + 12, rect.top + 7))
 
     def draw_hover_card(self, cat_status, health):
         """Cute status card next to the cat while the mouse hovers it."""
@@ -2655,9 +2670,12 @@ class LittleCatGame:
                 if random.random() < chance:
                     self.curiosity_pause = 0.8 + (curiosity * 1.2)
                     self.curiosity_timer = 0
+                    # Really stop: "sit" for the whole pause, so the walk code leaves it alone
+                    # (before, the pose said sit while the cat kept sliding to its target)
+                    self.current_action = "sit"
+                    self.action_timer = max(self.action_timer, self.curiosity_pause)
             if self.curiosity_pause > 0:
                 self.curiosity_pause -= 1 / FPS
-                self.current_action = "sit"
                 self.is_moving = False
         
         # Decrease action timer
@@ -2687,6 +2705,9 @@ class LittleCatGame:
                     self.auto_perform_action(action)
                     self.current_action = action
                     self.action_timer = 2.5
+                    # Stop where it is: an eating/sleeping cat must not glide on afterwards
+                    self.display.target_x, self.display.target_y = self.display.cat_x, self.display.cat_y
+                    self.is_moving = False
 
         # Mini-game timer
         if self.mini_game:
