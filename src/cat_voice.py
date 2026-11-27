@@ -38,6 +38,15 @@ LINES = {
     "achievement": ["✨ {name}! ✨", "we did it! {name} 🏆", "yay! {name} ⭐"],
     "minigame_win": ["caught it!! 🏆", "i'm a hunter! 😼", "*proud wiggle*"],
     "minigame_miss": ["so close! 😹", "next time!", "*pretends it meant that*"],
+    # --- living on the desktop --------------------------------------------------
+    "perch": ["nice view from up here ☀️", "*settles on the window* 😌", "king of the window 👑", "*dangles a paw*"],
+    "perch_fall": ["whoa! 🙀", "hey, my window! 😹", "*lands on all fours* ✨"],
+    "thrown": ["wiiiii! 🎢", "again!! ✨", "wheee~ 💨", "i can fly! 🪽"],
+    "landed": ["*lands gracefully* ✨", "10/10 landing 😼", "*shakes fur*"],
+    "bonk": ["boing! 😹"],
+    "chase": ["got you! 🐾", "*pounces on cursor*", "it's fast! 😼"],
+    "chase_tired": ["*pant pant* you win 😹", "it's too fast~ 💨", "*sits and stares at it*"],
+    "gift_drop": ["i brought you something! 🎁", "for you~ 💕", "*drops a gift* look!"],
     "breakfast": ["breakfast time? ☀️🐟"],
     "bedtime": ["getting cozy... 🌙"],
 }
@@ -78,6 +87,32 @@ def memory_line(cat):
     if getattr(cat, "trust", 0) > 70:
         return random.choice(["you're my favorite hooman 💕", "*follows you everywhere*", "i missed you~ ❤️"])
     return None
+
+
+ACTION_MEMORIES = {
+    "play": "when we played together 🧶",
+    "purr": "all those pets you gave me 💕",
+    "eat": "that yummy snack 🐟",
+    "groom": "when you brushed my fur ✨",
+    "talk": "our little chats 💬",
+    "train": "when i learned a trick 🎓",
+    "perch": "watching the world from your windows ☀️",
+    "chase_cursor": "chasing your cursor 🐾",
+}
+
+
+def gift_memory(cat):
+    """The note inside a gift: a happy memory the cat kept from your time together."""
+    graph = getattr(cat, "memory_graph", None)
+    if graph is not None:
+        favs = [(n, v) for n, v in graph.favorites("stimulus", top=4) if n in TOY_EMOJI and v > 0.1]
+        if favs and random.random() < 0.5:
+            toy = random.choice(favs)[0]
+            return f"remember the {toy}? {TOY_EMOJI[toy]}"
+        acts = [(n, v) for n, v in graph.favorites("action", top=5) if n in ACTION_MEMORIES and v > 0.05]
+        if acts:
+            return f"i remember {ACTION_MEMORIES[random.choice(acts)[0]]}"
+    return random.choice(["this is for my favorite hooman 💕", "found it just for you~ ✨", "thank mew for taking care of me 🐾"])
 
 
 def need_kind(cat):

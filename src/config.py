@@ -18,6 +18,15 @@ SPEECH_AMBIENT_COOLDOWN = 25   # min seconds between unsolicited lines (chatter,
 SPEECH_NEED_COOLDOWN = 60      # min seconds between repeating the same need ("snack?")
 HOVER_CARD_DELAY = 0.35        # seconds hovering the cat before the status card shows
 
+# Living on the desktop (Windows; everything turns itself off elsewhere)
+DESKTOP_LIFE = True            # master switch for the features below
+PERCH_ON_WINDOWS = True        # climbs onto window title bars and rides along
+CHASE_CURSOR = True            # chases a fast-moving cursor (keeps its distance)
+THROW_PHYSICS = True           # fling it while dragging: gravity, bounces, landings
+GIFTS = True                   # leaves a little gift with a memory now and then
+GIFTS_PER_DAY = 2
+MULTI_MONITOR = True           # the overlay spans every monitor
+
 # Cat Brain Settings
 INITIAL_HAPPINESS = 50      # 0-100
 INITIAL_HUNGER = 30         # 0-100
