@@ -12,6 +12,9 @@ import math
 from cat_brain import CatBrain
 from ui_agent import SeniorUIAgent
 import cat_voice
+import desktop
+from desktop_life import DesktopLife
+from autonomy import REASONS as _REASONS
 import time
 from datetime import datetime
 from typing import Dict, Optional, Tuple, List
@@ -44,6 +47,9 @@ SPEECH_DURATION = 3.5
 SPEECH_AMBIENT_COOLDOWN = 25
 SPEECH_NEED_COOLDOWN = 60
 HOVER_CARD_DELAY = 0.35
+DESKTOP_LIFE = True
+DESKTOP_SETTINGS = {}
+MULTI_MONITOR = True
 
 # Optional behavior settings (can be overridden in config.py)
 try:
@@ -53,6 +59,15 @@ try:
     SPEECH_AMBIENT_COOLDOWN = getattr(cfg, "SPEECH_AMBIENT_COOLDOWN", SPEECH_AMBIENT_COOLDOWN)
     SPEECH_NEED_COOLDOWN = getattr(cfg, "SPEECH_NEED_COOLDOWN", SPEECH_NEED_COOLDOWN)
     HOVER_CARD_DELAY = getattr(cfg, "HOVER_CARD_DELAY", HOVER_CARD_DELAY)
+    DESKTOP_LIFE = getattr(cfg, "DESKTOP_LIFE", DESKTOP_LIFE)
+    DESKTOP_SETTINGS = {
+        "perch": getattr(cfg, "PERCH_ON_WINDOWS", True),
+        "chase": getattr(cfg, "CHASE_CURSOR", True),
+        "throw": getattr(cfg, "THROW_PHYSICS", True),
+        "gifts": getattr(cfg, "GIFTS", True),
+        "gifts_per_day": getattr(cfg, "GIFTS_PER_DAY", 2),
+    }
+    MULTI_MONITOR = getattr(cfg, "MULTI_MONITOR", MULTI_MONITOR)
     ADULT_AGE_DAYS = getattr(cfg, "ADULT_AGE_DAYS", 199)
     BUSY_THRESHOLD_SECONDS = getattr(cfg, "BUSY_THRESHOLD_SECONDS", 20)
     ADULT_SLEEP_MULTIPLIER = getattr(cfg, "ADULT_SLEEP_MULTIPLIER", 2.5)
@@ -156,11 +171,21 @@ class GameDisplay:
     
     def __init__(self):
         # Window sizing (fullscreen desktop overlay or fixed window)
+        self.play_areas = []  # per-monitor walk areas in overlay coords (multi-monitor)
         if DESKTOP_OVERLAY:
             info = pygame.display.Info()
             self.window_width = info.current_w
             self.window_height = info.current_h
             flags = pygame.NOFRAME
+            vs = desktop.virtual_screen() if MULTI_MONITOR else None
+            if vs and (vs[2] - vs[0], vs[3] - vs[1]) != (self.window_width, self.window_height):
+                # Span every monitor: one borderless overlay over the whole virtual screen
+                os.environ["SDL_VIDEO_WINDOW_POS"] = f"{vs[0]},{vs[1]}"
+                self.window_width, self.window_height = vs[2] - vs[0], vs[3] - vs[1]
+                for m in desktop.monitors():
+                    l, t, r, b = m["work"]
+                    self.play_areas.append((l - vs[0] + 150, t - vs[1] + 250, r - vs[0] - 150, b - vs[1] - 150))
+                self.play_areas = [a for a in self.play_areas if a[2] > a[0] and a[3] > a[1]]
         else:
             self.window_width = WINDOW_WIDTH
             self.window_height = WINDOW_HEIGHT
@@ -900,7 +925,13 @@ class GameDisplay:
             y += 22
 
     def move_cat_to_random_position(self):
-        """Make cat walk to a random position."""
+        """Make cat walk to a random position (on a real monitor when there are several)."""
+        if self.play_areas:
+            # mostly stay on the current monitor, sometimes wander over to another one
+            here = [a for a in self.play_areas if a[0] - 150 <= self.cat_x <= a[2] + 150]
+            l, t, r, b = random.choice(here or self.play_areas) if random.random() < 0.85 else random.choice(self.play_areas)
+            self.target_x, self.target_y = random.randint(l, r), random.randint(t, b)
+            return
         self.target_x = random.randint(self.min_x, self.max_x)
         self.target_y = random.randint(self.min_y, self.max_y)
     
@@ -1199,6 +1230,13 @@ class GameDisplay:
         jump_progress = None
         if visual_state:
             jump_progress = visual_state.get("jump_progress")
+            gift = visual_state.get("gift")
+            if gift:  # a little present left on the taskbar, gently bobbing
+                frames = self.item_sprites.get(gift["kind"])
+                if frames:
+                    bob = (self.animation_frame // 4) % 2 * 2
+                    frame = frames[(self.animation_frame // 6) % len(frames)]
+                    self.screen.blit(frame, frame.get_rect(center=(int(gift["x"]), int(gift["y"]) - bob)))
         self.draw_cat(current_action, cat_status['mood'], cat_status['hunger'], jump_progress)
         if visual_state:
             if visual_state.get("toy"):
@@ -1313,11 +1351,38 @@ class GameDisplay:
             px(11, 5, EYE)
             rect(13, 6, 2, 1, ORANGE_)
             px(7, 14, ORANGE_); px(9, 14, ORANGE_)
+        elif kind == "feather":              # gift: a soft blue feather
+            SKY, SKY_D, QUILL = (140, 190, 240), (95, 150, 215), (240, 235, 220)
+            pygame.draw.polygon(s, SKY, [(3, 13), (6, 6), (11, 2), (13, 3), (10, 9)])
+            for (fx, fy) in ((6, 9), (8, 7), (10, 5)):
+                px(fx, fy, SKY_D); px(fx + 1, fy + 1, SKY_D)
+            for i in range(11):              # quill along the middle
+                px(3 + i, 13 - i, QUILL)
+            if frame % 2:
+                px(12, 2, WHITE_)            # sparkle
+        elif kind == "flower":               # gift: a little pink daisy
+            PETAL, PETAL_D, LEAF, CORE = (250, 170, 200), (225, 120, 160), (120, 190, 110), (250, 210, 90)
+            rect(7, 8, 2, 7, LEAF)
+            pygame.draw.polygon(s, LEAF, [(8, 12), (12, 10), (11, 13)])
+            for (cx, cy) in ((8, 3), (5, 5), (11, 5), (6, 8), (10, 8)):
+                pygame.draw.circle(s, PETAL, (cx, cy), 2)
+            px(5, 6, PETAL_D); px(11, 6, PETAL_D)
+            pygame.draw.circle(s, CORE, (8, 6), 2)
+            if frame % 2:
+                px(13, 2, WHITE_)
+        elif kind == "paperfish":            # gift: an origami fish folded from a note
+            PAPER, PAPER_D = (250, 245, 230), (215, 205, 185)
+            pygame.draw.polygon(s, PAPER, [(1, 8), (6, 4), (11, 8), (6, 12)])
+            pygame.draw.polygon(s, PAPER_D, [(6, 4), (11, 8), (6, 8)])
+            pygame.draw.polygon(s, PAPER, [(11, 8), (15, 4 + frame % 2), (15, 12 + frame % 2)])
+            px(4, 7, EYE)
+            rect(3, 10, 3, 1, PINK)          # a tiny heart-pink stripe
         return self._auto_outline(s)
 
     def init_item_sprites(self):
         scale = self.sprite_scale
-        kinds = {"bowl1": 1, "bowl2": 1, "bowl3": 1, "bowl0": 1, "ball": 2, "fish": 2, "mouse": 2, "bird": 2}
+        kinds = {"bowl1": 1, "bowl2": 1, "bowl3": 1, "bowl0": 1, "ball": 2, "fish": 2, "mouse": 2, "bird": 2,
+                 "feather": 2, "flower": 2, "paperfish": 2}
         self.item_sprites = {
             k: [pygame.transform.scale(self.make_item_sprite(k, f), (16 * scale, 16 * scale)) for f in range(n)]
             for k, n in kinds.items()
@@ -1421,6 +1486,18 @@ class LittleCatGame:
         # Apply initial click-through state
         self.display.apply_overlay_styles(self.click_through)
 
+        # Living on the real desktop: windows to sit on, throws, cursor chasing, gifts
+        self.life = None
+        if DESKTOP_OVERLAY and DESKTOP_LIFE and desktop.available():
+            try:
+                hwnd = pygame.display.get_wm_info().get("window") or 0
+                self.life = DesktopLife((self.display.window_width, self.display.window_height),
+                                        overlay_hwnd=int(hwnd), settings=DESKTOP_SETTINGS,
+                                        gifts_path=os.path.join(DATA_DIR, "gifts.json"))
+            except Exception as e:
+                print(f"Desktop life disabled: {e}")
+                self.life = None
+
         # Context menu
         self.context_menu_active = False
         self.context_menu_pos = (0, 0)
@@ -1522,11 +1599,18 @@ class LittleCatGame:
                     self.handle_context_menu_click(event.pos)
                     continue
 
+                if event.button == 1 and self.life and self.life.gift_hit(*event.pos):
+                    self.open_gift()
+                    continue
+
                 if event.button == 1 and ALLOW_DRAG:
                     if self.display.is_point_on_cat(*event.pos):
                         self.dragging = True
                         self.drag_offset_x = self.display.cat_x - event.pos[0]
                         self.drag_offset_y = self.display.cat_y - event.pos[1]
+                        if self.life:
+                            self.life.grab()
+                            self.life.track_drag(self.display.cat_x, self.display.cat_y)
                 elif event.button == 1 and CLICK_TO_PET:
                     if self.display.is_point_on_cat(*event.pos):
                         self.perform_action('purr', "You petted the cat!")
@@ -1545,7 +1629,7 @@ class LittleCatGame:
                     continue
                 
                 if event.button == 1 and self.dragging:
-                    self.dragging = False
+                    self.end_drag()
 
             if event.type == pygame.MOUSEMOTION:
                 # Block mouse motion when chat is active
@@ -1556,10 +1640,7 @@ class LittleCatGame:
                 self.last_mouse_pos = event.pos
                 self.mouse_seen = True
                 if self.dragging:
-                    self.display.cat_x = event.pos[0] + self.drag_offset_x
-                    self.display.cat_y = event.pos[1] + self.drag_offset_y
-                    self.display.cat_x = max(self.display.min_x, min(self.display.cat_x, self.display.max_x))
-                    self.display.cat_y = max(self.display.min_y, min(self.display.cat_y, self.display.max_y))
+                    self.drag_to(event.pos)
             
             if event.type == pygame.KEYDOWN:
                 if event.key == TOGGLE_UI_KEY:
@@ -2290,6 +2371,136 @@ class LittleCatGame:
             self.cat.energy = max(0, self.cat.energy - 8)
             self.cat.hunger = min(100, self.cat.hunger + 4)
     
+    # ------------------------------------------------------------ desktop life
+    def drag_to(self, pos):
+        d = self.display
+        d.cat_x = pos[0] + self.drag_offset_x
+        d.cat_y = pos[1] + self.drag_offset_y
+        if self.life:  # anywhere on screen, so it can be placed on a window
+            d.cat_x = max(40, min(d.cat_x, d.window_width - 40))
+            d.cat_y = max(40, min(d.cat_y, d.window_height - 40))
+            self.life.track_drag(d.cat_x, d.cat_y)
+        else:
+            d.cat_x = max(d.min_x, min(d.cat_x, d.max_x))
+            d.cat_y = max(d.min_y, min(d.cat_y, d.max_y))
+        d.target_x, d.target_y = d.cat_x, d.cat_y
+
+    def end_drag(self):
+        self.dragging = False
+        if self.life:
+            result = self.life.release(self.display.cat_x, self.display.cat_y)
+            if result == "set_down":
+                self.display.target_x, self.display.target_y = self.display.cat_x, self.display.cat_y
+
+    def open_gift(self):
+        self.life.open_gift()
+        self.say(cat_voice.gift_memory(self.cat), priority=3, duration=6.0)
+        self.cat.happiness = min(100, self.cat.happiness + 5)
+        self.cat.memory_graph.record("gift", "you opened my gift", 0.8, age=self.cat.age, source="player",
+                                     context="human_nearby")
+        self.play_sfx("purr")
+
+    def remember_desktop(self, action, response, reward):
+        """Desktop adventures go to the associative memory (not the Q-table)."""
+        try:
+            self.cat.memory_graph.record(action, response, reward, age=self.cat.age, source="self",
+                                         context="alone",
+                                         state={'happiness': self.cat.happiness, 'hunger': self.cat.hunger,
+                                                'energy': self.cat.energy, 'trust': self.cat.trust})
+        except Exception:
+            pass
+
+    def update_desktop_life(self, dt, is_busy):
+        """Returns True when desktop physics owns the cat's position this frame."""
+        life = self.life
+        if not life:
+            return False
+        d = self.display
+
+        # The release may happen off the cat (transparent pixels don't send events): poll globally
+        if self.dragging:
+            cur = desktop.cursor_pos()
+            if cur is not None:
+                self.drag_to(life.to_local(*cur))
+            if not desktop.left_button_down():
+                self.end_drag()
+            life.refresh(dt=dt)
+            return True
+
+        frozen = self.context_menu_active or self.chat_active or self.mini_game is not None
+        if frozen and life.mode in ("free", "chase", "approach"):
+            life.mode = "free"
+            return False
+
+        x, y, owns = life.update(dt, d.cat_x, d.cat_y)
+        if owns or life.mode == "perched":
+            d.cat_x, d.cat_y = x, y
+        if owns:
+            d.target_x, d.target_y = x, y
+
+        if life.mode == "approach":
+            d.target_x, d.target_y = life.approach_point()
+            d.cat_speed = max(d.cat_speed, 2.6)
+            if self.action_timer <= 0:
+                self.current_action = "walk"
+        elif life.mode == "chase" and life.cursor:
+            d.target_x, d.target_y = life.chase_target(d.cat_x, d.cat_y)
+            d.cat_speed = max(d.cat_speed, 4.5)
+            self.current_action = "walk"
+            self.action_timer = 0.2
+        elif life.mode == "perched":
+            d.target_x, d.target_y = life.constrain_target(d.target_x, d.target_y)
+            # Time to come down: bored of the view, or hungry (but never wake a sleeping cat)
+            if self.current_action != "sleep" and (life.perch_timer <= 0 or self.cat.hunger > 75):
+                life.leave_perch()
+
+        if owns and life.mode in ("airborne", "hop"):
+            self.current_action = "play"   # side view, paws out
+            self.action_timer = 0.15
+
+        can_start = (not is_busy and self.action_timer <= 0 and self.hunt_timer <= 0
+                     and self.current_action in ("idle", "walk") and self.cat.energy > 25
+                     and self.cat.hunger < 75)
+        life.wants_desktop(self.cat, dt, d.cat_x, d.cat_y, can_start)
+        life.maybe_gift(dt, d.cat_x,
+                        lambda: cat_voice.wellbeing({"hunger": self.cat.hunger, "energy": self.cat.energy,
+                                                     "happiness": self.cat.happiness}),
+                        user_present=lambda: desktop.idle_seconds() < 60)
+
+        for ev in life.pop_events():
+            self.on_desktop_event(ev)
+        return owns
+
+    def on_desktop_event(self, ev):
+        lines = {"thrown": ("thrown", 2), "bonk": ("bonk", 2), "landed": ("landed", 2),
+                 "perch_fall": ("perch_fall", 2), "chase_tired": ("chase_tired", 1),
+                 "chase_caught": ("chase", 2), "gift_drop": ("gift_drop", 3)}
+        if ev == "perched":
+            self.current_action = "sit"
+            self.action_timer = 2.0
+            if random.random() < 0.6:
+                self.say(cat_voice.say("perch", self.cat), priority=1)
+            self.remember_desktop("perch", "nice view from the window", 0.4)
+        elif ev == "chase_start":
+            self.cat.current_intent = _REASONS["chase_cursor"]
+        elif ev == "chase_caught":
+            self.current_action = "play"
+            self.action_timer = 1.2
+            self.cat.happiness = min(100, self.cat.happiness + 4)
+            self.cat.energy = max(0, self.cat.energy - 3)
+            self.remember_desktop("chase_cursor", "caught the cursor", 0.5)
+        elif ev == "thrown":
+            self.play_sfx("jump")
+        elif ev == "approach":
+            self.cat.current_intent = _REASONS["perch"]
+        if ev in lines:
+            kind, prio = lines[ev]
+            if ev == "landed" and random.random() < 0.5:
+                return
+            line = cat_voice.say(kind, self.cat)
+            if line:
+                self.say(line, priority=prio, duration=2.5 if prio < 3 else 4.0)
+
     def is_hovering_cat(self):
         return (getattr(self, "mouse_seen", False) and not self.dragging and not self.context_menu_active
                 and self.display.is_point_on_cat(*self.mouse_pos))
@@ -2357,6 +2568,11 @@ class LittleCatGame:
         ai_interval = min(10, 3 + age_days * 0.25)   # seconds
         self.display.cat_speed = max(0.8, 2.0 - age_days * 0.03)
 
+        # Real desktop: perching, flying after a throw, chasing the cursor, gifts
+        owns_position = self.update_desktop_life(1 / FPS, is_busy)
+        desktop_mode = self.life.mode if self.life else "free"
+        desktop_free = desktop_mode in ("free", "perched") and not self.dragging
+
         # Hunting interaction (mouse chase)
         if self.hunt_timer > 0:
             self.hunt_timer -= 1 / FPS
@@ -2369,7 +2585,7 @@ class LittleCatGame:
                 self.hunt_timer = 0
 
         # Adult behavior: stay near fixed spot and sleep more when user busy
-        if is_adult and is_busy and ADULT_FIXED_SPOT:
+        if is_adult and is_busy and ADULT_FIXED_SPOT and desktop_free:
             fixed_x, fixed_y = self.get_fixed_spot()
             self.display.target_x, self.display.target_y = fixed_x, fixed_y
             self.display.cat_speed = min(self.display.cat_speed, 1.2)
@@ -2386,7 +2602,7 @@ class LittleCatGame:
                     self.action_timer = 2.5 * ADULT_REST_MULTIPLIER
         
         # Young cat behavior: follow cursor and try to play
-        if not is_adult and YOUNG_FOLLOW_CURSOR and self.last_mouse_pos:
+        if not is_adult and YOUNG_FOLLOW_CURSOR and self.last_mouse_pos and desktop_free:
             mx, my = self.last_mouse_pos
             self.display.target_x, self.display.target_y = mx, my
             if self.young_play_cooldown > 0:
@@ -2413,17 +2629,23 @@ class LittleCatGame:
             self.display.target_x, self.display.target_y = self.context_menu_pos
             self.display.cat_x, self.display.cat_y = self.context_menu_pos
             self.is_moving = False
+        elif owns_position or self.dragging:
+            self.is_moving = False
         elif self.current_action in ("idle", "walk") or self.hunt_timer > 0:
+            if desktop_mode == "perched":  # walk along the title bar, never off into the air
+                self.display.target_x, self.display.target_y = self.life.constrain_target(
+                    self.display.target_x, self.display.target_y)
             self.is_moving = self.display.update_cat_movement()
-            
+
             # Randomly wander
             self.movement_timer += 1 / FPS
-            if self.movement_timer > move_interval and not self.is_moving and self.hunt_timer <= 0 and self.curiosity_pause <= 0 and not (is_adult and is_busy):
+            if (self.movement_timer > move_interval and not self.is_moving and self.hunt_timer <= 0
+                    and self.curiosity_pause <= 0 and not (is_adult and is_busy) and desktop_free):
                 self.display.move_cat_to_random_position()
                 self.movement_timer = 0
 
         # Curiosity pause while walking
-        if self.hunt_timer <= 0:
+        if self.hunt_timer <= 0 and desktop_free:
             curiosity = 0.5
             if hasattr(self.cat, "personality"):
                 curiosity = self.cat.personality.get("curious", 0.5)
@@ -2449,7 +2671,7 @@ class LittleCatGame:
                 self.current_action = "idle"
         
         # AI decides action if too much time has passed
-        if not (is_adult and is_busy):
+        if not (is_adult and is_busy) and desktop_free:
             self.ai_timer += 1 / FPS
             if self.ai_timer >= ai_interval:
                 self.ai_timer = 0
@@ -2518,6 +2740,7 @@ class LittleCatGame:
                 "food_level": self.food_level,
                 "curious": self.curiosity_pause > 0 and not self.speech,
                 "jump_progress": self.jump_progress,
+                "gift": self.life.gift if self.life else None,
                 "show_stats": self.show_stats_panel,
                 "speech": self.speech['text'] if self.speech else None,
                 "speech_alpha": min(1.0, (self.game_time - self.speech['born']) / 0.2) if self.speech else 1.0,

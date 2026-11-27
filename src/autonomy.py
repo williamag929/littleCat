@@ -51,6 +51,8 @@ REASONS = {
     "scratch": "sharpening claws",
     "hide": "don't feel safe",
     "train": "teach me a trick!",
+    "perch": "up there looks comfy",
+    "chase_cursor": "what's that?!",
 }
 
 
@@ -106,6 +108,41 @@ def score_actions(needs: Dict[str, float], personality: Dict[str, float], *,
             utility *= 0.75 ** repeats
         scores[action] = max(0.0, utility)
     return scores
+
+
+def score_desktop(needs: Dict[str, float], personality: Dict[str, float], *,
+                  hour: Optional[float] = None, memory=None,
+                  tags: Tuple[str, ...] = (), context: Optional[str] = None,
+                  cursor_speed: float = 0.0, cursor_dist: float = 9999.0,
+                  perch_available: bool = False) -> Dict[str, float]:
+    """Utilities (0..~1) for the desktop behaviours: climbing on a window and chasing the cursor.
+
+    They are evaluated by desktop_life alongside the classic actions, with the same
+    ingredients: needs, personality, time of day and what the cat remembers enjoying.
+    """
+    hunger = needs.get("hunger", 30)
+    energy = needs.get("energy", 70)
+    playful = personality.get("playful", 0.5)
+    curious = personality.get("curious", 0.5)
+    calm = personality.get("calm", 0.5)
+    if hour is None:
+        now = datetime.now()
+        hour = now.hour + now.minute / 60.0
+    activity = circadian_activity(hour)
+    ok_body = rising(energy, 30, 0.12) * falling(hunger, 80, 0.15)
+
+    # Cats love high places: curious and calm cats climb up to watch the world
+    perch = (0.35 + 0.4 * curious + 0.25 * calm) * ok_body * (0.5 + 0.5 * activity) if perch_available else 0.0
+    # A fast cursor close by is prey: playful, energetic cats can't resist
+    moving = rising(cursor_speed, 450, 0.012)
+    near = falling(cursor_dist, 420, 0.015)
+    chase = moving * near * rising(energy, 45, 0.1) * (0.4 + playful) * (0.5 + 0.5 * activity)
+
+    scores = {"perch": perch, "chase_cursor": chase}
+    if memory is not None:
+        for action in scores:
+            scores[action] *= 1.0 + 0.4 * memory.expectation(action, tags, context)
+    return {a: max(0.0, s) for a, s in scores.items()}
 
 
 def choose(scores: Dict[str, float], temperature: float = 0.15,
