@@ -69,6 +69,17 @@ LINES = {
     "focus_break": ["pong break? 🕹️", "stretch with me? 🐾", "snack break? 🐟"],
     "focus_cancel": ["ok, break time! 😸", "no more shh? yay 💕"],
     "together_hours": ["{hours} hours together! 💕", "we've spent {hours} hours together ✨"],
+    # --- collection (wardrobe / visitors / album) ---------------------------------
+    "unlock": ["ooh, a {item}! {icon} (wardrobe)", "look what i found: {item} {icon}"],
+    "wear": ["how do i look? {icon}✨", "so fancy~ {icon}", "*poses* {icon}"],
+    "unwear": ["au naturel 😸", "comfy again~"],
+    "locked": ["not yet... {hint} 🔒", "soon! {hint} 🔒"],
+    "visitor_arrive": ["a friend! 👀", "who's that? 🐱", "ooh, {name}! 💕"],
+    "visitor_sniff": ["*sniff sniff* 🐾", "hi {name}! *boop*"],
+    "visitor_play": ["let's play, {name}! 🧶", "tag! you're it 🐾"],
+    "visitor_bye": ["bye {name}! 👋", "come back soon, {name} 💕", "that was fun~ 🐾"],
+    "adopt": ["{name} is family now! 🏡💕", "welcome home, {name}! 🏡"],
+    "album_empty": ["our album is empty... for now 📔"],
     "breakfast": ["breakfast time? ☀️🐟"],
     "bedtime": ["getting cozy... 🌙"],
 }
@@ -125,6 +136,7 @@ ACTION_MEMORIES = {
     "chase_cursor": "chasing your cursor 🐾",
     "arcade": "our pong games 🕹️",
     "focus": "napping next to you while you worked 💤",
+    "visitor": "playing with a visiting friend 🐱",
 }
 
 

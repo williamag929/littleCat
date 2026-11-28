@@ -17,6 +17,8 @@ from desktop_life import DesktopLife, FEET as CAT_FEET
 from autonomy import REASONS as _REASONS
 from arcade import ArcadeSession
 from companion import Companion, format_together
+import collection
+from collection import ACCESSORIES, COATS, DEFAULT_COAT, Visit, VisitorSchedule
 from screen_agent.policy import ImitationPolicy
 import time
 from datetime import datetime
@@ -57,6 +59,8 @@ PRESENCE = True
 AWAY_AFTER_SECONDS = 300
 FOCUS_MINUTES = 25
 TYPING_RHYTHM = True
+WARDROBE = True
+VISITORS = True
 
 # Optional behavior settings (can be overridden in config.py)
 try:
@@ -79,6 +83,8 @@ try:
     AWAY_AFTER_SECONDS = getattr(cfg, "AWAY_AFTER_SECONDS", AWAY_AFTER_SECONDS)
     FOCUS_MINUTES = getattr(cfg, "FOCUS_MINUTES", FOCUS_MINUTES)
     TYPING_RHYTHM = getattr(cfg, "TYPING_RHYTHM", TYPING_RHYTHM)
+    WARDROBE = getattr(cfg, "WARDROBE", WARDROBE)
+    VISITORS = getattr(cfg, "VISITORS", VISITORS)
     ADULT_AGE_DAYS = getattr(cfg, "ADULT_AGE_DAYS", 199)
     BUSY_THRESHOLD_SECONDS = getattr(cfg, "BUSY_THRESHOLD_SECONDS", 20)
     ADULT_SLEEP_MULTIPLIER = getattr(cfg, "ADULT_SLEEP_MULTIPLIER", 2.5)
@@ -242,6 +248,7 @@ class GameDisplay:
         self.use_pixel_sprites = USE_PIXEL_SPRITES
         self.sprite_scale = SPRITE_SCALE
         self.sprites = {}
+        self.accessory = None     # wardrobe item worn by the active cat
         if self.use_pixel_sprites:
             self.init_pixel_sprites()
         self.init_item_sprites()
@@ -373,22 +380,41 @@ class GameDisplay:
         "groom": [0, 1],
     }
 
-    def init_pixel_sprites(self):
-        """Build pixel-art sprites (right-facing + mirrored) once at startup."""
-        counts = {"idle": 4, "walk": 4, "sit": 2, "sleep": 2, "eat": 2, "play": 3, "groom": 2, "tap": 2}
-        size = SPRITE_SIZE * self.sprite_scale
-        self.scaled_sprites, self.scaled_sprites_left = {}, {}
-        for pose, n in counts.items():
-            frames = [pygame.transform.scale(self.make_cat_sprite(pose, f), (size, size)) for f in range(n)]
-            self.scaled_sprites[pose] = frames
-            self.scaled_sprites_left[pose] = [pygame.transform.flip(f, True, False) for f in frames]
+    SPRITE_FRAMES = {"idle": 4, "walk": 4, "sit": 2, "sleep": 2, "eat": 2, "play": 3, "groom": 2, "tap": 2}
 
-    def make_cat_sprite(self, pose, frame):
-        """Draw one 32x32 pixel-art frame of a ginger tabby, then auto-outline it."""
+    def init_pixel_sprites(self, coat=DEFAULT_COAT):
+        """Build pixel-art sprites (right-facing + mirrored) for the active cat's coat."""
+        self.coat_banks = getattr(self, "coat_banks", {})
+        self.scaled_sprites, self.scaled_sprites_left = self.sprite_banks(coat)
+        self.coat = coat
+        if not hasattr(self, "accessory_sprites"):
+            self.init_accessory_sprites()
+
+    def sprite_banks(self, coat):
+        """(right, left) frame banks for a coat, built once and cached (visitors use them too)."""
+        if coat not in self.coat_banks:
+            size = SPRITE_SIZE * self.sprite_scale
+            right, left = {}, {}
+            for pose, n in self.SPRITE_FRAMES.items():
+                frames = [pygame.transform.scale(self.make_cat_sprite(pose, f, coat), (size, size))
+                          for f in range(n)]
+                right[pose] = frames
+                left[pose] = [pygame.transform.flip(f, True, False) for f in frames]
+            self.coat_banks[coat] = (right, left)
+        return self.coat_banks[coat]
+
+    def set_coat(self, coat):
+        if self.use_pixel_sprites and coat != getattr(self, "coat", None):
+            self.init_pixel_sprites(coat if coat in COATS else DEFAULT_COAT)
+
+    def make_cat_sprite(self, pose, frame, coat=DEFAULT_COAT):
+        """Draw one 32x32 pixel-art frame of a tabby in the given coat, then auto-outline it."""
         S = SPRITE_SIZE
         surf = pygame.Surface((S, S), pygame.SRCALPHA)
-        OUT, FUR, DARK = (74, 44, 33), (247, 160, 72), (214, 112, 44)
-        CREAM, PINK, EYE, SHINE = (255, 228, 190), (244, 150, 160), (45, 30, 30), (255, 255, 255)
+        FUR, DARK, CREAM, PINK = COATS.get(coat, COATS[DEFAULT_COAT])
+        OUT, EYE, SHINE = (74, 44, 33), (45, 30, 30), (255, 255, 255)
+        if coat == "black":
+            EYE, SHINE = (250, 214, 90), (255, 255, 255)   # golden eyes that show on dark fur
 
         def px(x, y, c):
             if 0 <= x < S and 0 <= y < S:
@@ -525,18 +551,158 @@ class GameDisplay:
     def draw_sprite_pose(self, hunger, y_offset=0):
         """Draw current sprite pose with animation frame, mirrored when walking left."""
         pose = self.current_pose
-        bank = self.scaled_sprites if self.facing_right else self.scaled_sprites_left
-        frames = bank.get(pose) or bank.get("idle", [])
-        if not frames:
+        n = len(self.scaled_sprites.get(pose) or self.scaled_sprites.get("idle", []))
+        if not n:
             return
         if pose == "tap":   # paws follow your typing, not the animation clock
-            frame = frames[self.tap_beat % len(frames)]
+            idx = self.tap_beat % n
         else:
-            seq = self.SPRITE_SEQUENCES.get(pose, list(range(len(frames))))
-            frame = frames[seq[self.animation_frame % len(seq)] % len(frames)]
-        x = int(self.cat_x - (SPRITE_SIZE * self.sprite_scale) / 2)
-        y = int(self.cat_y - (SPRITE_SIZE * self.sprite_scale) / 2 + y_offset)
-        self.screen.blit(frame, (x, y))
+            seq = self.SPRITE_SEQUENCES.get(pose, list(range(n)))
+            idx = seq[self.animation_frame % len(seq)] % n
+        self.blit_cat((self.scaled_sprites, self.scaled_sprites_left), pose, idx,
+                      self.cat_x, self.cat_y + y_offset, self.facing_right, self.accessory)
+
+    def blit_cat(self, banks, pose, idx, cx, cy, facing_right, accessory=None):
+        """Draw one cat frame centred on (cx, cy), with its wardrobe item on top."""
+        right, left = banks
+        frames = (right if facing_right else left).get(pose) or (right if facing_right else left)["idle"]
+        idx %= len(frames)
+        size = SPRITE_SIZE * self.sprite_scale
+        x, y = int(cx - size / 2), int(cy - size / 2)
+        self.screen.blit(frames[idx], (x, y))
+        if accessory:
+            self.draw_accessory(accessory, pose if pose in self.SPRITE_FRAMES else "idle", idx, x, y, facing_right)
+
+    # ---------------- wardrobe ----------------
+    @staticmethod
+    def accessory_anchor(slot, pose, idx):
+        """Where an item sits on the 32x32 cat frame (right-facing): (x, y) or None to hide it."""
+        if pose in ("idle", "sit", "eat", "groom", "tap"):
+            dip = 3 if pose == "eat" else 0
+            return {"head": (16, 7 + dip), "face": (16, 11 + dip), "neck": (16, 19 + dip)}[slot]
+        if pose == "sleep":
+            return {"head": (9, 16), "face": None, "neck": (13, 24)}[slot]
+        if pose == "walk":
+            bob = idx % 2
+            return {"head": (24, 9 + bob), "face": (26, 11 + bob), "neck": (21, 17 + bob)}[slot]
+        lift = (0, 2, 5)[idx % 3]                                       # play
+        return {"head": (24, 11 - lift), "face": (26, 13 - lift), "neck": (21, 19 - lift)}[slot]
+
+    def draw_accessory(self, key, pose, idx, x, y, facing_right):
+        item = ACCESSORIES.get(key)
+        sprites = getattr(self, "accessory_sprites", {}).get(key)
+        if not item or not sprites:
+            return
+        slot = item[2]
+        side = pose in ("walk", "play")
+        anchor = self.accessory_anchor(slot, pose, idx)
+        if anchor is None:
+            return
+        surf, (ax, ay) = sprites["side" if side and "side" in sprites else "front"]
+        s = self.sprite_scale
+        px_, py_ = anchor
+        if not facing_right:
+            px_ = SPRITE_SIZE - 1 - px_
+            surf = sprites.get("_flip_" + ("side" if side and "side" in sprites else "front"), surf)
+            ax = surf.get_width() // s - 1 - ax
+        self.screen.blit(surf, (x + (px_ - ax) * s, y + (py_ - ay) * s))
+
+    def init_accessory_sprites(self):
+        """16x16 pixel items (+ a side-view variant where needed), scaled like the cat."""
+        self.accessory_sprites = {}
+        for key in ACCESSORIES:
+            variants = {}
+            for view in ("front", "side"):
+                made = self.make_accessory_sprite(key, view)
+                if made is None:
+                    continue
+                surf, anchor = made
+                scaled = pygame.transform.scale(surf, (16 * self.sprite_scale, 16 * self.sprite_scale))
+                variants[view] = (scaled, anchor)
+                variants["_flip_" + view] = pygame.transform.flip(scaled, True, False)
+            self.accessory_sprites[key] = variants
+
+    def make_accessory_sprite(self, key, view="front"):
+        """Return (16x16 surface, anchor point in it) or None if this view reuses the front one."""
+        s = pygame.Surface((16, 16), pygame.SRCALPHA)
+        rect = lambda x, y, w, h, c: pygame.draw.rect(s, c, (x, y, w, h))
+        px = lambda x, y, c: s.set_at((x, y), c)
+        OUT = (74, 44, 33)
+        if key == "bow":
+            PINKB, DEEP = (255, 128, 170), (214, 80, 130)
+            if view == "side":
+                return None
+            pygame.draw.polygon(s, PINKB, [(9, 5), (13, 3), (13, 8)])
+            pygame.draw.polygon(s, PINKB, [(9, 5), (5, 3), (5, 8)])
+            rect(8, 4, 3, 3, DEEP)
+            self._auto_outline(s, OUT)
+            return s, (4, 10)       # sits on the right ear
+        if key == "flower":
+            if view == "side":
+                return None
+            PET, MID = (255, 182, 210), (255, 220, 90)
+            for (cx, cy) in ((8, 3), (6, 5), (10, 5), (7, 7), (9, 7)):
+                rect(cx - 1, cy - 1, 2, 2, PET)
+            rect(7, 4, 2, 2, MID)
+            self._auto_outline(s, OUT)
+            return s, (13, 11)      # tucked behind the left ear
+        if key == "party":
+            if view == "side":
+                return None
+            A, B = (120, 190, 255), (255, 214, 102)
+            pygame.draw.polygon(s, A, [(8, 1), (4, 11), (12, 11)])
+            rect(6, 6, 4, 1, B); rect(5, 9, 6, 1, B)
+            rect(7, 0, 2, 2, (255, 120, 150))
+            self._auto_outline(s, OUT)
+            return s, (8, 12)
+        if key == "crown":
+            if view == "side":
+                return None
+            G, J = (255, 206, 72), (230, 70, 90)
+            rect(4, 7, 9, 4, G)
+            for cx in (4, 8, 12):
+                pygame.draw.polygon(s, G, [(cx - 1, 7), (cx, 3), (cx + 1, 7)])
+            px(8, 8, J); px(5, 9, (90, 170, 255)); px(11, 9, (90, 170, 255))
+            self._auto_outline(s, OUT)
+            return s, (8, 11)
+        if key == "tophat":
+            if view == "side":
+                return None
+            K, R = (52, 48, 60), (200, 70, 90)
+            rect(5, 2, 7, 8, K); rect(3, 10, 11, 2, K); rect(5, 8, 7, 1, R)
+            self._auto_outline(s, (20, 18, 24))
+            return s, (8, 12)
+        if key == "glasses":
+            F, L = (60, 50, 60), (200, 230, 255)
+            if view == "front":
+                for gx in (3, 9):
+                    rect(gx, 6, 4, 3, F); rect(gx + 1, 7, 2, 1, L)
+                rect(7, 7, 2, 1, F)
+                return s, (8, 7)
+            rect(6, 6, 4, 3, F); rect(7, 7, 2, 1, L); rect(2, 7, 4, 1, F)   # one lens + arm
+            return s, (8, 7)
+        if key == "bell":
+            if view == "side":
+                return None
+            C, G = (220, 60, 80), (255, 210, 80)
+            rect(2, 6, 12, 2, C)
+            rect(7, 8, 3, 3, G); px(8, 10, (160, 110, 40))
+            self._auto_outline(s, OUT)
+            return s, (8, 7)
+        if key == "scarf":
+            A, B = (90, 160, 230), (240, 245, 255)
+            if view == "front":
+                rect(2, 5, 12, 3, A)
+                rect(10, 8, 3, 5, A)
+                for sx in (3, 7, 11):
+                    rect(sx, 5, 1, 3, B)
+                rect(10, 10, 3, 1, B)
+                self._auto_outline(s, OUT)
+                return s, (8, 6)
+            rect(5, 5, 6, 3, A); rect(4, 8, 3, 4, A); rect(4, 10, 3, 1, B)
+            self._auto_outline(s, OUT)
+            return s, (8, 6)
+        return None
 
     def update_pose(self, action):
         """Update current pose based on action."""
@@ -991,6 +1157,22 @@ class GameDisplay:
         if footer:
             self.screen.blit(self._speech_surface(footer, self.font_speech_small), (rect.left + 10, y + 1))
 
+    def draw_album_card(self, name, lines):
+        """The album: newest memories on a cream card next to the cat."""
+        title = self._speech_surface(f"📔 {name}'s album", self.font_speech)
+        rows = [self._speech_surface(line, self.font_speech_small) for line in lines]
+        width = max([title.get_width()] + [r.get_width() for r in rows]) + 24
+        height = 38 + len(rows) * 20 + 8
+        side = 1 if self.cat_x + 60 + width < self.window_width else -1
+        left = self.cat_x + 55 if side > 0 else self.cat_x - 55 - width
+        rect = self._clamp_rect(pygame.Rect(left, self.cat_y - 60, width, height))
+        pygame.draw.rect(self.screen, self.BUBBLE_SHADOW, rect.move(2, 3), border_radius=12)
+        pygame.draw.rect(self.screen, self.BUBBLE_FILL, rect, border_radius=12)
+        pygame.draw.rect(self.screen, self.BUBBLE_BORDER, rect, 2, border_radius=12)
+        self.screen.blit(title, (rect.left + 12, rect.top + 8))
+        for i, row in enumerate(rows):
+            self.screen.blit(row, (rect.left + 12, rect.top + 38 + i * 20))
+
     def move_cat_to_random_position(self):
         """Make cat walk to a random position (on a real monitor when there are several)."""
         if self.play_areas:
@@ -1306,6 +1488,10 @@ class GameDisplay:
                     bob = (self.animation_frame // 4) % 2 * 2
                     frame = frames[(self.animation_frame // 6) % len(frames)]
                     self.screen.blit(frame, frame.get_rect(center=(int(gift["x"]), int(gift["y"]) - bob)))
+            visitor = visual_state.get("visitor")
+            if visitor:
+                banks, pose, idx, vx, vy, facing = visitor
+                self.blit_cat(banks, pose, idx, vx, vy, facing)
         self.draw_cat(current_action, cat_status['mood'], cat_status['hunger'], jump_progress)
         if visual_state:
             if visual_state.get("toy"):
@@ -1328,7 +1514,9 @@ class GameDisplay:
 
         # The cat's single voice: speech bubble > thought bubble; hover card on mouse-over
         if visual_state:
-            if visual_state.get("hover_card"):
+            if visual_state.get("album"):
+                self.draw_album_card(cat_status['name'], visual_state["album"])
+            elif visual_state.get("hover_card"):
                 self.draw_hover_card(cat_status, visual_state.get("health", 0), visual_state.get("focus_left", 0))
             if visual_state.get("speech"):
                 self.draw_speech_bubble(visual_state["speech"], visual_state.get("speech_alpha", 1.0))
@@ -1581,6 +1769,13 @@ class LittleCatGame:
             self.companion = Companion(away_after=AWAY_AFTER_SECONDS,
                                        presence=PRESENCE, rhythm=TYPING_RHYTHM)
         self.focus_spot = None
+
+        # Collection: wardrobe, album and (at most one a day) a visiting cat
+        self.visit = None
+        self.visitors = VisitorSchedule(os.path.join(DATA_DIR, "visitors.json")) if VISITORS else None
+        self.album_timer = 0.0
+        self._best_rally_cache = (None, -999.0, 0)   # (cat name, game time read, best rally)
+        self.apply_cat_look()
 
         # Context menu
         self.context_menu_active = False
@@ -1891,6 +2086,10 @@ class LittleCatGame:
                 {"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True},
             ],
         }
+        self.context_menu_pages["care"].insert(8, {"label": "Collection", "icon": "📔",
+                                                   "action": nav("collection"), "keep_open": True})
+        self.context_menu_pages["collection"] = self.collection_page_items(nav)
+        self.context_menu_pages["wardrobe"] = self.wardrobe_page_items(nav)
         if self.companion and FOCUS_MINUTES:
             focus = ({"label": "End focus", "icon": "⏹️", "action": lambda: self.stop_focus(cancelled=True)}
                      if self.companion.in_focus else
@@ -1899,6 +2098,78 @@ class LittleCatGame:
         if self.chat_agent:
             self.context_menu_pages["more"].insert(0, {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui})
         self.set_menu_page("care")
+
+    def collection_page_items(self, nav):
+        items = []
+        if WARDROBE:
+            items.append({"label": "Wardrobe", "icon": "👒", "action": nav("wardrobe"), "keep_open": True})
+        items.append({"label": "Album", "icon": "📔", "action": self.show_album})
+        for entry in collection.adoptable(self.cat, taken_names=self.profile_names)[:2]:
+            items.append({"label": f"Adopt {entry['name']}", "icon": "🏡",
+                          "action": (lambda e=entry: self.adopt_visitor(e))})
+        items.append({"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True})
+        return items
+
+    def wardrobe_page_items(self, nav):
+        have = set(getattr(self.cat, "unlocked", []))
+        items = []
+        for key, (label, icon, _slot, _req, hint) in ACCESSORIES.items():
+            if key in have:
+                worn = getattr(self.cat, "accessory", None) == key
+                items.append({"label": ("✓ " if worn else "") + label, "icon": icon,
+                              "action": (lambda k=key: self.wear(k))})
+            else:
+                items.append({"label": f"{label}: {hint}", "icon": "🔒",
+                              "action": (lambda h=hint: self.say(cat_voice.say("locked", self.cat, hint=h),
+                                                                 priority=2, duration=2.5))})
+        if getattr(self.cat, "accessory", None):
+            items.append({"label": "Take off", "icon": "🚫", "action": lambda: self.wear(None)})
+        items.append({"label": "Back", "icon": "↩️", "action": nav("collection"), "keep_open": True})
+        return items
+
+    def wear(self, key):
+        if collection.equip(self.cat, key):
+            self.apply_cat_look()
+            if key:
+                label, icon = ACCESSORIES[key][0], ACCESSORIES[key][1]
+                self.say(cat_voice.say("wear", self.cat, icon=icon), priority=2, duration=2.5)
+                self.current_action, self.action_timer = "sit", 1.5
+            else:
+                self.say(cat_voice.say("unwear", self.cat), priority=2, duration=2.0)
+
+    def show_album(self):
+        if not getattr(self.cat, "album", None):
+            self.say(cat_voice.say("album_empty", self.cat), priority=2)
+            return
+        self.album_timer = 12.0
+
+    def album_lines(self, limit=8):
+        """Newest album entries as short lines for the album card."""
+        icons = {"visitor": "🐱", "gift": "🎁", "record": "🏆", "moment": "⭐", "unlock": "👒"}
+        lines = []
+        try:
+            fav = self.cat.memory_graph.favorites("action", top=1)
+            if fav:
+                lines.append(f"💕 favorite: {fav[0][0].replace('_', ' ')}")
+        except Exception:
+            pass
+        for e in reversed(self.cat.album[-limit:]):
+            text = f"{icons.get(e.get('kind'), '•')} {e.get('title', '')}"
+            if e.get("detail"):
+                text += f" · {e['detail']}"
+            if e.get("adopted"):
+                text += " 🏡"
+            lines.append(f"{text}  ({e.get('day', '')[5:]})")
+        return lines
+
+    def adopt_visitor(self, entry):
+        """A visitor from the album becomes your own cat, through the regular New cat flow."""
+        host = self.cat
+        collection.mark_adopted(host, entry["name"])
+        host.save_brain(self.save_path)
+        new_cat = self.create_new_cat(name=entry["name"], coat=entry.get("coat"))
+        collection.add_album(new_cat, "moment", f"adopted by {host.name}'s family")
+        self.say(cat_voice.say("adopt", new_cat, name=new_cat.name), priority=4, duration=4.0)
 
     def set_menu_page(self, page):
         """Switch radial menu page (replays the pop-open animation)."""
@@ -2008,24 +2279,33 @@ class LittleCatGame:
         self.current_action = "idle"
         self.action_timer = 0
         self.mini_game = None
+        self.apply_cat_look()
         print(f"Switched to {self.cat.name}!")
+
+    def apply_cat_look(self):
+        """Coat and wardrobe item of the active cat."""
+        self.display.set_coat(getattr(self.cat, "coat", DEFAULT_COAT))
+        self.display.accessory = getattr(self.cat, "accessory", None) if WARDROBE else None
 
     def next_cat(self):
         """Switch to the next cat profile."""
         self.set_active_cat(self.active_index + 1)
 
-    def create_new_cat(self):
-        """Create a new cat profile and switch to it."""
-        new_name = self.generate_new_cat_name()
+    def create_new_cat(self, name=None, coat=None):
+        """Create a new cat profile and switch to it (also used to adopt a visitor)."""
+        new_name = self.generate_new_cat_name(name)
         new_cat = CatBrain(new_name)
+        if coat in COATS:
+            new_cat.coat = coat
         self.cats.append(new_cat)
         self.profile_names.append(new_name)
         self.save_profiles_index()
         self.set_active_cat(len(self.cats) - 1)
+        return new_cat
 
-    def generate_new_cat_name(self):
+    def generate_new_cat_name(self, base=None):
         """Generate a unique cat name."""
-        base = "Whiskers"
+        base = base or "Whiskers"
         if base not in self.profile_names:
             return base
         i = 2
@@ -2176,6 +2456,7 @@ class LittleCatGame:
         if key in self.cat.achievements:
             return
         self.cat.achievements.add(key)
+        collection.add_album(self.cat, "moment", text)
         self.say(cat_voice.say("achievement", self.cat, name=text), priority=4, duration=4.5)
 
     def update_achievements(self):
@@ -2191,6 +2472,7 @@ class LittleCatGame:
                 self.award_achievement('trick_2', 'Trickster')
             if self.cat.age >= 1:
                 self.award_achievement('first_day', 'First Day')
+            self.check_unlocks()
 
     def start_mini_game(self, toy_type):
         """Start a simple toy mini-game (click the cat in time)."""
@@ -2533,7 +2815,11 @@ class LittleCatGame:
                     self.arcade_imitation.save(style_path)
                 except Exception:
                     pass
+        if summary["best_rally"] > stats["best_rally"] and summary["best_rally"] >= 3:
+            who = "me" if session.mode == "cat" else "you"
+            collection.add_album(self.cat, "record", "Pong record", f"rally of {summary['best_rally']} ({who})")
         stats["best_rally"] = max(stats["best_rally"], summary["best_rally"])
+        self._best_rally_cache = (None, -999.0, 0)
         path, _ = self._arcade_paths()
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -2617,8 +2903,11 @@ class LittleCatGame:
                 self.display.target_x, self.display.target_y = self.display.cat_x, self.display.cat_y
 
     def open_gift(self):
+        kind = (self.life.gift or {}).get("kind", "gift")
         self.life.open_gift()
-        self.say(cat_voice.gift_memory(self.cat), priority=3, duration=6.0)
+        note = cat_voice.gift_memory(self.cat)
+        collection.add_album(self.cat, "gift", f"a {kind} gift", note or "")
+        self.say(note, priority=3, duration=6.0)
         self.cat.happiness = min(100, self.cat.happiness + 5)
         self.cat.memory_graph.record("gift", "you opened my gift", 0.8, age=self.cat.age, source="player",
                                      context="human_nearby")
@@ -2698,6 +2987,81 @@ class LittleCatGame:
         for ev in life.pop_events():
             self.on_desktop_event(ev)
         return owns
+
+    # ---------------- collection (Phase 4) ----------------
+    def best_rally(self):
+        """Arcade best rally for the active cat (file read at most every 30 s)."""
+        name, cached_at, value = self._best_rally_cache
+        if name != self.cat.name or self.game_time - cached_at > 30:
+            value = self._arcade_stats().get("best_rally", 0)
+            self._best_rally_cache = (self.cat.name, self.game_time, value)
+        return value
+
+    def check_unlocks(self):
+        if not WARDROBE:
+            return
+        fresh = collection.new_unlocks(self.cat, self.best_rally())
+        for i, key in enumerate(fresh):
+            label, icon = ACCESSORIES[key][0], ACCESSORIES[key][1]
+            collection.add_album(self.cat, "unlock", label, icon)
+            if i == 0:
+                self.say(cat_voice.say("unlock", self.cat, item=label.lower(), icon=icon), priority=4, duration=4.0)
+
+    def visit_calm(self):
+        c = self.companion
+        return (not self.arcade and not self.dragging and not self.context_menu_active and not self.chat_active
+                and self.mini_game is None and self.current_action != "sleep" and self.cat.energy > 25
+                and not (c and (c.in_focus or c.away)) and (not self.life or self.life.mode == "free"))
+
+    def start_visit(self, visitor=None):
+        d = self.display
+        visitor = visitor or collection.make_visitor(home_coat=self.cat.coat, avoid_names=self.profile_names)
+        self.visit = Visit(visitor, d.window_width, d.cat_x, d.cat_y)
+        self.visit_banks = d.sprite_banks(visitor["coat"]) if d.use_pixel_sprites else None
+        if self.visitors:
+            self.visitors.mark()
+
+    def update_visitor(self, dt):
+        """At most one visitor a day: it arrives, sniffs, plays and always leaves. True = owns the cat."""
+        if self.visit is None:
+            if self.visitors and self.visitors.should_visit(dt, self.visit_calm()):
+                self.start_visit()
+            return False
+        visit, d = self.visit, self.display
+        if not self.visit_calm() and visit.state in ("arrive", "sniff", "play") and self.current_action != "sleep":
+            visit._leave()                       # you need the cat now: the guest goes home
+        host = visit.update(dt, d.cat_x, d.cat_y)
+        name = visit.visitor["name"]
+        for ev in visit.pop_events():
+            if ev == "arrived":
+                self.say(cat_voice.say("visitor_arrive", self.cat, name=name), priority=2, duration=3.0)
+                collection.add_album(self.cat, "visitor", f"{name} visited", visit.visitor["coat"],
+                                     name=name, coat=visit.visitor["coat"])
+            elif ev == "play":
+                self.say(cat_voice.say("visitor_play", self.cat, name=name), priority=2, duration=3.0)
+                self.cat.happiness = min(100, self.cat.happiness + 6)
+                self.cat.energy = max(0, self.cat.energy - 4)
+                self.remember_desktop("visitor", f"played with {name}", 0.7)
+            elif ev == "leaving":
+                self.say(cat_voice.say("visitor_bye", self.cat, name=name), priority=2, duration=3.0)
+            elif ev == "gone":
+                self.visit = None
+                return False
+        if host and not self.dragging:
+            self.current_action, self.action_timer = host[0], 0.3
+            d.facing_right = host[1]
+            d.target_x, d.target_y = d.cat_x, d.cat_y
+            self.is_moving = False
+            return True
+        return False
+
+    def visitor_visual(self):
+        v = self.visit
+        if not v or not getattr(self, "visit_banks", None):
+            return None
+        seq = GameDisplay.SPRITE_SEQUENCES.get(v.pose, [0])
+        idx = seq[self.display.animation_frame % len(seq)]
+        return (self.visit_banks, v.pose, idx, v.x, v.y - v.hop * 14, v.facing_right)
 
     # ---------------- work companion (Phase 3) ----------------
     def focus_spot_for(self, x):
@@ -2917,6 +3281,10 @@ class LittleCatGame:
             self.update_arcade(1 / FPS)
             owns_position = True
         companion_owns = self.update_companion(1 / FPS)
+        if not companion_owns:
+            companion_owns = self.update_visitor(1 / FPS)
+        if self.album_timer > 0:
+            self.album_timer -= 1 / FPS
         owns_position = owns_position or companion_owns
         desktop_mode = self.life.mode if self.life else "free"
         desktop_free = (desktop_mode in ("free", "perched") and not self.dragging and not self.arcade
@@ -3104,6 +3472,8 @@ class LittleCatGame:
                             and not (self.companion and (self.companion.in_focus or self.companion.away))
                             else None),
                 "focus_left": self.companion.focus_left() if self.companion else 0,
+                "visitor": self.visitor_visual(),
+                "album": self.album_lines() if self.album_timer > 0 else None,
                 "hover_card": self.hover_time >= HOVER_CARD_DELAY,
                 "health": cat_voice.wellbeing(cat_status),
                 "chat_active": self.chat_active,

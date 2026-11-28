@@ -88,6 +88,14 @@ Hoy [screen_agent_poc.py](../src/screen_agent_poc.py) es un script aparte: detec
 
 ## Fase 4 · v1.4 "Colección y visitantes" (~1–1.5 semanas)
 
+**Estado:** tareas 4.1 a 4.4 implementadas en la rama `feature/phase4-collection`. La lógica pura está en [collection.py](../src/collection.py) y el dibujo y la integración en `game.py`. Hay 13 tests en [test_collection.py](../test_collection.py), y 2 de ellos usan el juego completo sin ventana.
+
+- **Armario:** 8 accesorios en tres huecos (cabeza, cara y cuello). Cada uno tiene un punto de anclaje por postura y fotograma, se refleja al mirar a la izquierda y algunos tienen una versión de perfil. Se revisaron con una hoja de sprites de todas las posturas. Los requisitos son tiempo juntos, vínculo, sesiones de Focus, logros, el récord de Pong y visitantes conocidos.
+- **Visitantes:** como máximo uno al día, guardado en `visitors.json` para que reiniciar el juego no permita otra visita. Solo aparecen si el gato está tranquilo (sin Focus, sin ausencia, sin arcade y sin arrastrarlo) y nunca en los 2 primeros minutos. La visita sigue el orden llegar, olerse, jugar e irse. Hay un límite de 75 s, y si el usuario necesita al gato, el visitante se va.
+- **Pelajes:** 8 paletas. `make_cat_sprite` recibe el pelaje y los sprites se guardan en caché por pelaje. Cada gato guarda el suyo (`coat`).
+- **Álbum:** visitantes, regalos, récords de Pong (uno por título), logros y desbloqueos, con un máximo de 80 entradas. La tarjeta muestra además la acción favorita según `memory_graph`.
+- **Adoptar:** `create_new_cat(name, coat)` amplía el flujo de **New cat** que ya existía. Cada visitante se puede adoptar una sola vez y conserva su pelaje.
+
 | # | Tarea | Detalle | Archivos | Listo cuando… |
 |---|---|---|---|---|
 | 4.1 | **Armario de cosméticos** | Sombreros, lazos, collares y bufandas en pixel-art de 16×16, dibujados encima del sprite y ajustados a cada postura. Se desbloquean por tiempo juntos, vínculo y logros. Nueva página del menú: "Wardrobe". | `game.py` (`make_accessory_sprite`), `cat_brain.py` | 8 accesorios que se ven bien en todas las posturas, también mirando a la izquierda |

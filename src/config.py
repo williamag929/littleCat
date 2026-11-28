@@ -33,6 +33,10 @@ AWAY_AFTER_SECONDS = 300       # minutes without input before the cat considers 
 FOCUS_MINUTES = 25             # menu "Focus" length (pomodoro); the cat stays silent
 TYPING_RHYTHM = True           # taps its paws to how busily you type (no keylogger)
 
+# Collection
+WARDROBE = True                # accessories earned by time together, bond, focus, pong, visitors
+VISITORS = True                # a visiting cat drops by at most once a day, plays, and leaves
+
 # Cat Brain Settings
 INITIAL_HAPPINESS = 50      # 0-100
 INITIAL_HUNGER = 30         # 0-100
