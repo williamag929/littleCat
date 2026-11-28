@@ -79,6 +79,29 @@ The cat keeps you company while you work. It only knows **when** you use the PC,
 
 Each of these can be turned off in [src/config.py](src/config.py): `PRESENCE`, `AWAY_AFTER_SECONDS`, `FOCUS_MINUTES` and `TYPING_RHYTHM`.
 
+## 📔 Collection and Visitors
+
+Right-click the cat → **📔 Collection**:
+
+- **👒 Wardrobe:** 8 pixel-art accessories that fit every pose and both facing directions. You earn them by spending time together, building your bond, finishing Focus sessions, setting Pong records and meeting visitors. Locked items show what is missing.
+
+  | Accessory | Unlocked by |
+  |---|---|
+  | 🎀 bow | 1 h together |
+  | 🔔 bell collar | bond 50 |
+  | 👓 glasses | 3 Focus sessions |
+  | 🌸 flower | meeting a visitor |
+  | 🧣 scarf | 5 h together |
+  | 🥳 party hat | 4 achievements |
+  | 👑 crown | a Pong rally of 10 |
+  | 🎩 top hat | meeting 3 visitors |
+
+- **🐱 Visitors:** at most once a day, and only while things are calm, a cat with a different coat walks in, sniffs, plays for a bit and goes home. There is never more than one visitor, and it never stays.
+- **📔 Album:** visitors, gifts, Pong records, achievements and new accessories, plus your cat's favourite thing to do. It is saved with the cat.
+- **🏡 Adopt:** a visitor from the album can become your own cat with its own coat. This uses the same flow as *New cat*, so it adds a new cat rather than copying yours.
+
+Both features can be turned off in [src/config.py](src/config.py) with `WARDROBE` and `VISITORS`.
+
 ## 🎮 Screen Agent (Automated Game Player)
 
 LittleCat can play paddle games (Pong / Breakout style) by **looking at the screen**:

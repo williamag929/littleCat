@@ -61,6 +61,11 @@ class CatBrain:
         self.achievements = set()
         self.time_together = 0.0  # seconds spent together with the human present (Phase 3)
         self.focus_sessions = 0
+        # Collection (Phase 4)
+        self.coat = "ginger"      # fur palette (adopted visitors keep theirs)
+        self.accessory = None     # equipped wardrobe item key
+        self.unlocked = []        # wardrobe items earned so far
+        self.album = []           # visitors, gifts, records, moments
         
         # Brain weights (simple neural-inspired weights)
         self.behavior_weights = {
@@ -323,6 +328,10 @@ class CatBrain:
             'achievements': list(self.achievements),
             'time_together': self.time_together,
             'focus_sessions': self.focus_sessions,
+            'coat': self.coat,
+            'accessory': self.accessory,
+            'unlocked': list(self.unlocked),
+            'album': list(self.album),
             'memory_graph': self.memory_graph.to_dict(),
             'q_learning': {
                 'alpha': self.alpha,
@@ -367,6 +376,10 @@ class CatBrain:
             self.achievements = set(data.get('achievements', []))
             self.time_together = float(data.get('time_together', 0.0))
             self.focus_sessions = int(data.get('focus_sessions', 0))
+            self.coat = data.get('coat', 'ginger')
+            self.accessory = data.get('accessory')
+            self.unlocked = list(data.get('unlocked', []))
+            self.album = list(data.get('album', []))
 
             q_learning = data.get('q_learning', {})
             self.alpha = q_learning.get('alpha', self.alpha)
