@@ -59,6 +59,8 @@ class CatBrain:
 
         # Achievements (stored as a set for efficiency)
         self.achievements = set()
+        self.time_together = 0.0  # seconds spent together with the human present (Phase 3)
+        self.focus_sessions = 0
         
         # Brain weights (simple neural-inspired weights)
         self.behavior_weights = {
@@ -216,6 +218,8 @@ class CatBrain:
             'trick_level': self.trick_level,
             'trick_xp': round(self.trick_xp, 1),
             'achievements_count': len(self.achievements),
+            'time_together': round(self.time_together),
+            'focus_sessions': self.focus_sessions,
             'intent': self.current_intent,
             'memory_graph': self.memory_graph.summary(),
         }
@@ -317,6 +321,8 @@ class CatBrain:
             'trick_level': self.trick_level,
             'trick_xp': self.trick_xp,
             'achievements': list(self.achievements),
+            'time_together': self.time_together,
+            'focus_sessions': self.focus_sessions,
             'memory_graph': self.memory_graph.to_dict(),
             'q_learning': {
                 'alpha': self.alpha,
@@ -359,6 +365,8 @@ class CatBrain:
             self.trick_level = data.get('trick_level', 1)
             self.trick_xp = data.get('trick_xp', 0)
             self.achievements = set(data.get('achievements', []))
+            self.time_together = float(data.get('time_together', 0.0))
+            self.focus_sessions = int(data.get('focus_sessions', 0))
 
             q_learning = data.get('q_learning', {})
             self.alpha = q_learning.get('alpha', self.alpha)

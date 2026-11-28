@@ -69,6 +69,14 @@ Hoy [screen_agent_poc.py](../src/screen_agent_poc.py) es un script aparte: detec
 
 ## Fase 3 · v1.3 "Compañero de trabajo" (~1 semana)
 
+**Estado:** tareas 3.1 a 3.4 implementadas en la rama `feature/phase3-companion`. La lógica está en [companion.py](../src/companion.py), que se prueba sin ventana con un reloj y una entrada falsos. Hay 14 tests en [test_companion.py](../test_companion.py), y 3 de ellos usan el juego completo sin ventana.
+
+- **Privacidad:** solo se usan la marca de tiempo de la última entrada (`GetLastInputInfo`) y la posición del cursor. Un test comprueba que `companion.py` no lee teclas ni captura la pantalla.
+- **Ritmo al escribir:** cuenta las veces que cambia la marca de tiempo mientras el cursor no se mueve. Así distingue escribir de mover el ratón sin saber qué teclas se pulsan.
+- **Ausencia:** las necesidades avanzan 5 veces más despacio, el hambre no sube mientras no estás y la energía se recupera. Un Focus cuenta como presencia, así que al terminar uno leyendo no te marca como ausente de inmediato.
+- **Focus:** cero mensajes durante el Focus, verificado con un test de 1 minuto con el gato hambriento y cansado. Al terminar, sube el vínculo, el gato te felicita, te propone una pausa y desbloquea logros (1 y 10 sesiones).
+- **Tiempo juntos:** se guarda en la partida y aparece en la tarjeta al pasar el ratón y en Stats. Cada 10 horas hay una pequeña celebración.
+
 | # | Tarea | Detalle | Archivos | Listo cuando… |
 |---|---|---|---|---|
 | 3.1 | **Ausencia y regreso** | Con `GetLastInputInfo`: si no hay actividad en más de 5 minutos, el gato se duerme. Al volver, te saluda ("¡volviste!") una sola vez. Las necesidades bajan más despacio mientras no estás. | `game.py`, `desktop.py`, `cat_brain.py` | Nunca te recibe con un gato hambriento por haber estado fuera |

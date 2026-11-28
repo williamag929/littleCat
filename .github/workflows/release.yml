@@ -31,11 +31,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-build.txt
 
-      - name: Smoke test (brain + memory + desktop life + screen agent)
+      - name: Smoke test (brain + memory + desktop life + screen agent + companion)
         run: |
           python test_memory_graph.py
           python test_desktop_life.py
           python test_screen_agent.py
+          python test_companion.py
 
       - name: Build LittleCat.exe
         run: python tools/build_release.py ${{ env.VERSION }}
