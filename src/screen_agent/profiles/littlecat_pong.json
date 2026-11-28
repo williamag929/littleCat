@@ -1,0 +1,14 @@
+﻿{
+  "name": "LittleCat Pong",
+  "description": "The built-in Pong (python src/minigames/pong.py). Colours are known, so detection is exact.",
+  "window_title": "LittleCat Pong",
+  "region": null,
+  "keys": ["left", "right"],
+  "bottom_band": 0.18,
+  "tolerance": 40,
+  "downsample": "auto",
+  "ball_color": [255, 214, 102],
+  "paddle_color": [247, 160, 72],
+  "policy": "predict",
+  "error": 0.0
+}

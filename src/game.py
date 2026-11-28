@@ -13,8 +13,10 @@ from cat_brain import CatBrain
 from ui_agent import SeniorUIAgent
 import cat_voice
 import desktop
-from desktop_life import DesktopLife
+from desktop_life import DesktopLife, FEET as CAT_FEET
 from autonomy import REASONS as _REASONS
+from arcade import ArcadeSession
+from screen_agent.policy import ImitationPolicy
 import time
 from datetime import datetime
 from typing import Dict, Optional, Tuple, List
@@ -908,6 +910,29 @@ class GameDisplay:
         self._bubble_card(rect)
         self.screen.blit(soft, (rect.left + 12, rect.top + 7))
 
+    def draw_arcade(self, session, rect):
+        """A cosy little arcade cabinet: cream frame (same card style as the bubbles) around the Pong board."""
+        frame = rect.inflate(20, 70).move(0, -5)   # 40 px title row on top, 30 px footer
+        self._bubble_card(frame)
+        title = "🕹️ watch me play" if session.mode == "cat" else "🎮 teach me · ← →"
+        if session.mode == "cat" and session.style == "yours":
+            title = "🕹️ playing like you"
+        self.screen.blit(self._speech_surface(title, self.font_speech_small), (frame.left + 12, frame.top + 7))
+        hearts = "❤️" * session.lives + "🤍" * (3 - session.lives)
+        hs = self._speech_surface(hearts, self.font_speech_small)
+        self.screen.blit(hs, (frame.right - hs.get_width() - 12, frame.top + 7))
+        if not hasattr(self, "_arcade_font"):
+            self._arcade_font = pygame.font.Font(None, 30)
+        session.pong.render(self.screen, rect, font=self._arcade_font)
+        if session.over:
+            msg = self._speech_surface(f"{session.pong.hits} hits · best rally {session.pong.best_rally}",
+                                       self.font_speech)
+            box = msg.get_rect(center=rect.center).inflate(24, 14)
+            self._bubble_card(box)
+            self.screen.blit(msg, msg.get_rect(center=box.center))
+        hint = self._speech_surface("esc closes", self.font_speech_small)
+        self.screen.blit(hint, (frame.left + 12, frame.bottom - hint.get_height() - 4))
+
     def draw_hover_card(self, cat_status, health):
         """Cute status card next to the cat while the mouse hovers it."""
         rows = [
@@ -1245,6 +1270,8 @@ class GameDisplay:
         jump_progress = None
         if visual_state:
             jump_progress = visual_state.get("jump_progress")
+            if visual_state.get("arcade"):
+                self.draw_arcade(*visual_state["arcade"])
             gift = visual_state.get("gift")
             if gift:  # a little present left on the taskbar, gently bobbing
                 frames = self.item_sprites.get(gift["kind"])
@@ -1501,6 +1528,11 @@ class LittleCatGame:
         # Apply initial click-through state
         self.display.apply_overlay_styles(self.click_through)
 
+        # Arcade: the cat plays Pong ("Watch me play") or learns from you ("Teach me")
+        self.arcade = None
+        self.arcade_rect = None
+        self.arcade_close_timer = 0.0
+
         # Living on the real desktop: windows to sit on, throws, cursor chasing, gifts
         self.life = None
         if DESKTOP_OVERLAY and DESKTOP_LIFE and desktop.available():
@@ -1678,6 +1710,10 @@ class LittleCatGame:
                 if event.key == pygame.K_ESCAPE and self.context_menu_active:
                     self.context_menu_active = False
                     continue
+                if self.arcade:
+                    if event.key == pygame.K_ESCAPE:
+                        self.stop_arcade()
+                    continue  # arrows are read every frame in update_arcade()
                 
                 # Chat Agent Toggle (?)
                 if self.chat_agent and event.unicode == '?' and not self.chat_active:
@@ -1800,6 +1836,8 @@ class LittleCatGame:
                 {"label": "Fish", "icon": "🐠", "action": lambda: self.play_with_toy('fish')},
                 {"label": "Mouse", "icon": "🐭", "action": lambda: self.play_with_toy('mouse')},
                 {"label": "Bird", "icon": "🐦", "action": lambda: self.play_with_toy('bird')},
+                {"label": "Watch me play", "icon": "🕹️", "action": lambda: self.start_arcade("cat")},
+                {"label": "Teach me (arrows)", "icon": "🎮", "action": lambda: self.start_arcade("you")},
                 {"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True},
             ],
             "more": [
@@ -2386,6 +2424,132 @@ class LittleCatGame:
             self.cat.energy = max(0, self.cat.energy - 8)
             self.cat.hunger = min(100, self.cat.hunger + 4)
     
+    # ------------------------------------------------------------------ arcade
+    def _arcade_paths(self):
+        base = os.path.splitext(os.path.basename(self.get_cat_save_path(self.cat.name)))[0]
+        folder = os.path.join(DATA_DIR, "arcade")
+        return os.path.join(folder, f"{base}.json"), os.path.join(folder, f"{base}_style.json")
+
+    def _arcade_stats(self):
+        path, _ = self._arcade_paths()
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return {"games_played": 0, "best_rally": 0, "taught": 0, **json.load(f)}
+        except Exception:
+            return {"games_played": 0, "best_rally": 0, "taught": 0}
+
+    def start_arcade(self, mode):
+        """Open the arcade next to the cat. mode 'cat' = it plays, 'you' = you play and it learns."""
+        self.context_menu_active = False
+        if mode == "cat" and self.cat.energy < 20:
+            self.perform_action('sleep', "Cat is too tired to play")
+            return
+        stats = self._arcade_stats()
+        _, style_path = self._arcade_paths()
+        self.arcade_imitation = ImitationPolicy.load(style_path)
+        self.arcade = ArcadeSession(mode, games_played=stats["games_played"], imitation=self.arcade_imitation,
+                                    best_ever=stats["best_rally"])
+        self.arcade_close_timer = 0.0
+        # Board (1.5x) above the taskbar, under the cat; the cat sits on its top edge
+        d = self.display
+        bw, bh = 480, 360
+        floor = (self.life.floor_y(d.cat_x) + CAT_FEET) if self.life else d.window_height - 60
+        left = int(min(max(d.cat_x - bw * 0.7, 20), d.window_width - bw - 20))
+        top = int(max(120 + CAT_FEET, floor - bh - 36))
+        self.arcade_rect = pygame.Rect(left, top, bw, bh)
+        if self.life:
+            self.life.mode = "free"
+            self.life.perch = None
+        d.cat_x, d.cat_y = left + bw - 70, top - 40 - CAT_FEET + 4   # sitting on the cabinet's roof
+        d.target_x, d.target_y = d.cat_x, d.cat_y
+        d.facing_right = False
+        kind = ("arcade_start_yours" if self.arcade.style == "yours" else "arcade_start_cat") if mode == "cat" \
+            else "arcade_start_you"
+        self.say(cat_voice.say(kind, self.cat), priority=3, duration=3.0)
+        self.play_sfx("play")
+
+    def stop_arcade(self):
+        if not self.arcade:
+            return
+        session = self.arcade
+        self.arcade = None
+        self.arcade_rect = None
+        if session.pong.hits + session.pong.misses == 0:
+            return  # closed straight away: nothing to remember
+        summary = session.summary()
+        stats = self._arcade_stats()
+        if session.mode == "cat":
+            stats["games_played"] += 1
+        else:
+            stats["taught"] += 1
+            if session.over:
+                _, style_path = self._arcade_paths()
+                try:
+                    self.arcade_imitation.save(style_path)
+                except Exception:
+                    pass
+        stats["best_rally"] = max(stats["best_rally"], summary["best_rally"])
+        path, _ = self._arcade_paths()
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(stats, f)
+        except Exception:
+            pass
+        # Feelings + memory: it remembers whether pong was fun (and asks for it later)
+        reward = session.reward()
+        self.cat.happiness = min(100, self.cat.happiness + 6 + 2 * min(5, summary["hits"]))
+        self.cat.energy = max(0, self.cat.energy - (10 if session.mode == "cat" else 3))
+        self.cat.trust = min(100, self.cat.trust + (6 if session.mode == "you" else 2))
+        try:
+            self.cat.memory_graph.record("arcade", f"played pong, {summary['hits']} hits", reward,
+                                         age=self.cat.age, source="player" if session.mode == "you" else "self",
+                                         context="human_nearby",
+                                         state={'happiness': self.cat.happiness, 'hunger': self.cat.hunger,
+                                                'energy': self.cat.energy, 'trust': self.cat.trust})
+        except Exception:
+            pass
+
+    def update_arcade(self, dt):
+        session = self.arcade
+        if not session:
+            return
+        d = self.display
+        player = 0
+        if session.mode == "you":
+            keys = pygame.key.get_pressed()   # only while the overlay has focus (you clicked the menu)
+            player = (1 if keys[pygame.K_RIGHT] or keys[pygame.K_d] else 0) - \
+                     (1 if keys[pygame.K_LEFT] or keys[pygame.K_a] else 0)
+        events = []
+        for _ in range(2):                    # pong physics at 60 Hz
+            events += session.step(dt / 2, player)
+        who = session.mode
+        for ev in events:
+            if ev == "record":
+                self.say(cat_voice.say("arcade_record", self.cat), priority=3, duration=3.0)
+                self.play_sfx("purr")
+            elif ev in ("hit", "miss") and random.random() < (0.35 if ev == "hit" else 0.7):
+                self.say(cat_voice.say(f"arcade_{ev}_{who}", self.cat), priority=2, duration=2.0)
+            elif ev == "game_over":
+                kind = "arcade_over_cat" if who == "cat" else "arcade_over_you"
+                self.say(cat_voice.say(kind, self.cat, hits=session.pong.hits), priority=4, duration=4.0)
+                self.arcade_close_timer = 3.5
+            elif ev == "learned" and session.imitation and session.imitation.games_recorded >= 3:
+                self.say(cat_voice.say("arcade_learned", self.cat), priority=4, duration=4.0)
+        # The cat sits on the cabinet: paws busy while it plays, eyes on the ball while you do
+        d.target_x, d.target_y = d.cat_x, d.cat_y
+        if who == "cat" and session.last_action != 0 and not session.over:
+            self.current_action = "play"
+            d.facing_right = session.last_action > 0
+        else:
+            self.current_action = "sit"
+            d.facing_right = session.pong.ball_x > session.pong.paddle_x
+        self.action_timer = 0.2
+        if self.arcade_close_timer > 0:
+            self.arcade_close_timer -= dt
+            if self.arcade_close_timer <= 0:
+                self.stop_arcade()
+
     # ------------------------------------------------------------ desktop life
     def drag_to(self, pos):
         d = self.display
@@ -2442,7 +2606,9 @@ class LittleCatGame:
             life.refresh(dt=dt)
             return True
 
-        frozen = self.context_menu_active or self.chat_active or self.mini_game is not None
+        frozen = self.context_menu_active or self.chat_active or self.mini_game is not None or bool(self.arcade)
+        if self.arcade:
+            return True   # the cat sits on the arcade cabinet
         if frozen and life.mode in ("free", "chase", "approach"):
             life.mode = "free"
             return False
@@ -2585,8 +2751,11 @@ class LittleCatGame:
 
         # Real desktop: perching, flying after a throw, chasing the cursor, gifts
         owns_position = self.update_desktop_life(1 / FPS, is_busy)
+        if self.arcade:
+            self.update_arcade(1 / FPS)
+            owns_position = True
         desktop_mode = self.life.mode if self.life else "free"
-        desktop_free = desktop_mode in ("free", "perched") and not self.dragging
+        desktop_free = desktop_mode in ("free", "perched") and not self.dragging and not self.arcade
 
         # Hunting interaction (mouse chase)
         if self.hunt_timer > 0:
@@ -2762,6 +2931,7 @@ class LittleCatGame:
                 "curious": self.curiosity_pause > 0 and not self.speech,
                 "jump_progress": self.jump_progress,
                 "gift": self.life.gift if self.life else None,
+                "arcade": (self.arcade, self.arcade_rect) if self.arcade else None,
                 "show_stats": self.show_stats_panel,
                 "speech": self.speech['text'] if self.speech else None,
                 "speech_alpha": min(1.0, (self.game_time - self.speech['born']) / 0.2) if self.speech else 1.0,

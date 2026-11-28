@@ -36,6 +36,20 @@ Cada fase se publica como una versión con `git tag vX.Y.Z` (ver [RELEASING.md](
 
 ## Fase 2 · v1.2 Screen Agent → "Mira cómo juego" (~2 semanas)
 
+**Estado:** tareas 2.1 a 2.9 implementadas en la rama `feature/phase2-arcade`; la 2.10 (RL) queda como opcional. Pruebas en [test_screen_agent.py](../test_screen_agent.py), con 17 tests.
+
+| Métrica (Pong propio, captura a 30 fps, 50 ms de retardo) | Resultado |
+|---|---|
+| Política antigua (seguir la pelota) | 92 % de aciertos |
+| Predicción | 96 % de aciertos, rallies ~1.5× más largos |
+| Detección sin calibrar, en el escritorio real | 98–99 % de frames, 28–29 fps, 20 de 20 pelotas |
+| Imitación (copiando a un jugador imperfecto) | 94 % de aciertos (quedarse quieto: 18 %) |
+
+Notas:
+- **2.3:** la captura usa GDI con `ctypes` en lugar de `mss`, así que no añade dependencias.
+- **2.7:** los puntos se miden con eventos (golpe o fallo según el movimiento de la pelota), no leyendo el marcador.
+- **2.8:** el arcade vive en la overlay. El gato juega al Pong propio sentado encima de la máquina; en juegos externos se usa la línea de comandos.
+
 Hoy [screen_agent_poc.py](../src/screen_agent_poc.py) es un script aparte: detecta por color, apunta a la x actual de la pelota, se bloquea mientras pulsa una tecla y no entra en el `.exe` porque usa `cv2`.
 
 | # | Tarea | Detalle | Archivos | Listo cuando… |

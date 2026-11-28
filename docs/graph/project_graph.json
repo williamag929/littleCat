@@ -2,6 +2,14 @@
   "schema": "littlecat.codegraph/v1",
   "nodes": [
     {
+      "id": "class:arcade.ArcadeSession",
+      "type": "class",
+      "label": "ArcadeSession",
+      "file": "src/arcade.py",
+      "line": 37,
+      "loc": 67
+    },
+    {
       "id": "class:cat_brain.CatBrain",
       "type": "class",
       "label": "CatBrain",
@@ -18,20 +26,36 @@
       "loc": 267
     },
     {
+      "id": "class:desktop.WindowInfo",
+      "type": "class",
+      "label": "WindowInfo",
+      "file": "src/desktop.py",
+      "line": 73,
+      "loc": 4
+    },
+    {
+      "id": "class:desktop_life.DesktopLife",
+      "type": "class",
+      "label": "DesktopLife",
+      "file": "src/desktop_life.py",
+      "line": 50,
+      "loc": 397
+    },
+    {
       "id": "class:game.GameDisplay",
       "type": "class",
       "label": "GameDisplay",
       "file": "src/game.py",
-      "line": 147,
-      "loc": 1146
+      "line": 171,
+      "loc": 1311
     },
     {
       "id": "class:game.LittleCatGame",
       "type": "class",
       "label": "LittleCatGame",
       "file": "src/game.py",
-      "line": 1295,
-      "loc": 1214
+      "line": 1484,
+      "loc": 1512
     },
     {
       "id": "class:memory_graph.MemoryGraph",
@@ -95,6 +119,11 @@
       "label": ".json"
     },
     {
+      "id": "data:_style.json",
+      "type": "data",
+      "label": "_style.json"
+    },
+    {
       "id": "data:cats/<name>.json",
       "type": "data",
       "label": "cats/<name>.json"
@@ -103,6 +132,11 @@
       "id": "data:exports/profile_*.json",
       "type": "data",
       "label": "exports/profile_*.json"
+    },
+    {
+      "id": "data:gifts.json",
+      "type": "data",
+      "label": "gifts.json"
     },
     {
       "id": "data:profiles.json",
@@ -130,11 +164,67 @@
       "label": "training_log.json"
     },
     {
+      "id": "func:arcade.ArcadeSession.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/arcade.py",
+      "line": 38,
+      "loc": 20
+    },
+    {
+      "id": "func:arcade.ArcadeSession._tracked",
+      "type": "method",
+      "label": "_tracked",
+      "file": "src/arcade.py",
+      "line": 63,
+      "loc": 6
+    },
+    {
+      "id": "func:arcade.ArcadeSession.lives",
+      "type": "method",
+      "label": "lives",
+      "file": "src/arcade.py",
+      "line": 60,
+      "loc": 2
+    },
+    {
+      "id": "func:arcade.ArcadeSession.reward",
+      "type": "method",
+      "label": "reward",
+      "file": "src/arcade.py",
+      "line": 101,
+      "loc": 3
+    },
+    {
+      "id": "func:arcade.ArcadeSession.step",
+      "type": "method",
+      "label": "step",
+      "file": "src/arcade.py",
+      "line": 70,
+      "loc": 24
+    },
+    {
+      "id": "func:arcade.ArcadeSession.summary",
+      "type": "method",
+      "label": "summary",
+      "file": "src/arcade.py",
+      "line": 95,
+      "loc": 5
+    },
+    {
+      "id": "func:arcade.cat_aim_error",
+      "type": "function",
+      "label": "cat_aim_error",
+      "file": "src/arcade.py",
+      "line": 32,
+      "loc": 3
+    },
+    {
       "id": "func:autonomy.choose",
       "type": "function",
       "label": "choose",
       "file": "src/autonomy.py",
-      "line": 111,
+      "line": 148,
       "loc": 18
     },
     {
@@ -166,8 +256,16 @@
       "type": "function",
       "label": "score_actions",
       "file": "src/autonomy.py",
-      "line": 57,
+      "line": 59,
       "loc": 52
+    },
+    {
+      "id": "func:autonomy.score_desktop",
+      "type": "function",
+      "label": "score_desktop",
+      "file": "src/autonomy.py",
+      "line": 113,
+      "loc": 33
     },
     {
       "id": "func:cat_brain.CatBrain.__init__",
@@ -286,15 +384,23 @@
       "type": "function",
       "label": "_sound",
       "file": "src/cat_voice.py",
-      "line": 48,
+      "line": 69,
       "loc": 4
+    },
+    {
+      "id": "func:cat_voice.gift_memory",
+      "type": "function",
+      "label": "gift_memory",
+      "file": "src/cat_voice.py",
+      "line": 120,
+      "loc": 12
     },
     {
       "id": "func:cat_voice.idle_chatter",
       "type": "function",
       "label": "idle_chatter",
       "file": "src/cat_voice.py",
-      "line": 96,
+      "line": 147,
       "loc": 11
     },
     {
@@ -302,15 +408,15 @@
       "type": "function",
       "label": "memory_line",
       "file": "src/cat_voice.py",
-      "line": 68,
-      "loc": 13
+      "line": 89,
+      "loc": 16
     },
     {
       "id": "func:cat_voice.mood_word",
       "type": "function",
       "label": "mood_word",
       "file": "src/cat_voice.py",
-      "line": 115,
+      "line": 166,
       "loc": 13
     },
     {
@@ -318,7 +424,7 @@
       "type": "function",
       "label": "need_kind",
       "file": "src/cat_voice.py",
-      "line": 83,
+      "line": 134,
       "loc": 11
     },
     {
@@ -326,7 +432,7 @@
       "type": "function",
       "label": "say",
       "file": "src/cat_voice.py",
-      "line": 54,
+      "line": 75,
       "loc": 12
     },
     {
@@ -334,7 +440,7 @@
       "type": "function",
       "label": "wellbeing",
       "file": "src/cat_voice.py",
-      "line": 109,
+      "line": 160,
       "loc": 4
     },
     {
@@ -426,19 +532,419 @@
       "loc": 16
     },
     {
+      "id": "func:desktop._class_name",
+      "type": "function",
+      "label": "_class_name",
+      "file": "src/desktop.py",
+      "line": 243,
+      "loc": 4
+    },
+    {
+      "id": "func:desktop._is_cloaked",
+      "type": "function",
+      "label": "_is_cloaked",
+      "file": "src/desktop.py",
+      "line": 232,
+      "loc": 9
+    },
+    {
+      "id": "func:desktop._subtract",
+      "type": "function",
+      "label": "_subtract",
+      "file": "src/desktop.py",
+      "line": 287,
+      "loc": 12
+    },
+    {
+      "id": "func:desktop.available",
+      "type": "function",
+      "label": "available",
+      "file": "src/desktop.py",
+      "line": 83,
+      "loc": 2
+    },
+    {
+      "id": "func:desktop.client_origin",
+      "type": "function",
+      "label": "client_origin",
+      "file": "src/desktop.py",
+      "line": 175,
+      "loc": 11
+    },
+    {
+      "id": "func:desktop.client_rect",
+      "type": "function",
+      "label": "client_rect",
+      "file": "src/desktop.py",
+      "line": 218,
+      "loc": 12
+    },
+    {
+      "id": "func:desktop.cursor_pos",
+      "type": "function",
+      "label": "cursor_pos",
+      "file": "src/desktop.py",
+      "line": 87,
+      "loc": 11
+    },
+    {
+      "id": "func:desktop.find_window",
+      "type": "function",
+      "label": "find_window",
+      "file": "src/desktop.py",
+      "line": 209,
+      "loc": 7
+    },
+    {
+      "id": "func:desktop.floor_y_at",
+      "type": "function",
+      "label": "floor_y_at",
+      "file": "src/desktop.py",
+      "line": 342,
+      "loc": 7
+    },
+    {
+      "id": "func:desktop.foreground_window",
+      "type": "function",
+      "label": "foreground_window",
+      "file": "src/desktop.py",
+      "line": 188,
+      "loc": 7
+    },
+    {
+      "id": "func:desktop.idle_seconds",
+      "type": "function",
+      "label": "idle_seconds",
+      "file": "src/desktop.py",
+      "line": 110,
+      "loc": 13
+    },
+    {
+      "id": "func:desktop.left_button_down",
+      "type": "function",
+      "label": "left_button_down",
+      "file": "src/desktop.py",
+      "line": 100,
+      "loc": 8
+    },
+    {
+      "id": "func:desktop.list_windows",
+      "type": "function",
+      "label": "list_windows",
+      "file": "src/desktop.py",
+      "line": 249,
+      "loc": 32
+    },
+    {
+      "id": "func:desktop.monitors",
+      "type": "function",
+      "label": "monitors",
+      "file": "src/desktop.py",
+      "line": 139,
+      "loc": 19
+    },
+    {
+      "id": "func:desktop.perch_spots",
+      "type": "function",
+      "label": "perch_spots",
+      "file": "src/desktop.py",
+      "line": 301,
+      "loc": 29
+    },
+    {
+      "id": "func:desktop.spot_at",
+      "type": "function",
+      "label": "spot_at",
+      "file": "src/desktop.py",
+      "line": 332,
+      "loc": 8
+    },
+    {
+      "id": "func:desktop.virtual_screen",
+      "type": "function",
+      "label": "virtual_screen",
+      "file": "src/desktop.py",
+      "line": 125,
+      "loc": 12
+    },
+    {
+      "id": "func:desktop.window_rect",
+      "type": "function",
+      "label": "window_rect",
+      "file": "src/desktop.py",
+      "line": 160,
+      "loc": 13
+    },
+    {
+      "id": "func:desktop.window_title",
+      "type": "function",
+      "label": "window_title",
+      "file": "src/desktop.py",
+      "line": 197,
+      "loc": 10
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.__init__",
+      "type": "method",
+      "label": "__init__",
+      "file": "src/desktop_life.py",
+      "line": 51,
+      "loc": 55
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._exposed_here",
+      "type": "method",
+      "label": "_exposed_here",
+      "file": "src/desktop_life.py",
+      "line": 227,
+      "loc": 2
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._fly",
+      "type": "method",
+      "label": "_fly",
+      "file": "src/desktop_life.py",
+      "line": 411,
+      "loc": 26
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._load_gifts",
+      "type": "method",
+      "label": "_load_gifts",
+      "file": "src/desktop_life.py",
+      "line": 231,
+      "loc": 8
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._perch_still_valid",
+      "type": "method",
+      "label": "_perch_still_valid",
+      "file": "src/desktop_life.py",
+      "line": 216,
+      "loc": 10
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._save_gifts",
+      "type": "method",
+      "label": "_save_gifts",
+      "file": "src/desktop_life.py",
+      "line": 240,
+      "loc": 9
+    },
+    {
+      "id": "func:desktop_life.DesktopLife._settle_on",
+      "type": "method",
+      "label": "_settle_on",
+      "file": "src/desktop_life.py",
+      "line": 194,
+      "loc": 6
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.approach_point",
+      "type": "method",
+      "label": "approach_point",
+      "file": "src/desktop_life.py",
+      "line": 400,
+      "loc": 3
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.chase_target",
+      "type": "method",
+      "label": "chase_target",
+      "file": "src/desktop_life.py",
+      "line": 319,
+      "loc": 4
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.constrain_target",
+      "type": "method",
+      "label": "constrain_target",
+      "file": "src/desktop_life.py",
+      "line": 438,
+      "loc": 5
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.drop",
+      "type": "method",
+      "label": "drop",
+      "file": "src/desktop_life.py",
+      "line": 187,
+      "loc": 5
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.floor_y",
+      "type": "method",
+      "label": "floor_y",
+      "file": "src/desktop_life.py",
+      "line": 111,
+      "loc": 5
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.gift_hit",
+      "type": "method",
+      "label": "gift_hit",
+      "file": "src/desktop_life.py",
+      "line": 284,
+      "loc": 3
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.gifts_left_today",
+      "type": "method",
+      "label": "gifts_left_today",
+      "file": "src/desktop_life.py",
+      "line": 250,
+      "loc": 5
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.grab",
+      "type": "method",
+      "label": "grab",
+      "file": "src/desktop_life.py",
+      "line": 146,
+      "loc": 5
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.launch",
+      "type": "method",
+      "label": "launch",
+      "file": "src/desktop_life.py",
+      "line": 179,
+      "loc": 7
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.leave_perch",
+      "type": "method",
+      "label": "leave_perch",
+      "file": "src/desktop_life.py",
+      "line": 404,
+      "loc": 6
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.maybe_gift",
+      "type": "method",
+      "label": "maybe_gift",
+      "file": "src/desktop_life.py",
+      "line": 256,
+      "loc": 27
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.open_gift",
+      "type": "method",
+      "label": "open_gift",
+      "file": "src/desktop_life.py",
+      "line": 288,
+      "loc": 2
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.pop_events",
+      "type": "method",
+      "label": "pop_events",
+      "file": "src/desktop_life.py",
+      "line": 444,
+      "loc": 3
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.refresh",
+      "type": "method",
+      "label": "refresh",
+      "file": "src/desktop_life.py",
+      "line": 118,
+      "loc": 14
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.release",
+      "type": "method",
+      "label": "release",
+      "file": "src/desktop_life.py",
+      "line": 157,
+      "loc": 21
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.sense_cursor",
+      "type": "method",
+      "label": "sense_cursor",
+      "file": "src/desktop_life.py",
+      "line": 133,
+      "loc": 11
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.start_perch",
+      "type": "method",
+      "label": "start_perch",
+      "file": "src/desktop_life.py",
+      "line": 201,
+      "loc": 14
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.to_local",
+      "type": "method",
+      "label": "to_local",
+      "file": "src/desktop_life.py",
+      "line": 108,
+      "loc": 2
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.track_drag",
+      "type": "method",
+      "label": "track_drag",
+      "file": "src/desktop_life.py",
+      "line": 152,
+      "loc": 4
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.update",
+      "type": "method",
+      "label": "update",
+      "file": "src/desktop_life.py",
+      "line": 324,
+      "loc": 75
+    },
+    {
+      "id": "func:desktop_life.DesktopLife.wants_desktop",
+      "type": "method",
+      "label": "wants_desktop",
+      "file": "src/desktop_life.py",
+      "line": 292,
+      "loc": 26
+    },
+    {
       "id": "func:game.GameDisplay.__init__",
       "type": "method",
       "label": "__init__",
       "file": "src/game.py",
-      "line": 150,
-      "loc": 56
+      "line": 174,
+      "loc": 67
+    },
+    {
+      "id": "func:game.GameDisplay._auto_outline",
+      "type": "method",
+      "label": "_auto_outline",
+      "file": "src/game.py",
+      "line": 1323,
+      "loc": 9
+    },
+    {
+      "id": "func:game.GameDisplay._bubble_card",
+      "type": "method",
+      "label": "_bubble_card",
+      "file": "src/game.py",
+      "line": 880,
+      "loc": 4
+    },
+    {
+      "id": "func:game.GameDisplay._bubble_rect",
+      "type": "method",
+      "label": "_bubble_rect",
+      "file": "src/game.py",
+      "line": 876,
+      "loc": 3
     },
     {
       "id": "func:game.GameDisplay._clamp_rect",
       "type": "method",
       "label": "_clamp_rect",
       "file": "src/game.py",
-      "line": 830,
+      "line": 865,
       "loc": 4
     },
     {
@@ -446,7 +952,7 @@
       "type": "method",
       "label": "_speech_surface",
       "file": "src/game.py",
-      "line": 820,
+      "line": 855,
       "loc": 9
     },
     {
@@ -454,15 +960,23 @@
       "type": "method",
       "label": "apply_overlay_styles",
       "file": "src/game.py",
-      "line": 207,
+      "line": 242,
       "loc": 9
+    },
+    {
+      "id": "func:game.GameDisplay.draw_arcade",
+      "type": "method",
+      "label": "draw_arcade",
+      "file": "src/game.py",
+      "line": 913,
+      "loc": 22
     },
     {
       "id": "func:game.GameDisplay.draw_cat",
       "type": "method",
       "label": "draw_cat",
       "file": "src/game.py",
-      "line": 290,
+      "line": 325,
       "loc": 29
     },
     {
@@ -470,7 +984,7 @@
       "type": "method",
       "label": "draw_chat_ui",
       "file": "src/game.py",
-      "line": 1082,
+      "line": 1161,
       "loc": 91
     },
     {
@@ -478,7 +992,7 @@
       "type": "method",
       "label": "draw_claws",
       "file": "src/game.py",
-      "line": 773,
+      "line": 808,
       "loc": 5
     },
     {
@@ -486,7 +1000,7 @@
       "type": "method",
       "label": "draw_context_menu",
       "file": "src/game.py",
-      "line": 1038,
+      "line": 1117,
       "loc": 42
     },
     {
@@ -494,7 +1008,7 @@
       "type": "method",
       "label": "draw_ears",
       "file": "src/game.py",
-      "line": 681,
+      "line": 716,
       "loc": 22
     },
     {
@@ -502,7 +1016,7 @@
       "type": "method",
       "label": "draw_eating_cat",
       "file": "src/game.py",
-      "line": 559,
+      "line": 594,
       "loc": 29
     },
     {
@@ -510,7 +1024,7 @@
       "type": "method",
       "label": "draw_face",
       "file": "src/game.py",
-      "line": 704,
+      "line": 739,
       "loc": 52
     },
     {
@@ -518,15 +1032,15 @@
       "type": "method",
       "label": "draw_food",
       "file": "src/game.py",
-      "line": 1256,
-      "loc": 10
+      "line": 1449,
+      "loc": 6
     },
     {
       "id": "func:game.GameDisplay.draw_hover_card",
       "type": "method",
       "label": "draw_hover_card",
       "file": "src/game.py",
-      "line": 863,
+      "line": 936,
       "loc": 30
     },
     {
@@ -534,7 +1048,7 @@
       "type": "method",
       "label": "draw_idle_cat",
       "file": "src/game.py",
-      "line": 508,
+      "line": 543,
       "loc": 24
     },
     {
@@ -542,7 +1056,7 @@
       "type": "method",
       "label": "draw_instructions",
       "file": "src/game.py",
-      "line": 973,
+      "line": 1052,
       "loc": 16
     },
     {
@@ -550,7 +1064,7 @@
       "type": "method",
       "label": "draw_interest",
       "file": "src/game.py",
-      "line": 1267,
+      "line": 1456,
       "loc": 6
     },
     {
@@ -558,7 +1072,7 @@
       "type": "method",
       "label": "draw_jump_cat",
       "file": "src/game.py",
-      "line": 779,
+      "line": 814,
       "loc": 22
     },
     {
@@ -566,7 +1080,7 @@
       "type": "method",
       "label": "draw_label",
       "file": "src/game.py",
-      "line": 802,
+      "line": 837,
       "loc": 17
     },
     {
@@ -574,7 +1088,7 @@
       "type": "method",
       "label": "draw_playing_cat",
       "file": "src/game.py",
-      "line": 589,
+      "line": 624,
       "loc": 29
     },
     {
@@ -582,7 +1096,7 @@
       "type": "method",
       "label": "draw_sitting_cat",
       "file": "src/game.py",
-      "line": 619,
+      "line": 654,
       "loc": 20
     },
     {
@@ -590,7 +1104,7 @@
       "type": "method",
       "label": "draw_sleeping_cat",
       "file": "src/game.py",
-      "line": 533,
+      "line": 568,
       "loc": 25
     },
     {
@@ -598,15 +1112,15 @@
       "type": "method",
       "label": "draw_speech_bubble",
       "file": "src/game.py",
-      "line": 835,
-      "loc": 15
+      "line": 885,
+      "loc": 11
     },
     {
       "id": "func:game.GameDisplay.draw_sprite_pose",
       "type": "method",
       "label": "draw_sprite_pose",
       "file": "src/game.py",
-      "line": 476,
+      "line": 511,
       "loc": 12
     },
     {
@@ -614,7 +1128,7 @@
       "type": "method",
       "label": "draw_stats",
       "file": "src/game.py",
-      "line": 920,
+      "line": 999,
       "loc": 52
     },
     {
@@ -622,7 +1136,7 @@
       "type": "method",
       "label": "draw_stats_panel",
       "file": "src/game.py",
-      "line": 1274,
+      "line": 1463,
       "loc": 19
     },
     {
@@ -630,23 +1144,23 @@
       "type": "method",
       "label": "draw_thought_bubble",
       "file": "src/game.py",
-      "line": 851,
-      "loc": 11
+      "line": 897,
+      "loc": 15
     },
     {
       "id": "func:game.GameDisplay.draw_toy",
       "type": "method",
       "label": "draw_toy",
       "file": "src/game.py",
-      "line": 1234,
-      "loc": 21
+      "line": 1433,
+      "loc": 15
     },
     {
       "id": "func:game.GameDisplay.draw_toy_menu",
       "type": "method",
       "label": "draw_toy_menu",
       "file": "src/game.py",
-      "line": 990,
+      "line": 1069,
       "loc": 31
     },
     {
@@ -654,7 +1168,7 @@
       "type": "method",
       "label": "draw_walking_cat",
       "file": "src/game.py",
-      "line": 640,
+      "line": 675,
       "loc": 40
     },
     {
@@ -662,7 +1176,15 @@
       "type": "method",
       "label": "get_jump_offset",
       "file": "src/game.py",
-      "line": 764,
+      "line": 799,
+      "loc": 8
+    },
+    {
+      "id": "func:game.GameDisplay.init_item_sprites",
+      "type": "method",
+      "label": "init_item_sprites",
+      "file": "src/game.py",
+      "line": 1424,
       "loc": 8
     },
     {
@@ -670,7 +1192,7 @@
       "type": "method",
       "label": "init_pixel_sprites",
       "file": "src/game.py",
-      "line": 331,
+      "line": 366,
       "loc": 9
     },
     {
@@ -678,7 +1200,7 @@
       "type": "method",
       "label": "is_point_on_cat",
       "file": "src/game.py",
-      "line": 217,
+      "line": 252,
       "loc": 6
     },
     {
@@ -686,23 +1208,31 @@
       "type": "method",
       "label": "make_cat_sprite",
       "file": "src/game.py",
-      "line": 341,
+      "line": 376,
       "loc": 134
+    },
+    {
+      "id": "func:game.GameDisplay.make_item_sprite",
+      "type": "method",
+      "label": "make_item_sprite",
+      "file": "src/game.py",
+      "line": 1333,
+      "loc": 90
     },
     {
       "id": "func:game.GameDisplay.move_cat_to_random_position",
       "type": "method",
       "label": "move_cat_to_random_position",
       "file": "src/game.py",
-      "line": 894,
-      "loc": 4
+      "line": 967,
+      "loc": 10
     },
     {
       "id": "func:game.GameDisplay.radial_layout",
       "type": "method",
       "label": "radial_layout",
       "file": "src/game.py",
-      "line": 1022,
+      "line": 1101,
       "loc": 15
     },
     {
@@ -710,15 +1240,15 @@
       "type": "method",
       "label": "render",
       "file": "src/game.py",
-      "line": 1174,
-      "loc": 59
+      "line": 1253,
+      "loc": 68
     },
     {
       "id": "func:game.GameDisplay.set_always_on_top",
       "type": "method",
       "label": "set_always_on_top",
       "file": "src/game.py",
-      "line": 224,
+      "line": 259,
       "loc": 18
     },
     {
@@ -726,7 +1256,7 @@
       "type": "method",
       "label": "set_click_through",
       "file": "src/game.py",
-      "line": 243,
+      "line": 278,
       "loc": 24
     },
     {
@@ -734,7 +1264,7 @@
       "type": "method",
       "label": "set_transparent_background",
       "file": "src/game.py",
-      "line": 268,
+      "line": 303,
       "loc": 21
     },
     {
@@ -742,7 +1272,7 @@
       "type": "method",
       "label": "update_animation",
       "file": "src/game.py",
-      "line": 757,
+      "line": 792,
       "loc": 6
     },
     {
@@ -750,7 +1280,7 @@
       "type": "method",
       "label": "update_cat_movement",
       "file": "src/game.py",
-      "line": 899,
+      "line": 978,
       "loc": 20
     },
     {
@@ -758,7 +1288,7 @@
       "type": "method",
       "label": "update_pose",
       "file": "src/game.py",
-      "line": 489,
+      "line": 524,
       "loc": 18
     },
     {
@@ -766,15 +1296,31 @@
       "type": "method",
       "label": "__init__",
       "file": "src/game.py",
-      "line": 1298,
-      "loc": 121
+      "line": 1487,
+      "loc": 138
+    },
+    {
+      "id": "func:game.LittleCatGame._arcade_paths",
+      "type": "method",
+      "label": "_arcade_paths",
+      "file": "src/game.py",
+      "line": 2428,
+      "loc": 4
+    },
+    {
+      "id": "func:game.LittleCatGame._arcade_stats",
+      "type": "method",
+      "label": "_arcade_stats",
+      "file": "src/game.py",
+      "line": 2433,
+      "loc": 7
     },
     {
       "id": "func:game.LittleCatGame.ask_for_need",
       "type": "method",
       "label": "ask_for_need",
       "file": "src/game.py",
-      "line": 1885,
+      "line": 2101,
       "loc": 11
     },
     {
@@ -782,7 +1328,7 @@
       "type": "method",
       "label": "auto_perform_action",
       "file": "src/game.py",
-      "line": 2170,
+      "line": 2377,
       "loc": 49
     },
     {
@@ -790,7 +1336,7 @@
       "type": "method",
       "label": "award_achievement",
       "file": "src/game.py",
-      "line": 1913,
+      "line": 2129,
       "loc": 6
     },
     {
@@ -798,7 +1344,7 @@
       "type": "method",
       "label": "calculate_reward",
       "file": "src/game.py",
-      "line": 2148,
+      "line": 2355,
       "loc": 21
     },
     {
@@ -806,15 +1352,31 @@
       "type": "method",
       "label": "create_new_cat",
       "file": "src/game.py",
-      "line": 1759,
+      "line": 1975,
       "loc": 8
+    },
+    {
+      "id": "func:game.LittleCatGame.drag_to",
+      "type": "method",
+      "label": "drag_to",
+      "file": "src/game.py",
+      "line": 2554,
+      "loc": 12
+    },
+    {
+      "id": "func:game.LittleCatGame.end_drag",
+      "type": "method",
+      "label": "end_drag",
+      "file": "src/game.py",
+      "line": 2567,
+      "loc": 6
     },
     {
       "id": "func:game.LittleCatGame.export_all_profiles",
       "type": "method",
       "label": "export_all_profiles",
       "file": "src/game.py",
-      "line": 1808,
+      "line": 2024,
       "loc": 8
     },
     {
@@ -822,7 +1384,7 @@
       "type": "method",
       "label": "export_profile",
       "file": "src/game.py",
-      "line": 1780,
+      "line": 1996,
       "loc": 10
     },
     {
@@ -830,7 +1392,7 @@
       "type": "method",
       "label": "generate_new_cat_name",
       "file": "src/game.py",
-      "line": 1768,
+      "line": 1984,
       "loc": 11
     },
     {
@@ -838,7 +1400,7 @@
       "type": "method",
       "label": "get_cat_save_path",
       "file": "src/game.py",
-      "line": 1733,
+      "line": 1949,
       "loc": 6
     },
     {
@@ -846,7 +1408,7 @@
       "type": "method",
       "label": "get_fixed_spot",
       "file": "src/game.py",
-      "line": 1690,
+      "line": 1906,
       "loc": 5
     },
     {
@@ -854,7 +1416,7 @@
       "type": "method",
       "label": "get_game_state_for_agent",
       "file": "src/game.py",
-      "line": 2469,
+      "line": 2956,
       "loc": 23
     },
     {
@@ -862,7 +1424,7 @@
       "type": "method",
       "label": "get_overlay_labels",
       "file": "src/game.py",
-      "line": 1965,
+      "line": 2181,
       "loc": 8
     },
     {
@@ -870,7 +1432,7 @@
       "type": "method",
       "label": "handle_context_menu_click",
       "file": "src/game.py",
-      "line": 1658,
+      "line": 1874,
       "loc": 12
     },
     {
@@ -878,15 +1440,15 @@
       "type": "method",
       "label": "handle_input",
       "file": "src/game.py",
-      "line": 1420,
-      "loc": 181
+      "line": 1626,
+      "loc": 189
     },
     {
       "id": "func:game.LittleCatGame.hibernate_game",
       "type": "method",
       "label": "hibernate_game",
       "file": "src/game.py",
-      "line": 2034,
+      "line": 2250,
       "loc": 4
     },
     {
@@ -894,7 +1456,7 @@
       "type": "method",
       "label": "import_profile",
       "file": "src/game.py",
-      "line": 1791,
+      "line": 2007,
       "loc": 16
     },
     {
@@ -902,7 +1464,7 @@
       "type": "method",
       "label": "init_sound",
       "file": "src/game.py",
-      "line": 1824,
+      "line": 2040,
       "loc": 22
     },
     {
@@ -910,7 +1472,7 @@
       "type": "method",
       "label": "is_hovering_cat",
       "file": "src/game.py",
-      "line": 2220,
+      "line": 2685,
       "loc": 3
     },
     {
@@ -918,7 +1480,7 @@
       "type": "method",
       "label": "is_mouse_near_cat",
       "file": "src/game.py",
-      "line": 1671,
+      "line": 1887,
       "loc": 5
     },
     {
@@ -926,7 +1488,7 @@
       "type": "method",
       "label": "load_profiles_index",
       "file": "src/game.py",
-      "line": 1701,
+      "line": 1917,
       "loc": 22
     },
     {
@@ -934,15 +1496,23 @@
       "type": "method",
       "label": "next_cat",
       "file": "src/game.py",
-      "line": 1755,
+      "line": 1971,
       "loc": 3
+    },
+    {
+      "id": "func:game.LittleCatGame.on_desktop_event",
+      "type": "method",
+      "label": "on_desktop_event",
+      "file": "src/game.py",
+      "line": 2655,
+      "loc": 29
     },
     {
       "id": "func:game.LittleCatGame.open_chat_ui",
       "type": "method",
       "label": "open_chat_ui",
       "file": "src/game.py",
-      "line": 2060,
+      "line": 2266,
       "loc": 9
     },
     {
@@ -950,15 +1520,23 @@
       "type": "method",
       "label": "open_context_menu",
       "file": "src/game.py",
-      "line": 1602,
-      "loc": 42
+      "line": 1816,
+      "loc": 44
+    },
+    {
+      "id": "func:game.LittleCatGame.open_gift",
+      "type": "method",
+      "label": "open_gift",
+      "file": "src/game.py",
+      "line": 2574,
+      "loc": 7
     },
     {
       "id": "func:game.LittleCatGame.open_toy_page",
       "type": "method",
       "label": "open_toy_page",
       "file": "src/game.py",
-      "line": 1651,
+      "line": 1867,
       "loc": 6
     },
     {
@@ -966,7 +1544,7 @@
       "type": "method",
       "label": "perform_action",
       "file": "src/game.py",
-      "line": 1974,
+      "line": 2190,
       "loc": 59
     },
     {
@@ -974,7 +1552,7 @@
       "type": "method",
       "label": "play_sfx",
       "file": "src/game.py",
-      "line": 1847,
+      "line": 2063,
       "loc": 8
     },
     {
@@ -982,15 +1560,23 @@
       "type": "method",
       "label": "play_with_toy",
       "file": "src/game.py",
-      "line": 2070,
-      "loc": 77
+      "line": 2276,
+      "loc": 78
+    },
+    {
+      "id": "func:game.LittleCatGame.remember_desktop",
+      "type": "method",
+      "label": "remember_desktop",
+      "file": "src/game.py",
+      "line": 2582,
+      "loc": 9
     },
     {
       "id": "func:game.LittleCatGame.resolve_mini_game",
       "type": "method",
       "label": "resolve_mini_game",
       "file": "src/game.py",
-      "line": 1948,
+      "line": 2164,
       "loc": 16
     },
     {
@@ -998,15 +1584,15 @@
       "type": "method",
       "label": "run",
       "file": "src/game.py",
-      "line": 2427,
-      "loc": 41
+      "line": 2912,
+      "loc": 43
     },
     {
       "id": "func:game.LittleCatGame.save_all_profiles",
       "type": "method",
       "label": "save_all_profiles",
       "file": "src/game.py",
-      "line": 1817,
+      "line": 2033,
       "loc": 6
     },
     {
@@ -1014,7 +1600,7 @@
       "type": "method",
       "label": "save_profiles_index",
       "file": "src/game.py",
-      "line": 1724,
+      "line": 1940,
       "loc": 8
     },
     {
@@ -1022,7 +1608,7 @@
       "type": "method",
       "label": "say",
       "file": "src/game.py",
-      "line": 1865,
+      "line": 2081,
       "loc": 19
     },
     {
@@ -1030,7 +1616,7 @@
       "type": "method",
       "label": "set_active_cat",
       "file": "src/game.py",
-      "line": 1740,
+      "line": 1956,
       "loc": 14
     },
     {
@@ -1038,7 +1624,7 @@
       "type": "method",
       "label": "set_menu_page",
       "file": "src/game.py",
-      "line": 1645,
+      "line": 1861,
       "loc": 5
     },
     {
@@ -1046,15 +1632,23 @@
       "type": "method",
       "label": "show_toy_menu",
       "file": "src/game.py",
-      "line": 2039,
-      "loc": 20
+      "line": 2255,
+      "loc": 10
+    },
+    {
+      "id": "func:game.LittleCatGame.start_arcade",
+      "type": "method",
+      "label": "start_arcade",
+      "file": "src/game.py",
+      "line": 2441,
+      "loc": 29
     },
     {
       "id": "func:game.LittleCatGame.start_hunt",
       "type": "method",
       "label": "start_hunt",
       "file": "src/game.py",
-      "line": 1677,
+      "line": 1893,
       "loc": 7
     },
     {
@@ -1062,7 +1656,7 @@
       "type": "method",
       "label": "start_jump",
       "file": "src/game.py",
-      "line": 1685,
+      "line": 1901,
       "loc": 4
     },
     {
@@ -1070,15 +1664,23 @@
       "type": "method",
       "label": "start_mini_game",
       "file": "src/game.py",
-      "line": 1934,
+      "line": 2150,
       "loc": 13
+    },
+    {
+      "id": "func:game.LittleCatGame.stop_arcade",
+      "type": "method",
+      "label": "stop_arcade",
+      "file": "src/game.py",
+      "line": 2471,
+      "loc": 41
     },
     {
       "id": "func:game.LittleCatGame.toggle_mute",
       "type": "method",
       "label": "toggle_mute",
       "file": "src/game.py",
-      "line": 1856,
+      "line": 2072,
       "loc": 8
     },
     {
@@ -1086,7 +1688,7 @@
       "type": "method",
       "label": "toggle_stats_panel",
       "file": "src/game.py",
-      "line": 1696,
+      "line": 1912,
       "loc": 4
     },
     {
@@ -1094,31 +1696,47 @@
       "type": "method",
       "label": "update",
       "file": "src/game.py",
-      "line": 2270,
-      "loc": 156
+      "line": 2735,
+      "loc": 176
     },
     {
       "id": "func:game.LittleCatGame.update_achievements",
       "type": "method",
       "label": "update_achievements",
       "file": "src/game.py",
-      "line": 1920,
+      "line": 2136,
       "loc": 13
+    },
+    {
+      "id": "func:game.LittleCatGame.update_arcade",
+      "type": "method",
+      "label": "update_arcade",
+      "file": "src/game.py",
+      "line": 2513,
+      "loc": 39
     },
     {
       "id": "func:game.LittleCatGame.update_chat_response",
       "type": "method",
       "label": "update_chat_response",
       "file": "src/game.py",
-      "line": 2493,
+      "line": 2980,
       "loc": 16
+    },
+    {
+      "id": "func:game.LittleCatGame.update_desktop_life",
+      "type": "method",
+      "label": "update_desktop_life",
+      "file": "src/game.py",
+      "line": 2592,
+      "loc": 62
     },
     {
       "id": "func:game.LittleCatGame.update_reminders",
       "type": "method",
       "label": "update_reminders",
       "file": "src/game.py",
-      "line": 1897,
+      "line": 2113,
       "loc": 15
     },
     {
@@ -1126,7 +1744,7 @@
       "type": "method",
       "label": "update_voice",
       "file": "src/game.py",
-      "line": 2224,
+      "line": 2689,
       "loc": 45
     },
     {
@@ -1602,10 +2220,17 @@
       "loc": 24
     },
     {
+      "id": "module:arcade",
+      "type": "module",
+      "label": "arcade",
+      "loc": 104,
+      "file": "src/arcade.py"
+    },
+    {
       "id": "module:autonomy",
       "type": "module",
       "label": "autonomy",
-      "loc": 129,
+      "loc": 166,
       "file": "src/autonomy.py"
     },
     {
@@ -1619,7 +2244,7 @@
       "id": "module:cat_voice",
       "type": "module",
       "label": "cat_voice",
-      "loc": 128,
+      "loc": 179,
       "file": "src/cat_voice.py"
     },
     {
@@ -1633,14 +2258,28 @@
       "id": "module:config",
       "type": "module",
       "label": "config",
-      "loc": 100,
+      "loc": 109,
       "file": "src/config.py"
+    },
+    {
+      "id": "module:desktop",
+      "type": "module",
+      "label": "desktop",
+      "loc": 349,
+      "file": "src/desktop.py"
+    },
+    {
+      "id": "module:desktop_life",
+      "type": "module",
+      "label": "desktop_life",
+      "loc": 447,
+      "file": "src/desktop_life.py"
     },
     {
       "id": "module:game",
       "type": "module",
       "label": "game",
-      "loc": 2514,
+      "loc": 3001,
       "file": "src/game.py"
     },
     {
@@ -1673,6 +2312,36 @@
     }
   ],
   "edges": [
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession.__init__"
+    },
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession._tracked"
+    },
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession.lives"
+    },
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession.reward"
+    },
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession.step"
+    },
+    {
+      "from": "class:arcade.ArcadeSession",
+      "rel": "has_method",
+      "to": "func:arcade.ArcadeSession.summary"
+    },
     {
       "from": "class:cat_brain.CatBrain",
       "rel": "has_method",
@@ -1794,9 +2463,164 @@
       "to": "func:chat_agent.ChatAgent.request_help"
     },
     {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.__init__"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._exposed_here"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._fly"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._load_gifts"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._perch_still_valid"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._save_gifts"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife._settle_on"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.approach_point"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.chase_target"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.constrain_target"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.drop"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.floor_y"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.gift_hit"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.gifts_left_today"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.grab"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.launch"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.leave_perch"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.maybe_gift"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.open_gift"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.pop_events"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.refresh"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.release"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.sense_cursor"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.start_perch"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.to_local"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.track_drag"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.update"
+    },
+    {
+      "from": "class:desktop_life.DesktopLife",
+      "rel": "has_method",
+      "to": "func:desktop_life.DesktopLife.wants_desktop"
+    },
+    {
       "from": "class:game.GameDisplay",
       "rel": "has_method",
       "to": "func:game.GameDisplay.__init__"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay._auto_outline"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay._bubble_card"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay._bubble_rect"
     },
     {
       "from": "class:game.GameDisplay",
@@ -1812,6 +2636,11 @@
       "from": "class:game.GameDisplay",
       "rel": "has_method",
       "to": "func:game.GameDisplay.apply_overlay_styles"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.draw_arcade"
     },
     {
       "from": "class:game.GameDisplay",
@@ -1946,6 +2775,11 @@
     {
       "from": "class:game.GameDisplay",
       "rel": "has_method",
+      "to": "func:game.GameDisplay.init_item_sprites"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
       "to": "func:game.GameDisplay.init_pixel_sprites"
     },
     {
@@ -1957,6 +2791,11 @@
       "from": "class:game.GameDisplay",
       "rel": "has_method",
       "to": "func:game.GameDisplay.make_cat_sprite"
+    },
+    {
+      "from": "class:game.GameDisplay",
+      "rel": "has_method",
+      "to": "func:game.GameDisplay.make_item_sprite"
     },
     {
       "from": "class:game.GameDisplay",
@@ -2011,6 +2850,16 @@
     {
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
+      "to": "func:game.LittleCatGame._arcade_paths"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame._arcade_stats"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
       "to": "func:game.LittleCatGame.ask_for_need"
     },
     {
@@ -2032,6 +2881,16 @@
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
       "to": "func:game.LittleCatGame.create_new_cat"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.drag_to"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.end_drag"
     },
     {
       "from": "class:game.LittleCatGame",
@@ -2116,12 +2975,22 @@
     {
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
+      "to": "func:game.LittleCatGame.on_desktop_event"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
       "to": "func:game.LittleCatGame.open_chat_ui"
     },
     {
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
       "to": "func:game.LittleCatGame.open_context_menu"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.open_gift"
     },
     {
       "from": "class:game.LittleCatGame",
@@ -2142,6 +3011,11 @@
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
       "to": "func:game.LittleCatGame.play_with_toy"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.remember_desktop"
     },
     {
       "from": "class:game.LittleCatGame",
@@ -2186,6 +3060,11 @@
     {
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
+      "to": "func:game.LittleCatGame.start_arcade"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
       "to": "func:game.LittleCatGame.start_hunt"
     },
     {
@@ -2197,6 +3076,11 @@
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
       "to": "func:game.LittleCatGame.start_mini_game"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.stop_arcade"
     },
     {
       "from": "class:game.LittleCatGame",
@@ -2221,7 +3105,17 @@
     {
       "from": "class:game.LittleCatGame",
       "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_arcade"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
       "to": "func:game.LittleCatGame.update_chat_response"
+    },
+    {
+      "from": "class:game.LittleCatGame",
+      "rel": "has_method",
+      "to": "func:game.LittleCatGame.update_desktop_life"
     },
     {
       "from": "class:game.LittleCatGame",
@@ -2419,6 +3313,16 @@
       "to": "func:ui_agent.SeniorUIAgent.suggest_interaction"
     },
     {
+      "from": "func:arcade.ArcadeSession.__init__",
+      "rel": "calls",
+      "to": "func:arcade.cat_aim_error"
+    },
+    {
+      "from": "func:arcade.ArcadeSession.step",
+      "rel": "calls",
+      "to": "func:arcade.ArcadeSession._tracked"
+    },
+    {
       "from": "func:autonomy.falling",
       "rel": "calls",
       "to": "func:autonomy.rising"
@@ -2435,6 +3339,21 @@
     },
     {
       "from": "func:autonomy.score_actions",
+      "rel": "calls",
+      "to": "func:autonomy.rising"
+    },
+    {
+      "from": "func:autonomy.score_desktop",
+      "rel": "calls",
+      "to": "func:autonomy.circadian_activity"
+    },
+    {
+      "from": "func:autonomy.score_desktop",
+      "rel": "calls",
+      "to": "func:autonomy.falling"
+    },
+    {
+      "from": "func:autonomy.score_desktop",
       "rel": "calls",
       "to": "func:autonomy.rising"
     },
@@ -2559,6 +3478,211 @@
       "to": "func:chat_agent.ChatAgent.is_rate_limited"
     },
     {
+      "from": "func:desktop.client_rect",
+      "rel": "calls",
+      "to": "func:desktop.client_origin"
+    },
+    {
+      "from": "func:desktop.find_window",
+      "rel": "calls",
+      "to": "func:desktop.list_windows"
+    },
+    {
+      "from": "func:desktop.find_window",
+      "rel": "calls",
+      "to": "func:desktop.window_title"
+    },
+    {
+      "from": "func:desktop.list_windows",
+      "rel": "calls",
+      "to": "func:desktop._class_name"
+    },
+    {
+      "from": "func:desktop.list_windows",
+      "rel": "calls",
+      "to": "func:desktop._is_cloaked"
+    },
+    {
+      "from": "func:desktop.perch_spots",
+      "rel": "calls",
+      "to": "func:desktop._subtract"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.__init__",
+      "rel": "calls",
+      "to": "func:desktop.client_origin"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.__init__",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._load_gifts"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.__init__",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.refresh"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife._fly",
+      "rel": "calls",
+      "to": "func:desktop.spot_at"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife._fly",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._settle_on"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife._fly",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.floor_y"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife._perch_still_valid",
+      "rel": "calls",
+      "to": "func:desktop.window_rect"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife._settle_on",
+      "rel": "calls",
+      "to": "func:desktop.window_rect"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.drop",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.launch"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.floor_y",
+      "rel": "calls",
+      "to": "func:desktop.floor_y_at"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.leave_perch",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.launch"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.maybe_gift",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._save_gifts"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.maybe_gift",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.floor_y"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.maybe_gift",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.gifts_left_today"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.refresh",
+      "rel": "calls",
+      "to": "func:desktop.list_windows"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.refresh",
+      "rel": "calls",
+      "to": "func:desktop.monitors"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.refresh",
+      "rel": "calls",
+      "to": "func:desktop.perch_spots"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.release",
+      "rel": "calls",
+      "to": "func:desktop.spot_at"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.release",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._settle_on"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.release",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.launch"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.sense_cursor",
+      "rel": "calls",
+      "to": "func:desktop.cursor_pos"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.sense_cursor",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.to_local"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop.window_rect"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._exposed_here"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._fly"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._perch_still_valid"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife._settle_on"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.chase_target"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.drop"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.refresh"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.sense_cursor"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.wants_desktop",
+      "rel": "calls",
+      "to": "func:autonomy.score_desktop"
+    },
+    {
+      "from": "func:desktop_life.DesktopLife.wants_desktop",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.start_perch"
+    },
+    {
+      "from": "func:game.GameDisplay.__init__",
+      "rel": "calls",
+      "to": "func:desktop.monitors"
+    },
+    {
+      "from": "func:game.GameDisplay.__init__",
+      "rel": "calls",
+      "to": "func:desktop.virtual_screen"
+    },
+    {
       "from": "func:game.GameDisplay.__init__",
       "rel": "calls",
       "to": "func:game.GameDisplay.apply_overlay_styles"
@@ -2566,7 +3690,17 @@
     {
       "from": "func:game.GameDisplay.__init__",
       "rel": "calls",
+      "to": "func:game.GameDisplay.init_item_sprites"
+    },
+    {
+      "from": "func:game.GameDisplay.__init__",
+      "rel": "calls",
       "to": "func:game.GameDisplay.init_pixel_sprites"
+    },
+    {
+      "from": "func:game.GameDisplay._bubble_rect",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._clamp_rect"
     },
     {
       "from": "func:game.GameDisplay._speech_surface",
@@ -2587,6 +3721,21 @@
       "from": "func:game.GameDisplay.apply_overlay_styles",
       "rel": "calls",
       "to": "func:game.GameDisplay.set_transparent_background"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_arcade",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._bubble_card"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_arcade",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_arcade",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
     },
     {
       "from": "func:game.GameDisplay.draw_cat",
@@ -2756,7 +3905,12 @@
     {
       "from": "func:game.GameDisplay.draw_speech_bubble",
       "rel": "calls",
-      "to": "func:game.GameDisplay._clamp_rect"
+      "to": "func:game.GameDisplay._bubble_card"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_speech_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._bubble_rect"
     },
     {
       "from": "func:game.GameDisplay.draw_speech_bubble",
@@ -2786,12 +3940,22 @@
     {
       "from": "func:game.GameDisplay.draw_thought_bubble",
       "rel": "calls",
-      "to": "func:game.GameDisplay._clamp_rect"
+      "to": "func:game.GameDisplay._bubble_card"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_thought_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._bubble_rect"
     },
     {
       "from": "func:game.GameDisplay.draw_thought_bubble",
       "rel": "calls",
       "to": "func:game.GameDisplay._speech_surface"
+    },
+    {
+      "from": "func:game.GameDisplay.draw_thought_bubble",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.render"
     },
     {
       "from": "func:game.GameDisplay.draw_toy_menu",
@@ -2809,9 +3973,24 @@
       "to": "func:game.GameDisplay.draw_face"
     },
     {
+      "from": "func:game.GameDisplay.init_item_sprites",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.make_item_sprite"
+    },
+    {
       "from": "func:game.GameDisplay.init_pixel_sprites",
       "rel": "calls",
       "to": "func:game.GameDisplay.make_cat_sprite"
+    },
+    {
+      "from": "func:game.GameDisplay.make_item_sprite",
+      "rel": "calls",
+      "to": "func:game.GameDisplay._auto_outline"
+    },
+    {
+      "from": "func:game.GameDisplay.render",
+      "rel": "calls",
+      "to": "func:game.GameDisplay.draw_arcade"
     },
     {
       "from": "func:game.GameDisplay.render",
@@ -2901,6 +4080,11 @@
     {
       "from": "func:game.LittleCatGame.__init__",
       "rel": "calls",
+      "to": "func:desktop.available"
+    },
+    {
+      "from": "func:game.LittleCatGame.__init__",
+      "rel": "calls",
       "to": "func:game.GameDisplay.apply_overlay_styles"
     },
     {
@@ -2917,6 +4101,16 @@
       "from": "func:game.LittleCatGame.__init__",
       "rel": "calls",
       "to": "func:game.LittleCatGame.load_profiles_index"
+    },
+    {
+      "from": "func:game.LittleCatGame._arcade_paths",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.get_cat_save_path"
+    },
+    {
+      "from": "func:game.LittleCatGame._arcade_stats",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame._arcade_paths"
     },
     {
       "from": "func:game.LittleCatGame.ask_for_need",
@@ -2969,6 +4163,16 @@
       "to": "func:game.LittleCatGame.set_active_cat"
     },
     {
+      "from": "func:game.LittleCatGame.drag_to",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.track_drag"
+    },
+    {
+      "from": "func:game.LittleCatGame.end_drag",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.release"
+    },
+    {
       "from": "func:game.LittleCatGame.export_all_profiles",
       "rel": "calls",
       "to": "func:cat_brain.CatBrain.save_brain"
@@ -3011,12 +4215,37 @@
     {
       "from": "func:game.LittleCatGame.handle_input",
       "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.gift_hit"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.grab"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.track_drag"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
       "to": "func:game.GameDisplay.apply_overlay_styles"
     },
     {
       "from": "func:game.LittleCatGame.handle_input",
       "rel": "calls",
       "to": "func:game.GameDisplay.is_point_on_cat"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.drag_to"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.end_drag"
     },
     {
       "from": "func:game.LittleCatGame.handle_input",
@@ -3046,6 +4275,11 @@
     {
       "from": "func:game.LittleCatGame.handle_input",
       "rel": "calls",
+      "to": "func:game.LittleCatGame.open_gift"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
       "to": "func:game.LittleCatGame.perform_action"
     },
     {
@@ -3067,6 +4301,11 @@
       "from": "func:game.LittleCatGame.handle_input",
       "rel": "calls",
       "to": "func:game.LittleCatGame.start_hunt"
+    },
+    {
+      "from": "func:game.LittleCatGame.handle_input",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.stop_arcade"
     },
     {
       "from": "func:game.LittleCatGame.handle_input",
@@ -3099,6 +4338,26 @@
       "to": "func:game.LittleCatGame.set_active_cat"
     },
     {
+      "from": "func:game.LittleCatGame.on_desktop_event",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.on_desktop_event",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.on_desktop_event",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.remember_desktop"
+    },
+    {
+      "from": "func:game.LittleCatGame.on_desktop_event",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
       "from": "func:game.LittleCatGame.open_context_menu",
       "rel": "calls",
       "to": "func:cat_brain.CatBrain.load_brain"
@@ -3122,6 +4381,31 @@
       "from": "func:game.LittleCatGame.open_context_menu",
       "rel": "calls",
       "to": "func:game.LittleCatGame.set_menu_page"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_context_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.start_arcade"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_gift",
+      "rel": "calls",
+      "to": "func:cat_voice.gift_memory"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_gift",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.open_gift"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_gift",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.open_gift",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
     },
     {
       "from": "func:game.LittleCatGame.open_toy_page",
@@ -3286,7 +4570,52 @@
     {
       "from": "func:game.LittleCatGame.show_toy_menu",
       "rel": "calls",
+      "to": "func:game.LittleCatGame.open_context_menu"
+    },
+    {
+      "from": "func:game.LittleCatGame.show_toy_menu",
+      "rel": "calls",
       "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.show_toy_menu",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.set_menu_page"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.floor_y"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame._arcade_paths"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame._arcade_stats"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.perform_action"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.start_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
     },
     {
       "from": "func:game.LittleCatGame.start_hunt",
@@ -3299,6 +4628,26 @@
       "to": "func:game.LittleCatGame.play_sfx"
     },
     {
+      "from": "func:game.LittleCatGame.stop_arcade",
+      "rel": "calls",
+      "to": "func:arcade.ArcadeSession.reward"
+    },
+    {
+      "from": "func:game.LittleCatGame.stop_arcade",
+      "rel": "calls",
+      "to": "func:arcade.ArcadeSession.summary"
+    },
+    {
+      "from": "func:game.LittleCatGame.stop_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame._arcade_paths"
+    },
+    {
+      "from": "func:game.LittleCatGame.stop_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame._arcade_stats"
+    },
+    {
       "from": "func:game.LittleCatGame.update",
       "rel": "calls",
       "to": "func:cat_brain.CatBrain.decide_action"
@@ -3307,6 +4656,11 @@
       "from": "func:game.LittleCatGame.update",
       "rel": "calls",
       "to": "func:cat_brain.CatBrain.update_state"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.constrain_target"
     },
     {
       "from": "func:game.LittleCatGame.update",
@@ -3351,7 +4705,17 @@
     {
       "from": "func:game.LittleCatGame.update",
       "rel": "calls",
+      "to": "func:game.LittleCatGame.update_arcade"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
       "to": "func:game.LittleCatGame.update_chat_response"
+    },
+    {
+      "from": "func:game.LittleCatGame.update",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update_desktop_life"
     },
     {
       "from": "func:game.LittleCatGame.update",
@@ -3369,9 +4733,124 @@
       "to": "func:game.LittleCatGame.award_achievement"
     },
     {
+      "from": "func:game.LittleCatGame.update_arcade",
+      "rel": "calls",
+      "to": "func:arcade.ArcadeSession.step"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_arcade",
+      "rel": "calls",
+      "to": "func:cat_voice.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.play_sfx"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.say"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_arcade",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.stop_arcade"
+    },
+    {
       "from": "func:game.LittleCatGame.update_chat_response",
       "rel": "calls",
       "to": "func:chat_agent.ChatAgent.get_response"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:cat_voice.wellbeing"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop.cursor_pos"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop.idle_seconds"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop.left_button_down"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.approach_point"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.chase_target"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.constrain_target"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.leave_perch"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.maybe_gift"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.pop_events"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.refresh"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.to_local"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.update"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:desktop_life.DesktopLife.wants_desktop"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.drag_to"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.end_drag"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.on_desktop_event"
+    },
+    {
+      "from": "func:game.LittleCatGame.update_desktop_life",
+      "rel": "calls",
+      "to": "func:game.LittleCatGame.update"
     },
     {
       "from": "func:game.LittleCatGame.update_reminders",
@@ -3669,6 +5148,16 @@
       "to": "func:trainer.CatTrainer.test_decision_making"
     },
     {
+      "from": "module:arcade",
+      "rel": "defines",
+      "to": "class:arcade.ArcadeSession"
+    },
+    {
+      "from": "module:arcade",
+      "rel": "defines",
+      "to": "func:arcade.cat_aim_error"
+    },
+    {
       "from": "module:autonomy",
       "rel": "defines",
       "to": "func:autonomy.choose"
@@ -3694,6 +5183,11 @@
       "to": "func:autonomy.score_actions"
     },
     {
+      "from": "module:autonomy",
+      "rel": "defines",
+      "to": "func:autonomy.score_desktop"
+    },
+    {
       "from": "module:cat_brain",
       "rel": "defines",
       "to": "class:cat_brain.CatBrain"
@@ -3712,6 +5206,11 @@
       "from": "module:cat_voice",
       "rel": "defines",
       "to": "func:cat_voice._sound"
+    },
+    {
+      "from": "module:cat_voice",
+      "rel": "defines",
+      "to": "func:cat_voice.gift_memory"
     },
     {
       "from": "module:cat_voice",
@@ -3754,6 +5253,121 @@
       "to": "func:chat_agent.create_chat_agent"
     },
     {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "class:desktop.WindowInfo"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop._class_name"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop._is_cloaked"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop._subtract"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.available"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.client_origin"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.client_rect"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.cursor_pos"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.find_window"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.floor_y_at"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.foreground_window"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.idle_seconds"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.left_button_down"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.list_windows"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.monitors"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.perch_spots"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.spot_at"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.virtual_screen"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.window_rect"
+    },
+    {
+      "from": "module:desktop",
+      "rel": "defines",
+      "to": "func:desktop.window_title"
+    },
+    {
+      "from": "module:desktop_life",
+      "rel": "defines",
+      "to": "class:desktop_life.DesktopLife"
+    },
+    {
+      "from": "module:desktop_life",
+      "rel": "imports",
+      "to": "module:autonomy"
+    },
+    {
+      "from": "module:desktop_life",
+      "rel": "imports",
+      "to": "module:desktop"
+    },
+    {
       "from": "module:game",
       "rel": "defines",
       "to": "class:game.GameDisplay"
@@ -3762,6 +5376,16 @@
       "from": "module:game",
       "rel": "defines",
       "to": "class:game.LittleCatGame"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:arcade"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:autonomy"
     },
     {
       "from": "module:game",
@@ -3786,12 +5410,32 @@
     {
       "from": "module:game",
       "rel": "imports",
+      "to": "module:desktop"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
+      "to": "module:desktop_life"
+    },
+    {
+      "from": "module:game",
+      "rel": "imports",
       "to": "module:ui_agent"
     },
     {
       "from": "module:game",
       "rel": "reads_writes",
       "to": "data:.json"
+    },
+    {
+      "from": "module:game",
+      "rel": "reads_writes",
+      "to": "data:_style.json"
+    },
+    {
+      "from": "module:game",
+      "rel": "reads_writes",
+      "to": "data:gifts.json"
     },
     {
       "from": "module:game",
