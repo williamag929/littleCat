@@ -70,24 +70,34 @@ The **Senior UI Agent** enhances your gaming experience with intelligent, contex
 
 ## 🎮 Screen Agent (Automated Game Player)
 
-In addition to the AI cat, this project includes a **Screen Agent** that can automatically play games!
+LittleCat can play paddle games (Pong / Breakout style) by **looking at the screen**:
 
-**Key Features:**
-- **Computer vision** using OpenCV to detect game elements
-- **Automated keyboard control** to play the game
-- **Adaptive learning** to improve performance over time
-- **Works with any Pong/Breakout-style game**
+- **Perception without calibration:** the ball is found by motion and the paddle as the widest shape at the bottom (numpy only, no OpenCV).
+- **Prediction:** it simulates the ball's wall bounces and waits where it will land, instead of chasing it.
+- **Safe controls:** keys are held without blocking and only sent while the game window is in front. **Ctrl+Alt+P** stops it from anywhere.
+- **One JSON profile per game** in [src/screen_agent/profiles/](src/screen_agent/profiles/).
+- **The cat's arcade:** right-click the cat, then **Play**, then:
+  - **🕹️ Watch me play:** the cat plays Pong on your desktop and gets better with practice.
+  - **🎮 Teach me:** you play with the arrow keys. After 3 games the cat plays *like you*.
 
-**Quick Start:**
+**Quick start:**
 ```bash
-# Calibrate the agent for your game
-python src/screen_agent_poc.py --calibrate
-
-# Let it play automatically
-python src/screen_agent_poc.py --play
+python src/minigames/pong.py                         # the built-in Pong (arrow keys)
+python src/screen_agent --profile littlecat_pong     # let the agent play it (Ctrl+Alt+P stops)
+python src/screen_agent --profile pong_generic --window "My Game"   # any paddle game
+python src/screen_agent --bench                      # compare policies, headless
 ```
 
-**See [AGENT_GUIDE.md](AGENT_GUIDE.md) for complete screen agent documentation!**
+Measured on the built-in Pong with a 30 fps capture and 50 ms input lag:
+
+| Policy | Hit rate |
+|---|---|
+| Follow the ball (old prototype) | ~92% |
+| Prediction | ~96%, with rallies about 1.5x longer |
+
+On the real desktop it runs at about 28 fps and detects the ball in 98–99% of frames.
+
+The old OpenCV prototype is still in `src/screen_agent_poc.py`; its calibration can be reused with `python src/screen_agent --from-poc`.
 
 ## 🚀 Installation
 

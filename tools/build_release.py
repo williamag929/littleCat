@@ -27,6 +27,8 @@ def main():
         "--noconfirm", "--clean", "--onefile", "--windowed",
         "--name", "LittleCat",
         "--paths", os.path.join(ROOT, "src"),
+        # screen agent game profiles (JSON) travel inside the exe
+        "--add-data", f"{os.path.join(ROOT, 'src', 'screen_agent', 'profiles')}{os.pathsep}screen_agent/profiles",
         "--distpath", dist,
         "--workpath", build,
         "--specpath", build,

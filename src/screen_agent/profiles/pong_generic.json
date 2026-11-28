@@ -1,0 +1,14 @@
+﻿{
+  "name": "Generic paddle game",
+  "description": "Any Pong/Breakout-style game with the paddle at the bottom. Set window_title (part of the game window's title) or an absolute region [left, top, width, height]. No colours needed: the ball is found by motion.",
+  "window_title": "",
+  "region": null,
+  "keys": ["left", "right"],
+  "bottom_band": 0.18,
+  "tolerance": 40,
+  "downsample": "auto",
+  "ball_color": null,
+  "paddle_color": null,
+  "policy": "predict",
+  "error": 0.0
+}

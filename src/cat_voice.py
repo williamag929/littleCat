@@ -47,6 +47,18 @@ LINES = {
     "chase": ["got you! 🐾", "*pounces on cursor*", "it's fast! 😼"],
     "chase_tired": ["*pant pant* you win 😹", "it's too fast~ 💨", "*sits and stares at it*"],
     "gift_drop": ["i brought you something! 🎁", "for you~ 💕", "*drops a gift* look!"],
+    # --- arcade ("Watch me play" / "Teach me") -----------------------------------
+    "arcade_start_cat": ["watch this! 🕹️", "my turn! 😼", "i've been practicing~ ✨"],
+    "arcade_start_yours": ["i'll play like you! 🎮", "watch, i learned from you ✨"],
+    "arcade_start_you": ["show me how! 👀", "i'm watching~ 🎮", "teach me teach me!"],
+    "arcade_hit_cat": ["*bap!*", "got it! 🐾", "hehe 😸"],
+    "arcade_miss_cat": ["so close! 😹", "*pretends it meant that*", "next one!"],
+    "arcade_hit_you": ["nice one! ✨", "ooh! 👀", "*tail swish*"],
+    "arcade_miss_you": ["aww 😿", "you'll get it!", "*pats your hand*"],
+    "arcade_record": ["new record! 🏆", "best rally ever!! ✨"],
+    "arcade_over_cat": ["{hits} hits! again? 🕹️", "that was fun! ({hits} hits) 😸"],
+    "arcade_over_you": ["you're good! ({hits} hits) 🎮", "thanks for teaching me 💕"],
+    "arcade_learned": ["i think i get your style now! 🎓✨", "i'll try it your way next time 🎓"],
     "breakfast": ["breakfast time? ☀️🐟"],
     "bedtime": ["getting cozy... 🌙"],
 }
@@ -84,6 +96,9 @@ def memory_line(cat):
         toy = favs[0][0]
         return random.choice([f"{toy} again? {TOY_EMOJI[toy]}", f"remember the {toy}? {TOY_EMOJI[toy]}",
                               f"i dreamt of the {toy} {TOY_EMOJI[toy]}"])
+    games = [(n, v) for n, v in graph.favorites("action", top=4) if n == "arcade" and v > 0.2]
+    if games and random.random() < 0.4:
+        return random.choice(["pong later? 🕹️", "i want a rematch! 🕹️", "i dreamt of pong 🎮"])
     if getattr(cat, "trust", 0) > 70:
         return random.choice(["you're my favorite hooman 💕", "*follows you everywhere*", "i missed you~ ❤️"])
     return None
@@ -98,6 +113,7 @@ ACTION_MEMORIES = {
     "train": "when i learned a trick 🎓",
     "perch": "watching the world from your windows ☀️",
     "chase_cursor": "chasing your cursor 🐾",
+    "arcade": "our pong games 🕹️",
 }
 
 

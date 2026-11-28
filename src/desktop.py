@@ -194,6 +194,41 @@ def foreground_window() -> int:
         return 0
 
 
+def window_title(hwnd: int) -> str:
+    if not IS_WINDOWS or not hwnd:
+        return ""
+    try:
+        n = _user32.GetWindowTextLengthW(hwnd)
+        buf = ctypes.create_unicode_buffer(n + 1)
+        _user32.GetWindowTextW(hwnd, buf, n + 1)
+        return buf.value
+    except Exception:
+        return ""
+
+
+def find_window(title_part: str) -> int:
+    """First visible window whose title contains `title_part` (case-insensitive)."""
+    needle = title_part.lower()
+    for w in list_windows():
+        if needle in window_title(w.hwnd).lower():
+            return w.hwnd
+    return 0
+
+
+def client_rect(hwnd: int) -> Optional[Rect]:
+    """A window's client area (inside borders/title bar) in screen coords."""
+    if not IS_WINDOWS or not hwnd:
+        return None
+    try:
+        r = wintypes.RECT()
+        if not _user32.GetClientRect(hwnd, ctypes.byref(r)):
+            return None
+        x, y = client_origin(hwnd)
+        return x, y, x + r.right, y + r.bottom
+    except Exception:
+        return None
+
+
 def _is_cloaked(hwnd) -> bool:
     if _dwmapi is None:
         return False
