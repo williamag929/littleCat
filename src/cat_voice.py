@@ -59,6 +59,16 @@ LINES = {
     "arcade_over_cat": ["{hits} hits! again? 🕹️", "that was fun! ({hits} hits) 😸"],
     "arcade_over_you": ["you're good! ({hits} hits) 🎮", "thanks for teaching me 💕"],
     "arcade_learned": ["i think i get your style now! 🎓✨", "i'll try it your way next time 🎓"],
+    # --- work companion (away / focus / together) ---------------------------------
+    "back": ["you're back! 💕", "welcome back~ 😸", "*stretches* oh hi! ☀️", "i saved your spot 🐾"],
+    "back_long": ["you were gone so long! i napped 💤💕", "finally! i missed you~ ❤️",
+                  "*big yawn* welcome back! 😸"],
+    "focus_start": ["i'll be quiet 🤫", "go get 'em! i'll nap here 💤", "*curls up* focus time~"],
+    "focus_done": ["{minutes} minutes! you did it 🎉", "great focus! ✨ break time?",
+                   "done! you were amazing 💪😸"],
+    "focus_break": ["pong break? 🕹️", "stretch with me? 🐾", "snack break? 🐟"],
+    "focus_cancel": ["ok, break time! 😸", "no more shh? yay 💕"],
+    "together_hours": ["{hours} hours together! 💕", "we've spent {hours} hours together ✨"],
     "breakfast": ["breakfast time? ☀️🐟"],
     "bedtime": ["getting cozy... 🌙"],
 }
@@ -114,6 +124,7 @@ ACTION_MEMORIES = {
     "perch": "watching the world from your windows ☀️",
     "chase_cursor": "chasing your cursor 🐾",
     "arcade": "our pong games 🕹️",
+    "focus": "napping next to you while you worked 💤",
 }
 
 

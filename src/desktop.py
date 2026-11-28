@@ -122,6 +122,24 @@ def idle_seconds() -> float:
     return 0.0
 
 
+def last_input_tick() -> Optional[int]:
+    """Timestamp (ms tick) of the last input anywhere - *when*, never *what*.
+
+    It changes on every key or mouse event, so counting how often it changes
+    gives a typing rhythm without reading a single key.
+    """
+    if not IS_WINDOWS:
+        return None
+    try:
+        info = _LASTINPUTINFO()
+        info.cbSize = ctypes.sizeof(_LASTINPUTINFO)
+        if _user32.GetLastInputInfo(ctypes.byref(info)):
+            return int(info.dwTime)
+    except Exception:
+        pass
+    return None
+
+
 def virtual_screen() -> Optional[Rect]:
     """Bounding box of all monitors (screen coords)."""
     if not IS_WINDOWS:

@@ -68,6 +68,17 @@ The **Senior UI Agent** enhances your gaming experience with intelligent, contex
 
 **See [UI_AGENT_GUIDE.md](UI_AGENT_GUIDE.md) for complete UI agent documentation!**
 
+## 💼 Work Companion
+
+The cat keeps you company while you work. It only knows **when** you use the PC, never **what** you do: no keys are read and no screenshots are taken.
+
+- **Away and back:** after 5 minutes without input the cat takes a nap, and its needs slow down so it's never starving when you come back. It says hi once when you return.
+- **Focus (pomodoro):** right-click the cat → **🎯 Focus 25 min**. The cat curls up in a corner and stays completely silent. When the time is up it cheers, your bond grows, and it suggests a break.
+- **Typing paws:** while you type a lot, a playful cat taps its paws along (Bongo-Cat style). A calm or tired cat just sits next to you.
+- **Time together:** hours spent together are saved with the cat and shown on its hover card and in Stats.
+
+Each of these can be turned off in [src/config.py](src/config.py): `PRESENCE`, `AWAY_AFTER_SECONDS`, `FOCUS_MINUTES` and `TYPING_RHYTHM`.
+
 ## 🎮 Screen Agent (Automated Game Player)
 
 LittleCat can play paddle games (Pong / Breakout style) by **looking at the screen**:

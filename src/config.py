@@ -27,6 +27,12 @@ GIFTS = True                   # leaves a little gift with a memory now and then
 GIFTS_PER_DAY = 2
 MULTI_MONITOR = True           # the overlay spans every monitor
 
+# Work companion (only *when* you use the PC is read, never *what*: no keys, no screenshots)
+PRESENCE = True                # naps while you're away, says hi once when you're back
+AWAY_AFTER_SECONDS = 300       # minutes without input before the cat considers you away
+FOCUS_MINUTES = 25             # menu "Focus" length (pomodoro); the cat stays silent
+TYPING_RHYTHM = True           # taps its paws to how busily you type (no keylogger)
+
 # Cat Brain Settings
 INITIAL_HAPPINESS = 50      # 0-100
 INITIAL_HUNGER = 30         # 0-100

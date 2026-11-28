@@ -16,6 +16,7 @@ import desktop
 from desktop_life import DesktopLife, FEET as CAT_FEET
 from autonomy import REASONS as _REASONS
 from arcade import ArcadeSession
+from companion import Companion, format_together
 from screen_agent.policy import ImitationPolicy
 import time
 from datetime import datetime
@@ -52,6 +53,10 @@ HOVER_CARD_DELAY = 0.35
 DESKTOP_LIFE = True
 DESKTOP_SETTINGS = {}
 MULTI_MONITOR = True
+PRESENCE = True
+AWAY_AFTER_SECONDS = 300
+FOCUS_MINUTES = 25
+TYPING_RHYTHM = True
 
 # Optional behavior settings (can be overridden in config.py)
 try:
@@ -70,6 +75,10 @@ try:
         "gifts_per_day": getattr(cfg, "GIFTS_PER_DAY", 2),
     }
     MULTI_MONITOR = getattr(cfg, "MULTI_MONITOR", MULTI_MONITOR)
+    PRESENCE = getattr(cfg, "PRESENCE", PRESENCE)
+    AWAY_AFTER_SECONDS = getattr(cfg, "AWAY_AFTER_SECONDS", AWAY_AFTER_SECONDS)
+    FOCUS_MINUTES = getattr(cfg, "FOCUS_MINUTES", FOCUS_MINUTES)
+    TYPING_RHYTHM = getattr(cfg, "TYPING_RHYTHM", TYPING_RHYTHM)
     ADULT_AGE_DAYS = getattr(cfg, "ADULT_AGE_DAYS", 199)
     BUSY_THRESHOLD_SECONDS = getattr(cfg, "BUSY_THRESHOLD_SECONDS", 20)
     ADULT_SLEEP_MULTIPLIER = getattr(cfg, "ADULT_SLEEP_MULTIPLIER", 2.5)
@@ -220,6 +229,7 @@ class GameDisplay:
         self.animation_timer = 0
         self.animation_speed = 0.15
         self.current_pose = "idle"
+        self.tap_beat = 0
         self.facing_right = True
         
         # Movement bounds (play area)
@@ -365,7 +375,7 @@ class GameDisplay:
 
     def init_pixel_sprites(self):
         """Build pixel-art sprites (right-facing + mirrored) once at startup."""
-        counts = {"idle": 4, "walk": 4, "sit": 2, "sleep": 2, "eat": 2, "play": 3, "groom": 2}
+        counts = {"idle": 4, "walk": 4, "sit": 2, "sleep": 2, "eat": 2, "play": 3, "groom": 2, "tap": 2}
         size = SPRITE_SIZE * self.sprite_scale
         self.scaled_sprites, self.scaled_sprites_left = {}, {}
         for pose, n in counts.items():
@@ -405,17 +415,21 @@ class GameDisplay:
                 else:                        # closed / blink
                     rect(ex, y + 1, 2, 1, EYE)
 
-        if pose in ("idle", "sit", "eat", "groom"):
+        if pose in ("idle", "sit", "eat", "groom", "tap"):
             # ---------- front-facing sitting cat ----------
             dip = 3 if pose == "eat" else 0
             sway = [0, 1, 0, -1][frame % 4] if pose == "idle" else (frame % 2)
-            if pose == "sit":   # tail wrapped around the paws
+            if pose in ("sit", "tap"):   # tail wrapped around the paws
                 tail([(22, 29), (24, 28), (25, 26 - sway)])
             else:               # tail up, swaying
                 tail([(22, 27), (24, 25), (25, 22), (25 + sway, 19), (24 + sway, 17)])
             ell(9, 15, 14, 15, FUR)                     # body
             ell(12, 18, 8, 10, CREAM)                   # chest
-            rect(11, 27, 4, 3, CREAM); rect(17, 27, 4, 3, CREAM)  # front paws
+            if pose == "tap":   # Bongo-style: one paw up, one paw down, alternating
+                up_x, down_x = (11, 17) if frame % 2 == 0 else (17, 11)
+                rect(up_x, 22, 4, 4, CREAM); rect(down_x, 27, 4, 3, CREAM)
+            else:
+                rect(11, 27, 4, 3, CREAM); rect(17, 27, 4, 3, CREAM)  # front paws
             hx, hy = 8, 5 + dip
             if pose == "groom" and frame % 2:           # licking a raised paw
                 rect(19, 16, 4, 5, CREAM)
@@ -430,7 +444,7 @@ class GameDisplay:
             rect(hx, hy + 6, 2, 1, DARK); rect(hx + 14, hy + 6, 2, 1, DARK)  # cheek stripes
             if pose == "eat":
                 mode = "closed"
-            elif pose in ("sit", "groom"):
+            elif pose in ("sit", "groom", "tap"):
                 mode = "happy"
             else:
                 mode = "closed" if frame == 3 else "open"
@@ -515,8 +529,11 @@ class GameDisplay:
         frames = bank.get(pose) or bank.get("idle", [])
         if not frames:
             return
-        seq = self.SPRITE_SEQUENCES.get(pose, list(range(len(frames))))
-        frame = frames[seq[self.animation_frame % len(seq)] % len(frames)]
+        if pose == "tap":   # paws follow your typing, not the animation clock
+            frame = frames[self.tap_beat % len(frames)]
+        else:
+            seq = self.SPRITE_SEQUENCES.get(pose, list(range(len(frames))))
+            frame = frames[seq[self.animation_frame % len(seq)] % len(frames)]
         x = int(self.cat_x - (SPRITE_SIZE * self.sprite_scale) / 2)
         y = int(self.cat_y - (SPRITE_SIZE * self.sprite_scale) / 2 + y_offset)
         self.screen.blit(frame, (x, y))
@@ -536,6 +553,8 @@ class GameDisplay:
             'jump': 'play',
             'walk': 'walk',
             'sit': 'sit',
+            'tap': 'tap',
+            'focus': 'sleep',
             'idle': 'idle'
         }
         self.current_pose = pose_map.get(action, 'idle')
@@ -933,8 +952,14 @@ class GameDisplay:
         hint = self._speech_surface("esc closes", self.font_speech_small)
         self.screen.blit(hint, (frame.left + 12, frame.bottom - hint.get_height() - 4))
 
-    def draw_hover_card(self, cat_status, health):
+    def draw_hover_card(self, cat_status, health, focus_left=0):
         """Cute status card next to the cat while the mouse hovers it."""
+        if focus_left > 0:
+            footer = f"🎯 focus · {int(focus_left // 60) + 1} min left"
+        elif cat_status.get('time_together', 0) >= 60:
+            footer = f"🕰️ together {format_together(cat_status['time_together'])}"
+        else:
+            footer = None
         rows = [
             ("💚", "Health", health, (120, 200, 140)),
             ("❤️", "Happy", cat_status['happiness'], (240, 120, 140)),
@@ -944,7 +969,7 @@ class GameDisplay:
         ]
         title = self._speech_surface(f"{cat_status['name']} · {cat_voice.mood_word(cat_status)}", self.font_speech)
         width = max(190, title.get_width() + 24)
-        height = 38 + len(rows) * 22 + 8
+        height = 38 + len(rows) * 22 + 8 + (22 if footer else 0)
         side = 1 if self.cat_x + 60 + width < self.window_width else -1
         left = self.cat_x + 55 if side > 0 else self.cat_x - 55 - width
         rect = self._clamp_rect(pygame.Rect(left, self.cat_y - 40, width, height))  # below the speech bubble
@@ -963,6 +988,8 @@ class GameDisplay:
             if fill.width:
                 pygame.draw.rect(self.screen, color, fill, border_radius=5)
             y += 22
+        if footer:
+            self.screen.blit(self._speech_surface(footer, self.font_speech_small), (rect.left + 10, y + 1))
 
     def move_cat_to_random_position(self):
         """Make cat walk to a random position (on a real monitor when there are several)."""
@@ -1302,7 +1329,7 @@ class GameDisplay:
         # The cat's single voice: speech bubble > thought bubble; hover card on mouse-over
         if visual_state:
             if visual_state.get("hover_card"):
-                self.draw_hover_card(cat_status, visual_state.get("health", 0))
+                self.draw_hover_card(cat_status, visual_state.get("health", 0), visual_state.get("focus_left", 0))
             if visual_state.get("speech"):
                 self.draw_speech_bubble(visual_state["speech"], visual_state.get("speech_alpha", 1.0))
             elif visual_state.get("thought") and not visual_state.get("hover_card"):
@@ -1470,8 +1497,10 @@ class GameDisplay:
             f"Trust: {cat_status['trust']}",
             f"Happy: {cat_status['happiness']}",
             f"Learn: {cat_status['memories_count']}",
+            f"Together: {format_together(cat_status.get('time_together', 0))}",
+            f"Focus done: {cat_status.get('focus_sessions', 0)}",
         ]
-        width = 150
+        width = 190
         height = 18 * len(lines) + 10
         panel = pygame.Rect(x, y, width, height)
         pygame.draw.rect(self.screen, WHITE, panel)
@@ -1544,6 +1573,14 @@ class LittleCatGame:
             except Exception as e:
                 print(f"Desktop life disabled: {e}")
                 self.life = None
+
+        # Work companion: away/back naps, Focus (pomodoro), typing paws, time together.
+        # Only *when* you use the PC is read (GetLastInputInfo), never *what*.
+        self.companion = None
+        if DESKTOP_OVERLAY and desktop.available() and (PRESENCE or TYPING_RHYTHM or FOCUS_MINUTES):
+            self.companion = Companion(away_after=AWAY_AFTER_SECONDS,
+                                       presence=PRESENCE, rhythm=TYPING_RHYTHM)
+        self.focus_spot = None
 
         # Context menu
         self.context_menu_active = False
@@ -1854,6 +1891,11 @@ class LittleCatGame:
                 {"label": "Back", "icon": "↩️", "action": nav("care"), "keep_open": True},
             ],
         }
+        if self.companion and FOCUS_MINUTES:
+            focus = ({"label": "End focus", "icon": "⏹️", "action": lambda: self.stop_focus(cancelled=True)}
+                     if self.companion.in_focus else
+                     {"label": f"Focus {FOCUS_MINUTES} min", "icon": "🎯", "action": self.start_focus})
+            self.context_menu_pages["care"].insert(7, focus)
         if self.chat_agent:
             self.context_menu_pages["more"].insert(0, {"label": "Ask LARY", "icon": "🤖", "action": self.open_chat_ui})
         self.set_menu_page("care")
@@ -2085,6 +2127,9 @@ class LittleCatGame:
         talks like a pet, not like a notification center.
         """
         if not text:
+            return False
+        # Focus mode: total silence (only the focus start/end lines use priority 9)
+        if self.companion and self.companion.in_focus and priority < 9:
             return False
         now = self.game_time
         active = self.speech and self.speech['expires'] > now
@@ -2639,18 +2684,128 @@ class LittleCatGame:
             self.current_action = "play"   # side view, paws out
             self.action_timer = 0.15
 
-        can_start = (not is_busy and self.action_timer <= 0 and self.hunt_timer <= 0
+        quiet = bool(self.companion and (self.companion.in_focus or self.companion.away))
+        can_start = (not is_busy and not quiet and self.action_timer <= 0 and self.hunt_timer <= 0
                      and self.current_action in ("idle", "walk") and self.cat.energy > 25
                      and self.cat.hunger < 75)
         life.wants_desktop(self.cat, dt, d.cat_x, d.cat_y, can_start)
-        life.maybe_gift(dt, d.cat_x,
-                        lambda: cat_voice.wellbeing({"hunger": self.cat.hunger, "energy": self.cat.energy,
-                                                     "happiness": self.cat.happiness}),
-                        user_present=lambda: desktop.idle_seconds() < 60)
+        if not quiet:
+            life.maybe_gift(dt, d.cat_x,
+                            lambda: cat_voice.wellbeing({"hunger": self.cat.hunger, "energy": self.cat.energy,
+                                                         "happiness": self.cat.happiness}),
+                            user_present=lambda: desktop.idle_seconds() < 60)
 
         for ev in life.pop_events():
             self.on_desktop_event(ev)
         return owns
+
+    # ---------------- work companion (Phase 3) ----------------
+    def focus_spot_for(self, x):
+        """A quiet corner: bottom-right of the monitor the cat is on, on the taskbar."""
+        d = self.display
+        here = [a for a in d.play_areas if a[0] - 150 <= x <= a[2] + 150]
+        sx = (here or d.play_areas)[0][2] + 90 if d.play_areas else d.window_width - FIXED_SPOT_MARGIN_X
+        sy = self.life.floor_y(sx) if self.life else d.window_height - FIXED_SPOT_MARGIN_Y
+        return sx, sy
+
+    def start_focus(self):
+        if not self.companion:
+            return
+        if self.arcade:
+            self.stop_arcade()
+        self.companion.start_focus(FOCUS_MINUTES)
+        if self.life and self.life.mode == "perched":
+            self.life.leave_perch()
+        self.focus_spot = self.focus_spot_for(self.display.cat_x)
+        self.speech = None
+        self.say(cat_voice.say("focus_start", self.cat), priority=9, duration=2.5)
+
+    def stop_focus(self, cancelled=False, minutes=0):
+        c = self.companion
+        if not c:
+            return
+        c.cancel_focus()
+        self.focus_spot = None
+        self.current_action, self.action_timer = "idle", 0
+        if cancelled:
+            self.say(cat_voice.say("focus_cancel", self.cat), priority=4)
+            return
+        # A finished pomodoro: proud cat, stronger bond, and a break suggestion
+        self.cat.focus_sessions += 1
+        self.cat.trust = min(100, self.cat.trust + 5)
+        self.cat.happiness = min(100, self.cat.happiness + 8)
+        self.remember_desktop("focus", "napped while you focused", 0.6)
+        self.start_jump()
+        self.say(cat_voice.say("focus_done", self.cat, minutes=minutes), priority=9, duration=4.5)
+        self.pending_line = (self.game_time + 5.0, cat_voice.say("focus_break", self.cat))
+        if self.cat.focus_sessions == 1:
+            self.award_achievement("focus_1", "Deep Work Buddy")
+        elif self.cat.focus_sessions == 10:
+            self.award_achievement("focus_10", "Pomodoro Pro")
+
+    def update_companion(self, dt):
+        """Away naps, welcome back, Focus and typing paws. True = it owns the cat's position."""
+        c = self.companion
+        if not c:
+            return False
+        d = self.display
+        for ev in c.update(dt):
+            if ev[0] == "away":
+                self.current_action, self.action_timer = "sleep", 3.0
+            elif ev[0] == "back":
+                self.current_action, self.action_timer = "idle", 0
+                kind = "back_long" if ev[1] >= 3600 else "back"
+                self.say(cat_voice.say(kind, self.cat), priority=4, duration=4.0)
+                self.cat.happiness = min(100, self.cat.happiness + 3)
+            elif ev[0] == "focus_done":
+                self.stop_focus(minutes=ev[1])
+
+        # Time together (with you present); a little celebration every 10 hours
+        before = self.cat.time_together
+        self.cat.time_together += c.take_together()
+        hours = int(self.cat.time_together // 3600)
+        if hours > int(before // 3600) and hours % 10 == 0:
+            self.say(cat_voice.say("together_hours", self.cat, hours=hours), priority=4, duration=4.0)
+            if hours == 10:
+                self.award_achievement("together_10", "Office Cat")
+
+        if getattr(self, "pending_line", None) and self.game_time >= self.pending_line[0]:
+            self.say(self.pending_line[1], priority=3)
+            self.pending_line = None
+
+        busy_elsewhere = self.dragging or self.arcade or self.context_menu_active or self.chat_active
+        free = not self.life or self.life.mode == "free"
+
+        if c.in_focus and not busy_elsewhere and free:
+            sx, sy = self.focus_spot or self.focus_spot_for(d.cat_x)
+            if abs(d.cat_x - sx) > 6 or abs(d.cat_y - sy) > 6:
+                d.target_x, d.target_y = sx, sy
+                d.cat_speed = max(d.cat_speed, 2.2)
+                self.is_moving = d.update_cat_movement()
+                self.current_action, self.action_timer = "walk", 0.2
+            else:
+                self.current_action, self.action_timer = "focus", 0.5   # curled up, silent
+                self.is_moving = False
+            return True
+
+        if c.away and not busy_elsewhere:
+            self.current_action = "sleep"
+            self.action_timer = max(self.action_timer, 1.0)
+            d.target_x, d.target_y = d.cat_x, d.cat_y
+            self.is_moving = False
+            return free
+
+        if (c.typing() and not busy_elsewhere and self.hunt_timer <= 0 and self.jump_timer <= 0
+                and self.current_action in ("idle", "walk", "sit", "tap")):
+            # Busy typing: playful cats drum along, calm or tired ones just sit with you
+            calm = self.cat.energy < 45 or self.cat.personality.get("playful", 0.5) < 0.3
+            self.current_action = "sit" if calm else "tap"
+            self.action_timer = max(self.action_timer, 0.8)
+            d.tap_beat = c.beat
+            d.target_x, d.target_y = d.cat_x, d.cat_y
+            self.is_moving = False
+            return free
+        return False
 
     def on_desktop_event(self, ev):
         lines = {"thrown": ("thrown", 2), "bonk": ("bonk", 2), "landed": ("landed", 2),
@@ -2736,7 +2891,14 @@ class LittleCatGame:
         """Update game state."""
         # Update cat internal state
         delta_time = GAME_SPEED
-        self.cat.update_state(delta_time)
+        companion = self.companion
+        away = bool(companion and companion.away)
+        hunger_before = self.cat.hunger
+        self.cat.update_state(delta_time * (companion.need_rate() if companion else 1.0))
+        if away:
+            # Never welcome you back with a starving cat: it naps, hunger stays mild, energy refills
+            self.cat.hunger = min(self.cat.hunger, max(hunger_before, 65))
+            self.cat.energy = min(100, self.cat.energy + 0.1 / FPS)
 
         self.update_voice()
 
@@ -2754,8 +2916,11 @@ class LittleCatGame:
         if self.arcade:
             self.update_arcade(1 / FPS)
             owns_position = True
+        companion_owns = self.update_companion(1 / FPS)
+        owns_position = owns_position or companion_owns
         desktop_mode = self.life.mode if self.life else "free"
-        desktop_free = desktop_mode in ("free", "perched") and not self.dragging and not self.arcade
+        desktop_free = (desktop_mode in ("free", "perched") and not self.dragging and not self.arcade
+                        and not companion_owns)
 
         # Hunting interaction (mouse chase)
         if self.hunt_timer > 0:
@@ -2935,7 +3100,10 @@ class LittleCatGame:
                 "show_stats": self.show_stats_panel,
                 "speech": self.speech['text'] if self.speech else None,
                 "speech_alpha": min(1.0, (self.game_time - self.speech['born']) / 0.2) if self.speech else 1.0,
-                "thought": self.thought_bubble if not SHOW_UI else None,
+                "thought": (self.thought_bubble if not SHOW_UI
+                            and not (self.companion and (self.companion.in_focus or self.companion.away))
+                            else None),
+                "focus_left": self.companion.focus_left() if self.companion else 0,
                 "hover_card": self.hover_time >= HOVER_CARD_DELAY,
                 "health": cat_voice.wellbeing(cat_status),
                 "chat_active": self.chat_active,
